@@ -56,7 +56,6 @@ Note: Please add comments for everything you do in the code, and give a comments
 - Then create also a .env on the socket folder, PORT = 4000 is inside of it
 
 (Note that you need to to this to create an account)
-
 - Set up your name and email, command this:
   ```
   git config --global user.namae "Your Name"
@@ -66,20 +65,20 @@ Note: Please add comments for everything you do in the code, and give a comments
 
 #### Backend
 - Open terminal, no need to cd just use this code, to install the dependecies:
-    ```
+  ```
      npm install || yarn install
   ```
 
 #### Frontend
 - Open terminal, need to directory first, and try to install all dependcies:
-      ```
+  ```
     cd frontend
     npm install || yarn install
   ```
 
 #### Socket
 - Open terminal, need also the directory first, and try to install all dependencies:
-        ```
+  ```
     cd frontend
     npm install || yarn install
   ```
@@ -94,7 +93,7 @@ Note: Please add comments for everything you do in the code, and give a comments
 
 #### Frontend
 - If you want to start frontend, just open terminal, go to frontend directory and use this code:
-    ```
+  ```
     cd frontend
     npm start
   ```
@@ -103,4 +102,4 @@ Note: Please add comments for everything you do in the code, and give a comments
  ```
     cd socket
     npm start
-  ```
+ ```
