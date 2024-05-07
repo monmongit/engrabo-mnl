@@ -39,44 +39,68 @@ Note: Please add comments for everything you do in the code, and give a comments
 
 ## Before you start just do the following:
 
+### Set up
 - Create a capstone folder, right click the folder, open using terminal, command this:
   ```
     code .
   ```
-  you will be directed to your vscode
+(This will be directed to your vscode)
+
 - Once you are already in vscdoe just 'Ctrl + Shift + `' to go on terminal, command this:
   ```
     git clone https://github.com/monmongit/engrabo-mnl
   ```
-  you will get all the code 
+  (You will get all the code repository on your github)
 
-  after, create a folder config inside the backend, then inside of the folder create .env file and contanct me for the data of it
+- Then after that, create a config folder, inside of backend. Then inside of config folder, create the .env file and contact me for the data
+- Then create also a .env on the socket folder, PORT = 4000 is inside of it
 
-- always need to do is go to EngraboMNL Directory, command this:
+(Note that you need to to this to create an account)
 
-  ```
-    cd engrabo-mnl //if nandito naman na kayo kahit wag na to
-
-    cd other Directory depending on what you are doing
-  ```
-
-- Then installed the package
-  ```
-    npm install || yarn install
-  ```
-- Then checked if already connected (Backend)
-  ```
-    npm run server
-  ```
-- Then checked if already connected (Frontend)
-  ```
-cd frontend    
-npm start
-  ```
 - Set up your name and email, command this:
-
   ```
   git config --global user.namae "Your Name"
 
   git config --global user.email "your_email@example.com"
+  ```
+
+#### Backend
+- Open terminal, no need to cd just use this code, to install the dependecies:
+    ```
+     npm install || yarn install
+  ```
+
+#### Frontend
+- Open terminal, need to directory first, and try to install all dependcies:
+      ```
+    cd frontend
+    npm install || yarn install
+  ```
+
+#### Socket
+- Open terminal, need also the directory first, and try to install all dependencies:
+        ```
+    cd frontend
+    npm install || yarn install
+  ```
+
+### Start
+
+#### Backend
+- If you want to start the backend, just open terminal and use this code:
+  ```
+    npm run server
+  ```
+
+#### Frontend
+- If you want to start frontend, just open terminal, go to frontend directory and use this code:
+    ```
+    cd frontend
+    npm start
+  ```
+#### Socket
+- If you want to start socket, just open terminal, go to frontend directory and use this code:
+ ```
+    cd socket
+    npm start
   ```
