@@ -4,25 +4,45 @@ const router = express.Router();
 const catchAsyncError = require('../middleware/catchAsyncError');
 const Product = require('../model/product');
 const Admin = require('../model/admin');
+const Event = require('../model/event');
 const Order = require('../model/order');
-const { upload } = require('../multer');
+const cloudinary = require('cloudinary');
 const ErrorHandler = require('../utils/ErrorHandler');
-const fs = require('fs');
+
 // Create Product
 router.post(
   '/create-product',
-  upload.array('images'),
   catchAsyncError(async (req, res, next) => {
     try {
       const adminId = req.body.adminId;
+
       const admin = await Admin.findById(adminId);
       if (!admin) {
         return next(new ErrorHandler('Admin Id is invalid', 400));
       } else {
-        const files = req.files;
-        const imageUrls = files.map((file) => `${file.filename}`);
+        let images = [];
+
+        if (typeof req.body.images === 'string') {
+          images.push(req.body.images);
+        } else {
+          images = req.body.images;
+        }
+
+        const imagesLinks = [];
+
+        for (let i = 0; i < images.length; i++) {
+          const result = await cloudinary.v2.uploader.upload(images[i], {
+            folder: 'products',
+          });
+
+          imagesLinks.push({
+            public_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
+
         const productData = req.body;
-        productData.images = imageUrls;
+        productData.images = imagesLinks;
         productData.admin = admin;
 
         const product = await Product.create(productData);
@@ -55,15 +75,29 @@ router.get(
   })
 );
 
-// Get all Products for all users
-router.get(
-  '/get-all-products',
+// Delete Product by admin
+router.delete(
+  '/delete-admin-product/:id',
+  isAdmin,
   catchAsyncError(async (req, res, next) => {
     try {
-      const products = await Product.find({});
-      res.status(200).json({
+      const product = await Product.findById(req.params.id);
+
+      if (!product) {
+        return next(new ErrorHandler('Product is not found!', 404));
+      }
+
+      for (let i = 0; i < product.images.length; i++) {
+        const result = await cloudinary.v2.uploader.destroy(
+          product.images[i].public_id
+        );
+      }
+
+      await Product.deleteOne({ _id: req.params.id });
+
+      res.status(201).json({
         success: true,
-        products,
+        message: 'Product deleted successfully!',
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
@@ -71,38 +105,16 @@ router.get(
   })
 );
 
-// Delete Product
-router.delete(
-  '/delete-admin-product/:id',
-  isAdmin,
+// Get all Products for all users
+router.get(
+  '/get-all-products',
   catchAsyncError(async (req, res, next) => {
     try {
-      const productId = req.params.id;
-
-      const productData = await Product.findById(productId);
-
-      productData.images.forEach((imageUrl) => {
-        const filename = imageUrl;
-        const filePath = `uploads/${filename}`;
-
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
-      });
-
-      const product = await Product.findByIdAndDelete(productId);
-
-      console.log(product.images);
-
-      if (!product) {
-        return new new ErrorHandler('Product not found with this id!', 500)();
-      }
+      const products = await Product.find().sort({ createAt: -1 });
 
       res.status(201).json({
         success: true,
-        message: 'Product Deleted Successfully!',
+        products,
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
@@ -144,7 +156,20 @@ router.put(
     try {
       const { user, rating, comment, productId, orderId } = req.body;
 
-      const product = await Product.findById(productId);
+      if (!user || !rating || !productId || !orderId) {
+        return next(new ErrorHandler('Missing required fields', 400));
+      }
+
+      // Attempt to find the item in Products
+      let item = await Product.findById(productId);
+
+      // If not found in Products, attempt to find it in Events
+      if (!item) {
+        item = await Event.findById(productId);
+        if (!item) {
+          return next(new ErrorHandler('Item not found', 404));
+        }
+      }
 
       const review = {
         user,
@@ -153,30 +178,33 @@ router.put(
         productId,
       };
 
-      const isReviewed = product.reviews.find(
+      // Check if the user has already reviewed this item
+      const isReviewed = item.reviews.find(
         (rev) => rev.user._id === req.user._id
       );
 
       if (isReviewed) {
-        product.reviews.forEach((rev) => {
+        item.reviews.forEach((rev) => {
           if (rev.user._id === req.user._id) {
-            (rev.rating = rating), (rev.comment = comment), (rev.user = user);
+            rev.rating = rating;
+            rev.comment = comment;
+            rev.user = user;
           }
         });
       } else {
-        product.reviews.push(review);
+        item.reviews.push(review);
       }
 
+      // Calculate the new average rating
       let avg = 0;
-
-      product.reviews.forEach((rev) => {
+      item.reviews.forEach((rev) => {
         avg += rev.rating;
       });
+      item.ratings = avg / item.reviews.length;
 
-      product.ratings = avg / product.reviews.length;
+      await item.save({ validateBeforeSave: false });
 
-      await product.save({ validateBeforeSave: false });
-
+      // Update the order to mark the item as reviewed
       await Order.findByIdAndUpdate(
         orderId,
         { $set: { 'cart.$[elem].isReviewed': true } },
@@ -185,7 +213,7 @@ router.put(
 
       res.status(200).json({
         success: true,
-        message: 'Reviwed successfully!',
+        message: 'Reviewed successfully!',
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));

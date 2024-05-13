@@ -31,7 +31,7 @@ const ProductDetailsPage = () => {
   return (
     <div>
       <Header />
-      {data ? <ProductDetails data={data} /> : 'Loading product details...'}
+      <ProductDetails data={data} />
       {!eventData && <>{data && <SuggestedProduct data={data} />}</>}
       <Footer />
     </div>

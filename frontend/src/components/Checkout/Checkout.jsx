@@ -30,7 +30,6 @@ const Checkout = () => {
   const paymentSubmit = () => {
     if (
       address1 === '' ||
-      address2 === '' ||
       zipCode === null ||
       country === '' ||
       state === '' ||
@@ -47,16 +46,21 @@ const Checkout = () => {
         city,
       };
 
+      const discountValue = couponCodeData
+        ? (couponCodeData.value / 100) * subTotalPrice
+        : 0;
+      const totalPrice = (subTotalPrice + shipping - discountValue).toFixed(2);
+
       const orderData = {
         cart,
-        totalPrice,
-        subTotalPrice,
+        totalPrice: totalPrice,
+        subTotalPrice: subTotalPrice,
         shipping,
         originalPrice,
+        discountPrice: discountValue.toFixed(2),
         shippingAddress,
         user,
       };
-
       // update local storage with the updated orders array
       localStorage.setItem('latestOrder', JSON.stringify(orderData));
       navigate('/payment');
@@ -76,45 +80,48 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const name = couponCode;
+    if (!couponCode) {
+      toast.error('Please enter a coupon code.');
+      return;
+    }
 
     await axios
-      .get(`${server}/coupon/get-coupon-value/${name}`)
+      .get(`${server}/coupon/get-coupon-value/${couponCode}`)
       .then((res) => {
-        // This needs to handle possibly multiple coupons returned
-        const coupon = res.data.couponCodes[0]; // Assuming you want the first match
-
-        if (coupon) {
-          const today = new Date();
-          const expiryDate = new Date(coupon.expiresAt);
-
-          // Check if the coupon is expired
-          if (expiryDate < today) {
-            toast.error('This coupon has expired.');
-            setCouponCode('');
-            return;
-          }
-
-          // Now we check if the total price meets the minimum amount requirement
-          if (subTotalPrice < coupon.minAmount) {
-            toast.error('This coupon requires a minimum amount to be valid.');
-            setCouponCode('');
-            return;
-          }
-
-          const discount = (subTotalPrice * coupon.value) / 100;
-          setOriginalPrice(subTotalPrice - discount); // Adjusting the original price after discount
-          setCouponCodeData(coupon); // Storing the coupon data for further use
+        if (!res.data.couponCode) {
+          toast.error('Coupon code does not exist!');
           setCouponCode('');
-          toast.success('Coupon applied successfully!');
-        } else {
-          toast.error("Coupon code doesn't exist!");
-          setCouponCode('');
+          return;
         }
+
+        const { couponCode } = res.data;
+        const today = new Date();
+        const expiryDate = new Date(couponCode.expiresAt);
+
+        // Check coupon validity
+        if (expiryDate < today) {
+          toast.error('This coupon has expired.');
+          setCouponCode('');
+          return;
+        }
+
+        if (subTotalPrice < couponCode.minAmount) {
+          toast.error(
+            `This coupon requires a minimum amount of ${couponCode.minAmount} to be valid.`
+          );
+          setCouponCode('');
+          return;
+        }
+
+        // Calculate discount
+        const discountValue = (couponCode.value / 100) * subTotalPrice;
+        setOriginalPrice(subTotalPrice - discountValue); // Assuming originalPrice is the final price after discount
+        setCouponCodeData(couponCode);
+        toast.success('Coupon applied successfully!');
       })
       .catch((error) => {
-        toast.error('Failed to fetch coupon data.');
         console.error('Error fetching coupon:', error);
+        toast.error('Failed to apply coupon.');
       });
   };
 
@@ -125,8 +132,6 @@ const Checkout = () => {
   const totalPrice = couponCodeData
     ? (subTotalPrice + shipping - discountPercentenge).toFixed(2)
     : (subTotalPrice + shipping).toFixed(2);
-
-  console.log(discountPercentenge);
 
   return (
     <div className="w-full flex flex-col items-center py-8">

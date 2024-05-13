@@ -39,18 +39,16 @@ const AllCoupons = () => {
       })
       .then((res) => {
         setIsLoading(false);
-        console.log(res.data); // Add this to log the API response
         setCoupons(res.data.couponCodes);
       })
       .catch((error) => {
         setIsLoading(false);
-        console.error('Error fetching coupons:', error);
       });
   }, [dispatch, admin._id]);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
-    setSearchTerm(value); // Update the search term state
+    setSearchTerm(value);
   };
 
   const handleDelete = async (id) => {

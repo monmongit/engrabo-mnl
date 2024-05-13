@@ -2,7 +2,7 @@
 import React from 'react';
 import DashboardHeader from '../../components/Admin/Layout/DashboardHeader';
 import DashboardSideBar from '../../components/Admin/Layout/DashboardSideBar';
-import AllProducts from '../../components/Admin/AllProducts.jsx';
+import AllProducts from '../../components/Admin/AllProducts';
 
 const AdminAllCategories = () => {
   return (

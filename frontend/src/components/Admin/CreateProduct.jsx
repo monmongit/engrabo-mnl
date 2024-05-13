@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-// import { categoriesData } from '../../static/data';
 import { AiOutlinePlusCircle } from 'react-icons/ai';
 import { createProduct } from '../../redux/action/product';
 import { toast } from 'react-toastify';
@@ -10,6 +9,7 @@ import { getAllCategories } from '../../redux/action/category';
 
 const CreateProduct = ({ setOpen }) => {
   const { admin } = useSelector((state) => state.admin);
+
   const { success, error } = useSelector((state) => state.products);
 
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const CreateProduct = ({ setOpen }) => {
   const [tags, setTags] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
   const [discountPrice, setDiscountPrice] = useState('');
-  const [stock, setStock] = useState();
+  const [stock, setStock] = useState('');
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -44,17 +44,29 @@ const CreateProduct = ({ setOpen }) => {
   const handleImageChange = (e) => {
     e.preventDefault();
 
-    let files = Array.from(e.target.files);
-    setImages((prevImages) => [...prevImages, ...files]);
+    const files = Array.from(e.target.files);
+
+    setImages([]);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setImages((old) => [...old, reader.result]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
+  console.log(admin._id);
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const newForm = new FormData();
 
     images.forEach((image) => {
-      newForm.append('images', image);
+      newForm.set('images', image);
     });
 
     newForm.append('name', name);
@@ -66,7 +78,19 @@ const CreateProduct = ({ setOpen }) => {
     newForm.append('stock', stock);
     newForm.append('adminId', admin._id);
 
-    dispatch(createProduct(newForm));
+    dispatch(
+      createProduct({
+        name,
+        description,
+        category,
+        tags,
+        originalPrice,
+        discountPrice,
+        stock,
+        adminId: admin._id,
+        images,
+      })
+    );
   };
 
   return (
@@ -225,7 +249,7 @@ const CreateProduct = ({ setOpen }) => {
             {images &&
               images.map((i) => (
                 <img
-                  src={URL.createObjectURL(i)}
+                  src={i}
                   key={i}
                   alt=""
                   className="h-[120px] w-[120px] object-cover m-2"

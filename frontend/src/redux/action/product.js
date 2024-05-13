@@ -2,30 +2,47 @@ import axios from 'axios';
 import { server } from '../../server';
 
 // Create Product
-export const createProduct = (newForm) => async (dispatch) => {
-  try {
-    dispatch({
-      type: 'productCreateRequest',
-    });
-    const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+export const createProduct =
+  (
+    name,
+    description,
+    category,
+    tags,
+    originalPrice,
+    discountPrice,
+    stock,
+    adminId,
+    images
+  ) =>
+  async (dispatch) => {
+    try {
+      dispatch({
+        type: 'productCreateRequest',
+      });
 
-    const { data } = await axios.post(
-      `${server}/product/create-product`,
-      newForm,
-      config
-    );
-
-    dispatch({
-      type: 'productCreateSuccess',
-      payload: data.product,
-    });
-  } catch (error) {
-    dispatch({
-      type: 'productCreateFail',
-      payload: error.response.data.message,
-    });
-  }
-};
+      const { data } = await axios.post(
+        `${server}/product/create-product`,
+        name,
+        description,
+        category,
+        tags,
+        originalPrice,
+        discountPrice,
+        stock,
+        adminId,
+        images
+      );
+      dispatch({
+        type: 'productCreateSuccess',
+        payload: data.product,
+      });
+    } catch (error) {
+      dispatch({
+        type: 'productCreateFail',
+        payload: error.response.data.message,
+      });
+    }
+  };
 
 // Get All Products Admin
 export const getAllProductsAdmin = (id) => async (dispatch) => {
@@ -61,7 +78,7 @@ export const deleteProduct = (id) => async (dispatch) => {
     );
     dispatch({
       type: 'deleteProductSuccess',
-      payload: { id, message: data.message }, // Include the ID of the deleted product
+      payload: data.message,
     });
   } catch (error) {
     dispatch({

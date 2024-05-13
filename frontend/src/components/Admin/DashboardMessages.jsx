@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { backend_url, server } from '../../server';
+import React, { useEffect, useRef, useState } from 'react';
+import { server } from '../../server';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +12,7 @@ const ENDPOINT = 'http://localhost:4000/';
 const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
 
 const DashboardMessages = () => {
-  const { admin } = useSelector((state) => state.admin);
+  const { admin, isLoading } = useSelector((state) => state.admin);
   const [conversations, setConversations] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
@@ -21,8 +21,9 @@ const DashboardMessages = () => {
   const [userData, setUserData] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [activeStatus, setActiveStatus] = useState(false);
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState(null);
   const [open, setOpen] = useState(false);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     socketId.on('getMessage', (data) => {
@@ -37,7 +38,7 @@ const DashboardMessages = () => {
   useEffect(() => {
     arrivalMessage &&
       currentChat?.members.includes(arrivalMessage.sender) &&
-      setMessages((prev) => [...prev, arrivalMessage]);
+      setMessages((prevMessages) => [...prevMessages, arrivalMessage]);
   }, [arrivalMessage, currentChat]);
 
   useEffect(() => {
@@ -100,7 +101,7 @@ const DashboardMessages = () => {
     };
 
     const receiverId = currentChat.members.find(
-      (member) => member.id !== admin._id
+      (member) => member.id !== admin?._id
     );
 
     socketId.emit('sendMessage', {
@@ -145,6 +146,60 @@ const DashboardMessages = () => {
         console.log(error);
       });
   };
+
+  const handleImageUpload = async (e) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setImages(reader.result);
+        imageSendHandler(reader.result);
+      }
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  };
+
+  const imageSendHandler = async (e) => {
+    const receiverId = currentChat.members.find(
+      (member) => member !== admin._id
+    );
+    socketId.emit('sendMessage', {
+      senderId: admin._id,
+      receiverId,
+      images: e,
+    });
+
+    try {
+      await axios
+        .post(`${server}/message/create-new-message`, {
+          images: e,
+          sender: admin._id,
+          text: newMessage,
+          conversationId: currentChat._id,
+        })
+        .then((res) => {
+          setImages();
+          setMessages([...messages, res.data.message]);
+          updateLastMessageForImage();
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateLastMessageForImage = async () => {
+    await axios.put(
+      `${server}/conversation/update-last-message/${currentChat._id}`,
+      {
+        lastMessage: 'Sent an image',
+        lastMessageId: admin._id,
+      }
+    );
+  };
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behaviour: 'smooth' });
+  }, [messages]);
   return (
     <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll hide-scrollbar rounded">
       {/* All messages list */}
@@ -166,6 +221,7 @@ const DashboardMessages = () => {
                 userData={userData}
                 online={onlineCheck(item)}
                 setActiveStatus={setActiveStatus}
+                isLoading={isLoading}
               />
             ))}
         </>
@@ -179,8 +235,10 @@ const DashboardMessages = () => {
           messages={messages}
           adminId={admin._id}
           userData={userData}
+          scrollRef={scrollRef}
           setMessages={setMessages}
           activeStatus={activeStatus}
+          handleImageUpload={handleImageUpload}
         />
       )}
     </div>
@@ -197,13 +255,14 @@ const MessageList = ({
   userData,
   online,
   setActiveStatus,
+  isLoading,
 }) => {
   setActiveStatus(online);
   const [user, setUser] = useState([]);
   const [active, setActive] = useState(0);
   const navigate = useNavigate();
   const handleClick = (id) => {
-    navigate(`?${id}`);
+    navigate(`/dashboard-messages?${id}`);
     setOpen(true);
   };
 
@@ -236,7 +295,7 @@ const MessageList = ({
     >
       <div className="relative">
         <img
-          src={`${backend_url}/${user?.avatar?.url}`}
+          src={`${user?.avatar?.url}`}
           alt=""
           className="w-[50px] h-[50px] rounded-full"
         />
@@ -247,12 +306,14 @@ const MessageList = ({
         )}
       </div>
       <div className="pl-3">
-        <h1 className="font-[600]">{userData?.name}</h1>
+        <h1 className="font-[600]">{user?.name}</h1>
         <p className="text-[14px] text-[#000000a1]">
-          {data?.lastMessageId !== user?._id
-            ? 'You'
-            : user?.name.split(' ')[0] + ' '}
-          : {data?.lastMessage}
+          <p className="text-[14px] text-[#000000a1]">
+            {data?.lastMessageId !== userData?._id
+              ? 'You'
+              : userData?.name?.split(' ')[0] + ' '}
+            : {data?.lastMessage}
+          </p>
         </p>
       </div>
     </div>
@@ -268,6 +329,8 @@ const AdminInbox = ({
   adminId,
   userData,
   activeStatus,
+  scrollRef,
+  handleImageUpload,
 }) => {
   return (
     <div className="w-full min-h-full flex flex-col justify-between">
@@ -275,7 +338,7 @@ const AdminInbox = ({
       <div className="w-full flex p-3 items-center justify-between bg-[#b19b56]">
         <div className="flex">
           <img
-            src={`${backend_url}/${userData?.avatar?.url}`}
+            src={`${userData?.avatar?.url}`}
             alt=""
             className="w-[60px] h-[60px] rounded-full"
           />
@@ -302,33 +365,51 @@ const AdminInbox = ({
               className={`flex w-full my-2 ${
                 item.sender === adminId ? 'justify-end' : 'justify-start'
               }`}
+              ref={scrollRef}
             >
               {/* For messages from others, include the image to the left */}
               {item.sender !== adminId && (
                 <img
-                  src={`${backend_url}/${userData?.avatar?.url}`}
+                  src={`${userData?.avatar?.url}`}
                   alt=""
                   className="w-[40px] h-[40px] rounded-full mr-3"
                 />
               )}
 
-              {/* Text container */}
-              <div
-                className={`flex flex-col w-max ${
-                  item.sender === adminId ? 'items-end' : 'items-start'
-                }`}
-              >
+              {/* Images */}
+              {item.images && (
                 <div
-                  className={`p-2 rounded ${
-                    item.sender === adminId ? 'bg-[#000]' : 'bg-[#b19a5696]'
-                  } text-[#fff]`}
+                  className={`flex flex-col w-max ${
+                    item.sender === adminId ? 'items-end' : 'items-start'
+                  }`}
                 >
-                  <p>{item.text}</p>
+                  <img
+                    src={item.images.url}
+                    alt="Description of the content"
+                    className="w-[200px] h-[200px]  rounded-[10px] mr-2"
+                  />
                 </div>
-                <p className="text-[12px] text-[#000000d3] pt-1">
-                  {format(item.createdAt)}
-                </p>
-              </div>
+              )}
+
+              {/* Text container */}
+              {item.text !== '' && (
+                <div
+                  className={`flex flex-col w-max ${
+                    item.sender === adminId ? 'items-end' : 'items-start'
+                  }`}
+                >
+                  <div
+                    className={`p-2 rounded ${
+                      item.sender === adminId ? 'bg-[#000]' : 'bg-[#b19a5696]'
+                    } text-[#fff]`}
+                  >
+                    <p>{item.text}</p>
+                  </div>
+                  <p className="text-[12px] text-[#000000d3] pt-1">
+                    {format(item.createdAt)}
+                  </p>
+                </div>
+              )}
             </div>
           ))}
       </div>
@@ -338,10 +419,19 @@ const AdminInbox = ({
         className="p-3 relative w-full flex justify-between items-center"
         onSubmit={sendMessageHandler}
       >
-        <div className="w-[3%]">
-          <GrGallery className="cursor-pointer" size={20} fill="#171203" />
+        <div className="w-[30px]">
+          <input
+            type="file"
+            name=""
+            id="image"
+            className="hidden"
+            onChange={handleImageUpload}
+          />
+          <label htmlFor="image">
+            <GrGallery className="cursor-pointer" />
+          </label>
         </div>
-        <div className="w-[97%]">
+        <div className="w-full">
           <input
             type="text"
             required

@@ -1,58 +1,61 @@
 import React, { useState } from 'react';
 import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai';
 import { RxAvatar } from 'react-icons/rx';
-// import styles from '../../styles/style';
 import axios from 'axios';
-import { server } from '../../server';
+
 import { toast } from 'react-toastify';
 import '../../styles/toastDesign.css';
+import { server } from '../../server';
+import styles from '../../styles/style';
+import { Link } from 'react-router-dom';
 
 const AdminCreate = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState();
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [zipCode, setZipCode] = useState('');
   const [password, setPassword] = useState('');
   const [visible, setVisible] = useState('');
-  const [avatar, setAvatar] = useState('');
-
-  const handleFileInputChange = (e) => {
-    const file = e.target.files[0];
-    setAvatar(file);
-  };
+  const [avatar, setAvatar] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const config = {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    };
-    const newForm = new FormData();
 
-    newForm.append('file', avatar);
-    newForm.append('name', name);
-    newForm.append('email', email);
-    newForm.append('password', password);
-    newForm.append('zipCode', zipCode);
-    newForm.append('address', address);
-    newForm.append('phoneNumber', phoneNumber);
     axios
-      .post(`${server}/admin/create-admin`, newForm, config)
+      .post(`${server}/admin/create-admin`, {
+        name,
+        email,
+        password,
+        avatar,
+        zipCode,
+        address,
+        phoneNumber,
+      })
       .then((res) => {
-        if (res.data.success === true) {
-          toast.success(res.data.message);
-          setName('');
-          setEmail('');
-          setPassword('');
-          setAvatar();
-          setZipCode('');
-          setAddress('');
-          setPhoneNumber('');
-        }
+        toast.success(res.data.message);
+        setName('');
+        setEmail('');
+        setPassword('');
+        setAvatar('');
+        setZipCode('');
+        setAddress('');
+        setPhoneNumber('');
       })
       .catch((error) => {
         toast.error(error.response.data.message);
       });
+  };
+
+  const handleFileInputChange = (e) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setAvatar(reader.result);
+      }
+    };
+    reader.readAsDataURL(e.target.files[0]);
   };
 
   return (
@@ -72,7 +75,7 @@ const AdminCreate = () => {
                 htmlFor="email"
                 className="block text-sm font-medium text-brown-semidark"
               >
-                Shop Name
+                Admin Name
               </label>
               <div className="mt-1">
                 <input
@@ -213,7 +216,7 @@ const AdminCreate = () => {
                 <span className="inline-block h-8 w-8 rounded-full overflow-hidden">
                   {avatar ? (
                     <img
-                      src={URL.createObjectURL(avatar)}
+                      src={avatar}
                       alt="avatar"
                       className="h-full w-full object-cover rounded-full"
                     />
@@ -245,6 +248,16 @@ const AdminCreate = () => {
               >
                 Submit
               </button>
+            </div>
+
+            <div className={`${styles.normalFlex} w-full`}>
+              <h4>Already have an account?</h4>
+              <Link
+                to="/admin-login"
+                className="ml-2 text-brown-semidark hover:text-brown-dark"
+              >
+                Sign In
+              </Link>
             </div>
           </form>
         </div>

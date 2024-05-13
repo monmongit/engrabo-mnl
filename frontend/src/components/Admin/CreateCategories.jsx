@@ -23,7 +23,7 @@ const CreateCategory = ({ setOpen }) => {
     if (success) {
       toast.success('Category created successfully');
       navigate('/dashboard-categories');
-      window.location.reload(true);
+      window.location.reload();
     }
   }, [error, success, navigate, setOpen]);
 

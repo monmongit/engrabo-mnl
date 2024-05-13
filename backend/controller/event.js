@@ -1,36 +1,53 @@
 const express = require('express');
-const { isAdmin } = require('../middleware/auth');
-const router = express.Router();
 const catchAsyncError = require('../middleware/catchAsyncError');
 const Admin = require('../model/admin');
-const { upload } = require('../multer');
 const Event = require('../model/event');
 const ErrorHandler = require('../utils/ErrorHandler');
-const fs = require('fs');
+const { isAdmin, isAuthenticated } = require('../middleware/auth');
+const router = express.Router();
+const cloudinary = require('cloudinary');
 
 // Create Event
 router.post(
   '/create-event',
-  upload.array('images'),
   catchAsyncError(async (req, res, next) => {
     try {
       const adminId = req.body.adminId;
       const admin = await Admin.findById(adminId);
       if (!admin) {
         return next(new ErrorHandler('Admin Id is invalid', 400));
+      } else {
+        let images = [];
+        if (typeof req.body.images === 'string') {
+          images.push(req.body.images);
+        } else {
+          images = req.body.images;
+        }
+
+        const imagesLinks = [];
+
+        for (let i = 0; i < images.length; i++) {
+          const result = await cloudinary.v2.uploader.upload(images[i], {
+            folder: 'products',
+          });
+
+          imagesLinks.push({
+            public_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
+
+        const productData = req.body;
+        productData.images = imagesLinks;
+        productData.admin = admin;
+
+        const event = await Event.create(productData);
+
+        res.status(201).json({
+          success: true,
+          event,
+        });
       }
-      const files = req.files;
-      const imageUrls = files.map((file) => `${file.filename}`);
-      const eventData = req.body;
-      eventData.images = imageUrls;
-      eventData.admin = admin;
-
-      const event = await Event.create(eventData);
-
-      res.status(201).json({
-        success: true,
-        event,
-      });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
     }
@@ -38,6 +55,52 @@ router.post(
 );
 
 // Get all Events
+router.get(
+  '/get-all-events',
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const events = await Event.find();
+
+      res.status(201).json({
+        success: true,
+        events,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// Delete Event
+router.delete(
+  '/delete-admin-event/:id',
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const event = await Event.findById(req.params.id);
+
+      if (!event) {
+        return next(new ErrorHandler('Product is not found', 404));
+      }
+
+      for (let i = 0; i < event.images.length; i++) {
+        const result = await cloudinary.v2.uploader.destroy(
+          event.images[i].public_id
+        );
+      }
+
+      await Event.deleteOne({ _id: req.params.id });
+
+      res.status(201).json({
+        success: true,
+        message: 'Event Deleted successfully!',
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// Get all events of admin
 router.get(
   '/get-all-events/:id',
   catchAsyncError(async (req, res, next) => {
@@ -54,52 +117,6 @@ router.get(
   })
 );
 
-// Delete Event
-router.delete(
-  '/delete-admin-event/:id',
-  isAdmin,
-  catchAsyncError(async (req, res, next) => {
-    try {
-      const eventId = req.params.id;
-      const eventData = await Event.findById(eventId);
-      if (!eventData) {
-        return next(new ErrorHandler('Event not found with this id!', 404));
-      }
-
-      eventData.images.forEach((imageUrl) => {
-        const filename = imageUrl;
-        const filePath = `uploads/${filename}`;
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.log(err);
-          }
-        });
-      });
-
-      await Event.findByIdAndDelete(eventId);
-      res.status(200).json({
-        success: true,
-        message: 'Event deleted successfully!',
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error, 400));
-    }
-  })
-);
-
-// Get all events
-router.get('/get-all-events', async (req, res, next) => {
-  try {
-    const events = await Event.find();
-    res.status(201).json({
-      success: true,
-      events,
-    });
-  } catch (error) {
-    return next(new ErrorHandler(error, 400));
-  }
-});
-
 // Search Events by name or other attributes
 router.get(
   '/search-events',
@@ -109,11 +126,7 @@ router.get(
       const search = req.query.search;
       const regex = new RegExp(search, 'i');
       const events = await Event.find({
-        $or: [
-          { name: { $regex: regex } },
-          { location: { $regex: regex } }, // Example of additional field
-          // Add more fields if needed
-        ],
+        $or: [{ name: { $regex: regex } }, { location: { $regex: regex } }],
       });
 
       res.status(200).json({

@@ -2,30 +2,51 @@ import axios from 'axios';
 import { server } from '../../server';
 
 // Create Event Admin
-export const createEvent = (newForm) => async (dispatch) => {
-  try {
-    dispatch({
-      type: 'eventCreateRequest',
-    });
-    const config = { headers: { 'Content-Type': 'multipart/form-data' } };
+export const createEvent =
+  (
+    name,
+    description,
+    category,
+    tags,
+    originalPrice,
+    discountPrice,
+    stock,
+    adminId,
+    images,
+    startDate,
+    endDate
+  ) =>
+  async (dispatch) => {
+    try {
+      dispatch({
+        type: 'eventCreateRequest',
+      });
 
-    const { data } = await axios.post(
-      `${server}/event/create-event`,
-      newForm,
-      config
-    );
-
-    dispatch({
-      type: 'eventCreateSuccess',
-      payload: data.event,
-    });
-  } catch (error) {
-    dispatch({
-      type: 'eventCreateFail',
-      payload: error.response.data.message,
-    });
-  }
-};
+      const { data } = await axios.post(
+        `${server}/event/create-event`,
+        name,
+        description,
+        category,
+        tags,
+        originalPrice,
+        discountPrice,
+        stock,
+        adminId,
+        images,
+        startDate,
+        endDate
+      );
+      dispatch({
+        type: 'eventCreateSuccess',
+        payload: data.event,
+      });
+    } catch (error) {
+      dispatch({
+        type: 'eventCreateFail',
+        payload: error.response.data.message,
+      });
+    }
+  };
 
 // Get All Events Admin
 export const getAllEventsAdmin = (id) => async (dispatch) => {

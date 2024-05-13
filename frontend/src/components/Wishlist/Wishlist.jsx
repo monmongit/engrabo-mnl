@@ -5,7 +5,6 @@ import { BsCartPlus } from 'react-icons/bs';
 import { AiOutlineHeart } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeFromWishlist } from '../../redux/action/wishlist';
-import { backend_url } from '../../server';
 import { addTocart } from '../../redux/action/cart';
 import { toast } from 'react-toastify';
 
@@ -35,7 +34,7 @@ const Wishlist = ({ setOpenWishlist }) => {
 
   return (
     <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10 ">
-      <div className="fixed top-0 right-0 h-[100vh] w-[25%] bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm overflow-y-scroll hide-scrollbar ">
+      <div className="fixed top-0 right-0 h-[100vh] w-[70%] 800px:w-[25%] bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm overflow-y-scroll hide-scrollbar ">
         {wishlist && wishlist.length === 0 ? (
           <div className="w-full h-screen flex items-center justify-center">
             <div className="flex w-full justify-end pt-5 pr-5 fixed top-3 right-3">
@@ -101,7 +100,7 @@ const CartSingle = ({ data, removeFromWishlistHandler, addToCartHandler }) => {
         />
         {/* Image Product */}
         <img
-          src={`${backend_url}/${data?.images[0]}`}
+          src={`${data?.images[0]?.url}`}
           alt=""
           className="w-[130px] h-min ml-2 rounded-[5px]"
         />

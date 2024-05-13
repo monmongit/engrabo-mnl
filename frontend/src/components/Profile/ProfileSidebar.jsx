@@ -6,7 +6,6 @@ import { AiOutlineLogout, AiOutlineMessage } from 'react-icons/ai';
 import { MdOutlineTrackChanges } from 'react-icons/md';
 import { TbAddressBook } from 'react-icons/tb';
 import { RiLockPasswordLine } from 'react-icons/ri';
-
 import axios from 'axios';
 import { server } from '../../server';
 import { toast } from 'react-toastify';
@@ -26,6 +25,7 @@ const ProfileSidebar = ({ setActive, active }) => {
         console.log(error.response.data.message);
       });
   };
+
   return (
     <div className="w-full bg-[#f7ebca] shadow-sm rounded-[10px] p-4 pt-8">
       {/* Profile Sidebar */}
@@ -115,7 +115,7 @@ const ProfileSidebar = ({ setActive, active }) => {
         </span>
       </div>
 
-      {/* Payment Methods Sidebar */}
+      {/* Change Password Sidebar */}
       <div
         className="flex items-center cursor-pointer w-full mb-8"
         onClick={() => setActive(6)}

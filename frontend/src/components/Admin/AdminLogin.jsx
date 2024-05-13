@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai';
 import { Link } from 'react-router-dom';
 import styles from '../../styles/style';
-//import logo from '../../assets/Logo/engrabo-logo.png';
 import Homebackground from '../../assets/Logo/home-background.jpg';
 import axios from 'axios';
 import { server } from '../../server';
@@ -43,7 +41,7 @@ const AdminLogin = () => {
     <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-brown-dark">
-          Login to your account
+          Login to your admin account
         </h2>
       </div>
       <div className="flex flex-col mt-6 sm:mx-auto sm:flex-row sm:max-w-screen-xl">
@@ -143,7 +141,7 @@ const AdminLogin = () => {
             <div className={`${styles.normalFlex} w-full`}>
               <h4>Not have any account?</h4>
               <Link
-                to="/sign-up"
+                to="/admin-create"
                 className="ml-2 text-brown-semidark hover:text-brown-dark"
               >
                 Sign Up

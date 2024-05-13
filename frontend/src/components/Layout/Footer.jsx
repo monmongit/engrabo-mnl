@@ -37,7 +37,11 @@ const Footer = () => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-16 sm: text-center">
         <ul className="px-5 text-center sm:text-start flex sm:block flex-col items-center">
-          <img src={Logo} alt="" />
+          <img
+            src={Logo}
+            alt=""
+            style={{ filter: 'brightness(0) invert(1)' }}
+          />
           <br />
           <p className="text-justify text-[14px]">
             Engraving shop for wooden signages, souvenirs, decors and displays.
@@ -61,8 +65,8 @@ const Footer = () => {
 
         <ul className="text-center sm:text-start">
           <h1 className="mb-1 font-semibold">Company</h1>
-          {footerProductLinks.map((link) => (
-            <li key={link.name}>
+          {footerProductLinks.map((link, index) => (
+            <li key={index}>
               <Link
                 className="text-[#b19b56] hover:text-[#fff4d7] duration-300 text-sm cursor-pointer leading-6"
                 to={link.link}
@@ -75,8 +79,8 @@ const Footer = () => {
 
         <ul className="text-center sm:text-start">
           <h1 className="mb-1 font-semibold">Shop</h1>
-          {footercompanyLinks.map((link) => (
-            <li key={link.name}>
+          {footercompanyLinks.map((link, index) => (
+            <li key={index}>
               <Link
                 className="text-[#b19b56] hover:text-[#fff4d7] duration-300 text-sm cursor-pointer leading-6"
                 to={link.link}
@@ -89,8 +93,8 @@ const Footer = () => {
 
         <ul className="text-center sm:text-start">
           <h1 className="mb-1 font-semibold">Support</h1>
-          {footerSupportLinks.map((link) => (
-            <li key={link.name}>
+          {footerSupportLinks.map((link, index) => (
+            <li key={index}>
               <Link
                 className="text-[#b19b56] hover:text-[#fff4d7] duration-300 text-sm cursor-pointer leading-6"
                 to={link.link}

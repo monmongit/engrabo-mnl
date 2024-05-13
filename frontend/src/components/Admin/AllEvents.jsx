@@ -24,7 +24,7 @@ const AllEvents = () => {
 
   const handleDelete = (id) => {
     dispatch(deleteEvent(id));
-    toast.success('Product deleted successfully');
+    toast.success('Product event deleted successfully');
   };
 
   const handleSearchChange = (e) => {
@@ -73,16 +73,22 @@ const AllEvents = () => {
       field: 'Preview',
       flex: 0.8,
       minWidth: 100,
-      headerName: 'Preview',
+      headerName: '',
       type: 'number',
       sortable: false,
-      renderCell: (params) => (
-        <Link to={`product/${params.row.name.replace(/\s+/g, '-')}`}>
-          <Button>
-            <AiOutlineEye size={20} />
-          </Button>
-        </Link>
-      ),
+      renderCell: (params) => {
+        const d = params.row.name;
+        const product_name = d.replace(/\s+/g, '-');
+        return (
+          <>
+            <Link to={`/product/${product_name}`}>
+              <Button>
+                <AiOutlineEye size={20} />
+              </Button>
+            </Link>
+          </>
+        );
+      },
     },
     {
       field: 'Delete',
@@ -105,7 +111,7 @@ const AllEvents = () => {
     price: '₱ ' + item.originalPrice,
     discount: '₱ ' + item.discountPrice,
     stock: item.stock,
-    sold: 10, // Assuming sold count is static for demonstration
+    sold: item.sold_out, // Assuming sold count is static for demonstration
   }));
 
   return (

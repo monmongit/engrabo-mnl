@@ -42,7 +42,14 @@ const productSchema = new mongoose.Schema({
 
   images: [
     {
-      type: String,
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
     },
   ],
 
@@ -66,11 +73,11 @@ const productSchema = new mongoose.Schema({
       },
     },
   ],
-  ratings: [
-    {
-      type: Number,
-    },
-  ],
+
+  ratings: {
+    type: Number,
+  },
+
   adminId: {
     type: String,
     required: true,

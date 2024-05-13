@@ -4,7 +4,7 @@ import { FiPackage, FiShoppingBag } from 'react-icons/fi';
 // import { MdOutlineLocalOffer } from 'react-icons/md';
 import { RxDashboard } from 'react-icons/rx';
 import { RiLockPasswordLine } from 'react-icons/ri';
-
+import { CiSettings } from 'react-icons/ci';
 import { Link } from 'react-router-dom';
 import { BiMessageSquareDetail } from 'react-icons/bi';
 import { HiOutlineReceiptRefund } from 'react-icons/hi';
@@ -12,21 +12,22 @@ import { server } from '../../../server';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { MdOutlineLocalOffer } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 const DashboardSideBar = ({ active }) => {
   const navigate = useNavigate();
 
-  const logoutHandler = async () => {
-    try {
-      await axios.get(`${server}/admin/logout`, {
-        withCredentials: true,
+  const logoutHandler = () => {
+    axios
+      .get(`${server}/admin/logout`, { withCredentials: true })
+      .then((res) => {
+        toast.success(res.data.message);
+        window.location.reload(true);
+        navigate('/admin-login');
+      })
+      .catch((error) => {
+        console.log(error.response.data.message);
       });
-      // Add here if you want to navigate and then reload
-      navigate('/admin-login', { replace: true });
-      window.location.reload();
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
   };
   return (
     <div className="w-full h-[89vh] bg-[#f7ebca] shadow-sm overflow-y-scroll hide-scrollbar  sticky top-0 left-0 z-10">
@@ -115,26 +116,6 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Withdraw Money
-      <div className="w-full flex items-center p-4">
-        <Link
-          to="/dashboard-withdraw-money"
-          className="w-full flex items-center"
-        >
-          <CiMoneyBill
-            size={30}
-            color={`${active === 7 ? '#171203' : '#6b540f'}`}
-          />
-          <h5
-            className={`800px:block hidden pl-2 text-[18px] font-[400] ${
-              active === 7 ? 'text-[#171203]' : 'text-[#6b540f]'
-            }`}
-          >
-            Withdraw Money
-          </h5>
-        </Link>
-      </div> */}
-
       {/* Admin Inbox */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-messages" className="w-full flex items-center">
@@ -169,7 +150,7 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Settings */}
+      {/* Change Password */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-settings" className="w-full flex items-center">
           <RiLockPasswordLine
@@ -182,6 +163,22 @@ const DashboardSideBar = ({ active }) => {
             }`}
           >
             Change Password
+          </h5>
+        </Link>
+      </div>
+
+      <div className="w-full flex items-center p-4">
+        <Link to="/settings" className="w-full flex items-center">
+          <CiSettings
+            size={30}
+            color={`${active === 11 ? 'crimson' : '#555'}`}
+          />
+          <h5
+            className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
+              active === 11 ? 'text-[crimson]' : 'text-[#555]'
+            }`}
+          >
+            Settings
           </h5>
         </Link>
       </div>

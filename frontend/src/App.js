@@ -30,10 +30,12 @@ import {
   AdminCreateEvents,
   AdminAllEvents,
   AdminAllCoupons,
+  AdminPreviewPage,
   AdminAllCategories,
   AdminAllOrders,
   AdminOrdersDetails,
   AdminAllRefunds,
+  AdminSettingsPage,
   AdminUpdatePasswordPage,
   AdminInboxPage,
 } from './routes/AdminRoutes';
@@ -122,6 +124,8 @@ const App = () => {
         />
 
         {/* Admin Route */}
+        <Route path="/admin/preview/:id" element={<AdminPreviewPage />} />
+
         <Route path="/admin-create" element={<AdminCreatePage />} />
         <Route path="/admin-login" element={<AdminLoginPage />} />
 
@@ -139,6 +143,15 @@ const App = () => {
           element={
             <AdminProtectedRoute>
               <AdminUpdatePasswordPage />
+            </AdminProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <AdminProtectedRoute>
+              <AdminSettingsPage />
             </AdminProtectedRoute>
           }
         />

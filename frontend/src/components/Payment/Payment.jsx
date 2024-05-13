@@ -45,9 +45,12 @@ const Payment = () => {
   const order = {
     cart: orderData?.cart,
     shippingAddress: orderData?.shippingAddress,
-    user: user,
+    user: user && user,
+    discountPrice: orderData?.discountValue,
     totalPrice: orderData?.totalPrice,
   };
+
+  console.log(order);
 
   const onApprove = async (data, actions) => {
     return actions.order.capture().then(function (details) {
@@ -248,22 +251,24 @@ const CartData = ({ orderData }) => {
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8">
       <div className="flex justify-between">
         <h3 className="text-[16px] font-[400] text-[#b19b56]">subtotal:</h3>
-        <h5 className="text-[18px] font-[600]">${orderData?.subTotalPrice}</h5>
+        <h5 className="text-[18px] font-[600]">₱{orderData?.subTotalPrice}</h5>
       </div>
       <br />
       <div className="flex justify-between">
         <h3 className="text-[16px] font-[400] text-[#b19b56]">shipping:</h3>
-        <h5 className="text-[18px] font-[600]">${shipping}</h5>
+        <h5 className="text-[18px] font-[600]">₱{shipping}</h5>
       </div>
       <br />
       <div className="flex justify-between border-b pb-3">
         <h3 className="text-[16px] font-[400] text-[#b19b56]">Discount:</h3>
         <h5 className="text-[18px] font-[600]">
-          {orderData?.discountPrice ? '$' + orderData.discountPrice : '-'}
+          {orderData.discountPrice && parseFloat(orderData.discountPrice) > 0
+            ? `₱${parseFloat(orderData.discountPrice).toFixed(2)}`
+            : '-'}{' '}
         </h5>
       </div>
       <h5 className="text-[18px] font-[600] text-end pt-3">
-        ${orderData?.totalPrice}
+        ₱{orderData?.totalPrice}
       </h5>
       <br />
     </div>

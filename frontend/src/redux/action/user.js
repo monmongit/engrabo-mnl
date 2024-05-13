@@ -32,6 +32,7 @@ export const loadAdmin = () => async (dispatch) => {
     const { data } = await axios.get(`${server}/admin/getAdmin`, {
       withCredentials: true,
     });
+    console.log(data);
     dispatch({
       type: 'LoadAdminSuccess',
       payload: data.admin,

@@ -3,7 +3,6 @@ const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncError = require('../middleware/catchAsyncError');
 const express = require('express');
 const { isAdmin, isAuthenticated } = require('../middleware/auth');
-
 const router = express.Router();
 
 // Create new conversation
@@ -33,7 +32,7 @@ router.post(
         });
       }
     } catch (error) {
-      return next(new ErrorHandler(error.response.meesage), 400);
+      return next(new ErrorHandler(error.response.meesage), 500);
     }
   })
 );

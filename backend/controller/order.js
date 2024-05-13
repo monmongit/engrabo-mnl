@@ -5,6 +5,8 @@ const catchAsyncError = require('../middleware/catchAsyncError');
 const { isAuthenticated, isAdmin } = require('../middleware/auth');
 const Order = require('../model/order');
 const Product = require('../model/product');
+const Event = require('../model/event');
+const Admin = require('../model/admin');
 
 // create new order
 router.post(
@@ -17,7 +19,7 @@ router.post(
       const adminItemsMap = new Map();
 
       for (const item of cart) {
-        const adminId = item.shopId;
+        const adminId = item.adminId;
         if (!adminItemsMap.has(adminId)) {
           adminItemsMap.set(adminId, []);
         }
@@ -99,17 +101,19 @@ router.put(
       if (!order) {
         return next(new ErrorHandler('Order not found', 400));
       }
+
+      // Update the stock when transferring to delivery partner
       if (req.body.status === 'Transferred to delivery partner') {
-        order.cart.forEach(async (o) => {
-          await updateOrder(o._id, o.qty);
-        });
+        for (let item of order.cart) {
+          await updateItemStock(item._id, item.qty);
+        }
       }
 
+      // Update order details
       order.status = req.body.status;
-
       if (req.body.status === 'Delivered') {
         order.deliveredAt = Date.now();
-        order.paymentInfo.status = 'Succeeded';
+        order.paymentInfo.status = 'Paid';
       }
 
       await order.save({ validateBeforeSave: false });
@@ -118,19 +122,32 @@ router.put(
         success: true,
         order,
       });
-
-      async function updateOrder(id, qty) {
-        const product = await Product.findById(id);
-        product.stock -= qty;
-        product.sold_out += qty;
-
-        await product.save({ validateBeforeSave: false });
-      }
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
   })
 );
+
+async function updateItemStock(id, qty) {
+  // Try to update a product
+  let item = await Product.findById(id);
+
+  // If not a product, it might be an event
+  if (!item) {
+    item = await Event.findById(id);
+  }
+
+  if (!item) {
+    console.log('Item not found with ID:', id);
+    return; // If neither, skip the update
+  }
+
+  // Update stock and sold_out values
+  item.stock -= qty;
+  item.sold_out += qty;
+
+  await item.save({ validateBeforeSave: false });
+}
 
 // Refund a order of user
 router.put(

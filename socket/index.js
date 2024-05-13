@@ -52,22 +52,18 @@ io.on('connection', (socket) => {
   });
 
   // Send and get message
-  const messages = {}; // Ojbect to track message for each user
-
   socket.on('sendMessage', ({ senderId, receiverId, text, images }) => {
     const message = createMessage({ senderId, receiverId, text, images });
+    const receiver = getUser(receiverId);
 
-    const user = getUser(receiverId);
+    console.log(`Attempting to send message from ${senderId} to ${receiverId}`);
 
-    // Store the messages in the messages object
-    if (!messages[receiverId]) {
-      messages[receiverId] = [message];
+    if (receiver) {
+      console.log('Found receiver with socket ID:', receiver.socketId);
+      io.to(receiver.socketId).emit('getMessage', message);
     } else {
-      messages[receiverId].push(message);
+      console.log('Receiver not found for ID:', receiverId);
     }
-
-    // Send the message to the reciever
-    io.to(user?.socketId).emit('getMessage', message);
   });
 
   socket.on('messageSeen', ({ senderId, receiverId, messageId }) => {

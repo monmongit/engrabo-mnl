@@ -7,7 +7,7 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from 'react-icons/ai';
-import { backend_url, server } from '../../server';
+import { server } from '../../server';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllProductsAdmin } from '../../redux/action/product';
 import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
@@ -20,19 +20,17 @@ const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
   const { user, isAuthenticated } = useSelector((state) => state.user);
+  const { products } = useSelector((state) => state.products);
 
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
-
-  const { products } = useSelector((state) => state.products);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllProductsAdmin(data && data.admin._id));
-    if (wishlist && wishlist.find((i) => i._id === data._id)) {
+    dispatch(getAllProductsAdmin(data && data?.admin._id));
+    if (wishlist && wishlist.find((i) => i._id === data?._id)) {
       setClick(true);
     } else {
       setClick(false);
@@ -40,9 +38,9 @@ const ProductDetails = ({ data }) => {
   }, [dispatch, data, wishlist]);
 
   const incrementCount = () => {
-    if (data.stock <= count) {
+    if (data?.stock < count) {
       toast.error(
-        `${data.name} stock is limited! Please contact us to reserve your order!`
+        `${data?.name} stock is limited! Please contact us to reserve your order!`
       );
       return;
     }
@@ -69,7 +67,7 @@ const ProductDetails = ({ data }) => {
           adminId,
         })
         .then((res) => {
-          navigate(`/conversation/${res.data.conversation._id}`);
+          navigate(`/inbox?${res.data.conversation._id}`);
         })
         .catch((error) => {
           toast.error(error.response.data.message);
@@ -120,7 +118,9 @@ const ProductDetails = ({ data }) => {
       0
     );
 
-  const averageRating = totalRatings / totalReviewsLength || 0;
+  const avg = totalRatings / totalReviewsLength || 0;
+  const averageRating = avg.toFixed(2);
+
   return (
     <div className="bg-[#fff4d7] ">
       {data ? (
@@ -130,14 +130,14 @@ const ProductDetails = ({ data }) => {
             <div className="w-full md:w-1/2 flex flex-col items-center">
               {/* Image of Product Main */}
               <img
-                src={`${backend_url}/${data.images && data.images[select]}`}
+                src={`${data && data.images[select]?.url}`}
                 alt=""
                 className="w-[60%]"
               />
 
               <div className="flex mt-4">
                 {/* Image of Product Choices */}
-                {data.images &&
+                {data &&
                   data.images.map((i, index) => (
                     <div
                       className={`${
@@ -145,7 +145,7 @@ const ProductDetails = ({ data }) => {
                       } cursor-pointer p-1`}
                     >
                       <img
-                        src={`${backend_url}/${i}`}
+                        src={`${i?.url}`}
                         alt=""
                         className="h-[150px] w-[150px] overflow-hidden"
                         onClick={() => setSelect(index)}
@@ -176,17 +176,16 @@ const ProductDetails = ({ data }) => {
                     </h4>
                   )}
                 </div>
-
-                {/* Sold of Product */}
-                <span className="font-[400] text-[17px] text-[#b19b56]">
-                  {data?.sold_out} sold
-                </span>
               </div>
-              <div className="flex pt-3">
+              <div className="flex pt-3 justify-between">
                 {/* Products Stock */}
                 <h4 className="font-[400] text-[#534723] font-Roboto">
                   Stocks: {data.stock}
                 </h4>
+                {/* Sold of Product */}
+                <span className="font-[400] text-[17px] text-[#b19b56]">
+                  {data?.sold_out} sold
+                </span>
               </div>
 
               <div className="flex items-center mt-12 justify-between pr-3">
@@ -217,7 +216,7 @@ const ProductDetails = ({ data }) => {
                       className="cursor-pointer"
                       onClick={() => removeFromWishlistHandler(data)}
                       color={click ? '#171203' : '#171203'}
-                      title="Removed from Wishlist"
+                      title="Removed from wishlist"
                     />
                   ) : (
                     <AiOutlineHeart
@@ -225,7 +224,7 @@ const ProductDetails = ({ data }) => {
                       className="cursor-pointer"
                       onClick={() => addToWishlistHandler(data)}
                       color={click ? '#171203' : '#171203'}
-                      title="Added to Wishlist"
+                      title="Added to wishlist"
                     />
                   )}
                 </div>
@@ -237,15 +236,15 @@ const ProductDetails = ({ data }) => {
                 onClick={() => addToCartHandler(data._id)}
               >
                 <span className="text-[#fff4d7] flex items-center">
-                  Add to Cart <AiOutlineShoppingCart className="ml-1" />
+                  Add to cart <AiOutlineShoppingCart className="ml-1" />
                 </span>
               </div>
 
-              {/* Shop Profile */}
+              {/* Admin Profile */}
               <div className="flex items-center pt-8">
                 <Link to="/">
                   <img
-                    src={`${backend_url}${data?.admin?.avatar}`}
+                    src={`${data?.admin?.avatar?.url}`}
                     alt=""
                     className="w-[50px] h-[50px] rounded-full mr-2"
                   />
@@ -253,7 +252,7 @@ const ProductDetails = ({ data }) => {
                     <h3
                       className={`${styles.shop_name} pb-1 pt-1 !text-[#171203]`}
                     >
-                      Engrabo MNL
+                      {data.admin.name}
                     </h3>
                     <h5 className="pb-3 text-[15px] text-[#534723]">
                       ({averageRating}/5) Ratings
@@ -351,28 +350,6 @@ const ProductDetailsInfo = ({
             repudiandae accusantium. Lorem ipsum dolor sit amet, consectetur
             adipisicing elit.
           </p>
-          <p className="text-[#534723] text-justify py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore
-            voluptatibus repudiandae veritatis doloremque. Enim iusto doloribus,
-            suscipit dignissimos voluptatum magni quidem? Recusandae nobis
-            incidunt nihil nam beatae, qui fugiat ad! Lorem ipsum dolor sit,
-            amet consectetur adipisicing elit. Dicta, reprehenderit dolorem!
-            Mollitia voluptates quas nemo, sed sit voluptate esse architecto
-            aperiam reiciendis corporis obcaecati natus veritatis. Distinctio a
-            repudiandae accusantium. Lorem ipsum dolor sit amet, consectetur
-            adipisicing elit.
-          </p>
-          <p className="text-[#534723] text-justify py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore
-            voluptatibus repudiandae veritatis doloremque. Enim iusto doloribus,
-            suscipit dignissimos voluptatum magni quidem? Recusandae nobis
-            incidunt nihil nam beatae, qui fugiat ad! Lorem ipsum dolor sit,
-            amet consectetur adipisicing elit. Dicta, reprehenderit dolorem!
-            Mollitia voluptates quas nemo, sed sit voluptate esse architecto
-            aperiam reiciendis corporis obcaecati natus veritatis. Distinctio a
-            repudiandae accusantium. Lorem ipsum dolor sit amet, consectetur
-            adipisicing elit.
-          </p>
         </>
       ) : null}
 
@@ -380,11 +357,11 @@ const ProductDetailsInfo = ({
       {active === 2 ? (
         <div className="w-full py-3 min-h-[40vh] flex flex-col items-center overflow-y-scroll hide-scrollbar">
           {data &&
-            data.reviews.map((item, index) => (
+            data?.reviews.map((item, index) => (
               <div className="w-full flex my-2">
                 <div className="pl-2">
                   <img
-                    src={`${backend_url}/${item.user.avatar?.url}`}
+                    src={`${item.user.avatar?.url}`}
                     alt=""
                     className="w-[50px] h-[50] rounded-full"
                   />
@@ -394,14 +371,18 @@ const ProductDetailsInfo = ({
                     <h1 className="font-[500] text-[#171203]">
                       {item.user.name}
                     </h1>
-                    <Ratings rating={item.rating} />
+                    <Ratings rating={item?.rating} />
                   </div>
                   <p>{item.comment}</p>
                 </div>
               </div>
             ))}
           <div className="w-full flex justify-center">
-            {data && data.reviews.length === 0 && <h5>No Reviews yet!</h5>}
+            {data && data.reviews.length === 0 && (
+              <h5>
+                As of the moment, we have still no review for this product!
+              </h5>
+            )}
           </div>
         </div>
       ) : null}
@@ -412,13 +393,13 @@ const ProductDetailsInfo = ({
           <div className="w-full 800px:w-[50%]">
             <div className="flex items-center">
               <img
-                src={`${backend_url}${data?.admin?.avatar}`}
+                src={`${data?.admin?.avatar?.url}`}
                 alt=""
                 className="w-[50px] h=[50px] rounded-full"
               />
               {/* Other's Shop name of the Product View */}
               <div className="pl-3">
-                <h3 className={`${styles.shop_name}`}>Engrabo MNL</h3>
+                <h3 className={`${styles.shop_name}`}>{data.admin.name}</h3>
                 <h5 className="pb-2 text-[15px] text-[#534723]">
                   ({averageRating}/5) Ratings
                 </h5>
@@ -426,10 +407,7 @@ const ProductDetailsInfo = ({
             </div>
             {/* Shop Description */}
             <p className="pt-2 text-justify text-[#534723]">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis,
-              non. Illo praesentium distinctio quis, voluptatibus adipisci velit
-              blanditiis deleniti culpa sed? Nisi pariatur amet qui sit ipsum
-              earum perferendis impedit.
+              {data.admin.description}
             </p>
           </div>
           <div className="w-full 800px:w-[50%] mt-5 800px:mt-0 800px:flex flex-col items-end">

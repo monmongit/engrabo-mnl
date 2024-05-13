@@ -17,7 +17,7 @@ const adminSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please enter your password'],
-    minLength: [4, 'Password should be at least 4 characters'],
+    minLength: [6, 'Password should be at least 6 characters'],
     select: false,
   },
   description: {
@@ -42,14 +42,35 @@ const adminSchema = new mongoose.Schema({
     public_id: {
       type: String,
       required: true,
-      default: 'default_public_id', // Example default value or logic to generate one
     },
     url: {
       type: String,
       required: true,
-      default: 'default_avatar_url', // Example default URL
     },
   },
+  availableBalance: {
+    type: Number,
+    default: 0,
+  },
+  transections: [
+    {
+      amount: {
+        type: Number,
+        required: true,
+      },
+      status: {
+        type: String,
+        default: 'Processing',
+      },
+      createAt: {
+        type: Date,
+        default: Date.now(),
+      },
+      updateAt: {
+        type: Date,
+      },
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

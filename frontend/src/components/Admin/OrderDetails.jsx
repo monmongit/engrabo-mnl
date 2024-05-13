@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../../styles/style';
 import { BsFillBagFill } from 'react-icons/bs';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllOrdersOfAdmin } from '../../redux/action/order';
-import { backend_url, server } from '../../server';
+import { server } from '../../server';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -14,6 +14,7 @@ const OrderDetails = () => {
 
   const dispatch = useDispatch();
   const [status, setStatus] = useState('');
+  const navigate = useNavigate();
 
   const { id } = useParams();
 
@@ -36,6 +37,7 @@ const OrderDetails = () => {
       )
       .then((res) => {
         toast.success('Order Status Update!');
+        navigate('/dashboard-orders');
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -92,7 +94,7 @@ const OrderDetails = () => {
         data?.cart.map((item, index) => (
           <div className="w-full flex items-start mb-5">
             <img
-              src={`${backend_url}/${item.images[0]}`}
+              src={`${item.images[0]?.url}`}
               alt=""
               className="w-[80px] h-[80px]"
             />
@@ -134,6 +136,7 @@ const OrderDetails = () => {
         </div>
         <div className="w-full 800px:w-[40%]">
           <h4 className="pt-3 text-[20px] font-[600]">Payment Information</h4>
+          Status:{' '}
           {data?.paymentInfo?.status ? data?.paymentInfo?.status : 'Not Paid'}
         </div>
       </div>
@@ -173,19 +176,24 @@ const OrderDetails = () => {
           </select>
         )}
 
-      <select
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-        className="mt-2 appearance-none block px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
-      >
-        {['Processing Refund', 'Refund Approved']
-          .slice(['Processing Refund', 'Refund Approved'].indexOf(data?.status))
-          .map((option, index) => (
-            <option value={option} key={index}>
-              {option}
-            </option>
-          ))}
-      </select>
+      {data?.status === 'Processing Refund' ||
+      data?.status === 'Refund Approved' ? (
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          className="mt-2 appearance-none block px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+        >
+          {['Processing Refund', 'Refund Approved']
+            .slice(
+              ['Processing Refund', 'Refund Approved'].indexOf(data?.status)
+            )
+            .map((option, index) => (
+              <option value={option} key={index}>
+                {option}
+              </option>
+            ))}
+        </select>
+      ) : null}
 
       <div
         className={`${styles.button}!w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 font-[600] text-[18px] text-[#fff4d7]`}

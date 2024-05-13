@@ -10,34 +10,40 @@ import { Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { FiShoppingBag } from 'react-icons/fi';
 import { HiOutlineReceiptRefund } from 'react-icons/hi';
-import { getAllUsers } from '../../redux/action/user';
-import { LuUser2 } from 'react-icons/lu';
+// import { LuUser2 } from 'react-icons/lu';
 
 const DashboardHero = () => {
   const dispatch = useDispatch();
   const { orders } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
   const { products } = useSelector((state) => state.products);
-  const { users } = useSelector((state) => state.user);
   const [deliveredOrder, setDeliveredOrder] = useState(null);
 
+  console.log(admin);
   useEffect(() => {
-    dispatch(getAllOrdersOfAdmin(admin._id));
-    dispatch(getAllProductsAdmin(admin._id));
-    dispatch(getAllUsers());
+    if (admin && admin._id) {
+      dispatch(getAllOrdersOfAdmin(admin._id));
+      dispatch(getAllProductsAdmin(admin._id));
+    }
+  }, [dispatch, admin]);
 
+  useEffect(() => {
     const orderData =
       orders && orders.filter((item) => item.status === 'Delivered');
     setDeliveredOrder(orderData);
-  }, [dispatch, admin._id, orders]);
+  }, [orders]);
 
   const totalEarningWithoutTax =
     deliveredOrder &&
     deliveredOrder.reduce((acc, item) => acc + item.totalPrice, 0);
 
-  const serviceCharge = totalEarningWithoutTax * 0.1;
+  const serviceCharge = totalEarningWithoutTax
+    ? totalEarningWithoutTax * 0.1
+    : 0;
 
-  const availableBalance = totalEarningWithoutTax - serviceCharge.toFixed(2);
+  const availableBalance = totalEarningWithoutTax
+    ? totalEarningWithoutTax - serviceCharge
+    : 0;
 
   const columns = [
     { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
@@ -93,7 +99,7 @@ const DashboardHero = () => {
     orders.forEach((item) => {
       row.push({
         id: item._id,
-        itemsQty: item.cart.length,
+        itemsQty: item.cart.reduce((acc, item) => acc + item.qty, 0),
         total: '₱ ' + item.totalPrice,
         status: item.status,
       });
@@ -177,7 +183,7 @@ const DashboardHero = () => {
           </Link>
         </div>
 
-        {/* All User */}
+        {/* All User
         <div className="w-[80%] 800px:ml-0 ml-[40px] mb-4 800px:w-[18%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
           <div className="flex items-center">
             <LuUser2 size={30} className="mr-2" />
@@ -193,7 +199,7 @@ const DashboardHero = () => {
           <Link to="/dashboard-refunds">
             <h5 className="pt-4 pl-2 text-[#171203]">View User</h5>
           </Link>
-        </div>
+        </div> */}
       </div>
       <br />
       <h3 className="text-[22px] font-Poppins pb-2 text-[171203]">

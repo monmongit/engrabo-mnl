@@ -1,73 +1,63 @@
 const express = require('express');
-const path = require('path');
 const User = require('../model/user');
 const router = express.Router();
-const { upload } = require('../multer');
+const cloudinary = require('cloudinary');
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middleware/catchAsyncError');
-const fs = require('fs');
 const jwt = require('jsonwebtoken');
-const sendMail = require('../utils/sendMail'); // Ensure this path is correct
+const sendMail = require('../utils/sendMail');
 const sendToken = require('../utils/jwtToken');
 const { isAuthenticated, isAdmin } = require('../middleware/auth');
-const catchAsyncError = require('../middleware/catchAsyncError');
 
-router.post('/create-user', upload.single('file'), async (req, res, next) => {
+// Create user
+router.post('/create-user', async (req, res, next) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, avatar } = req.body;
     const userEmail = await User.findOne({ email });
 
     if (userEmail) {
-      if (req.file) {
-        const filename = req.file.filename;
-        const filePath = `uploads/${filename}`;
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.log('Error deleting file:', err);
-          }
-        });
-      }
       return next(new ErrorHandler('User already exists', 400));
     }
 
-    const fileUrl = req.file ? req.file.filename : '';
-
-    const publicId = req.file ? req.file.filename : '';
-
-    // Store user data in a temporary place or directly in the token if it's not too large (ensure sensitive info is securely handled)
-    const activationToken = createActivationToken({
-      name,
-      email,
-      password: password, // Consider hashing the password before including it in the token
-      avatar: {
-        public_id: publicId,
-        url: fileUrl,
-      },
+    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+      folder: 'avatars',
     });
+
+    const user = {
+      name: name,
+      email: email,
+      password: password,
+      avatar: {
+        public_id: myCloud.public_id,
+        url: myCloud.secure_url,
+      },
+    };
+
+    const activationToken = createActivationToken(user);
 
     const activationUrl = `http://localhost:3000/activation/${activationToken}`;
 
-    await sendMail({
-      email: email,
-      subject: 'Activate your account!',
-      message: `Hello ${name}, please click on the link to activate your account: ${activationUrl}`,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: `Please check your email: ${email} to activate your account`,
-    });
+    try {
+      await sendMail({
+        email: user.email,
+        subject: 'Activate your account',
+        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
+      });
+      res.status(201).json({
+        success: true,
+        message: `please check your email:- ${user.email} to activate your account!`,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
   } catch (error) {
-    console.error('Error processing request:', error);
-    res
-      .status(500)
-      .json({ success: false, message: 'Error processing request' });
+    return next(new ErrorHandler(error.message, 400));
   }
 });
 
 // Create activation token
-const createActivationToken = (payload) => {
-  return jwt.sign(payload, process.env.ACTIVATION_SECRET, {
+const createActivationToken = (user) => {
+  return jwt.sign(user, process.env.ACTIVATION_SECRET, {
     expiresIn: '5m',
   });
 };
@@ -89,8 +79,8 @@ router.post(
 
       const { name, email, password, avatar } = newUser;
 
-      // Check if user already exists
       let user = await User.findOne({ email });
+
       if (user) {
         return next(new ErrorHandler('User already exists', 400));
       }
@@ -171,6 +161,8 @@ router.get(
       res.cookie('token', null, {
         expires: new Date(Date.now()),
         httpOnly: true,
+        sameSite: 'none',
+        secure: true,
       });
 
       res.status(201).json({
@@ -225,45 +217,42 @@ router.put(
 router.put(
   '/update-avatar',
   isAuthenticated,
-  upload.single('image'),
-  async (req, res, next) => {
+  catchAsyncErrors(async (req, res, next) => {
     try {
-      const user = await User.findById(req.user.id);
-      if (!user) {
-        return next(new ErrorHandler('User not found', 404));
+      let existsUser = await User.findById(req.user.id);
+      if (req.body.avatar !== '') {
+        const imageId = existsUser.avatar.public_id;
+
+        await cloudinary.v2.uploader.destroy(imageId);
+
+        const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+          folder: 'avatars',
+          width: 150,
+        });
+
+        existsUser.avatar = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
       }
 
-      // Delete the existing avatar file if it exists
-      if (user.avatar && user.avatar.url) {
-        const existAvatarPath = path.join('uploads', user.avatar.url);
-        if (fs.existsSync(existAvatarPath)) {
-          fs.unlinkSync(existAvatarPath);
-        } else {
-          console.log('Previous avatar file not found:', existAvatarPath);
-        }
-      }
+      await existsUser.save();
 
-      const fileUrl = req.file ? req.file.filename : user.avatar.url; // Fallback to existing if no file provided
-
-      // Update user document
-      user.avatar = { public_id: req.file.filename, url: fileUrl };
-      await user.save();
-
-      res
-        .status(200)
-        .json({ success: true, message: 'Avatar updated', user: user });
+      res.status(200).json({
+        success: true,
+        user: existsUser,
+      });
     } catch (error) {
-      console.error('Failed to update avatar:', error);
       return next(new ErrorHandler(error.message, 500));
     }
-  }
+  })
 );
 
 // Update user addresses
 router.put(
   '/update-user-addresses',
   isAuthenticated,
-  catchAsyncError(async (req, res, next) => {
+  catchAsyncErrors(async (req, res, next) => {
     try {
       const user = await User.findById(req.user.id);
 
@@ -304,7 +293,7 @@ router.put(
 router.delete(
   '/delete-user-address/:id',
   isAuthenticated,
-  catchAsyncError(async (req, res, next) => {
+  catchAsyncErrors(async (req, res, next) => {
     try {
       const userId = req.user._id;
       const addressId = req.params.id;
@@ -328,7 +317,7 @@ router.delete(
 router.put(
   '/update-user-password',
   isAuthenticated,
-  catchAsyncError(async (req, res, next) => {
+  catchAsyncErrors(async (req, res, next) => {
     try {
       const user = await User.findById(req.user.id).select('+password');
 
@@ -362,7 +351,8 @@ router.put(
 router.get(
   '/admin-all-users',
   isAuthenticated,
-  catchAsyncError(async (req, res, next) => {
+  isAdmin,
+  catchAsyncErrors(async (req, res, next) => {
     try {
       const users = await User.find().sort({
         createdAt: -1,
@@ -380,8 +370,8 @@ router.get(
 // Delete all user by admin
 router.delete(
   '/delete-user/:id',
-  isAuthenticated,
-  catchAsyncError(async (req, res, next) => {
+  isAdmin,
+  catchAsyncErrors(async (req, res, next) => {
     try {
       const user = await User.findById(req.params.id);
 
@@ -410,7 +400,7 @@ router.delete(
 // Find user information with the userId
 router.get(
   '/user-info/:id',
-  catchAsyncError(async (req, res, next) => {
+  catchAsyncErrors(async (req, res, next) => {
     try {
       const user = await User.findById(req.params.id);
       res.status(201).json({

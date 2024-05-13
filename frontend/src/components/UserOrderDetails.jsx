@@ -3,7 +3,7 @@ import styles from '../styles/style';
 import { BsFillBagFill } from 'react-icons/bs';
 import { Link, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { backend_url, server } from '../server';
+import { server } from '../server';
 import { getAllOrdersOfUser } from '../redux/action/order';
 import { RxCross1 } from 'react-icons/rx';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
@@ -26,7 +26,7 @@ const UserOrderDetails = () => {
   }, [dispatch, user._id]);
 
   const data = orders && orders.find((item) => item._id === id);
-
+  console.log(id);
   const reviewHandler = async (e) => {
     await axios
       .put(
@@ -47,7 +47,7 @@ const UserOrderDetails = () => {
         dispatch(getAllOrdersOfUser(user._id));
 
         setComment('');
-        setRating(1);
+        setRating(null);
         setOpen(false);
       })
       .catch((error) => {
@@ -100,7 +100,7 @@ const UserOrderDetails = () => {
         data?.cart.map((item, index) => (
           <div className="w-full flex items-start mb-5">
             <img
-              src={`${backend_url}/${item.images[0]}`}
+              src={`${item.images[0]?.url}`}
               alt=""
               className="w-[80px] h-[80px] "
             />
@@ -152,7 +152,7 @@ const UserOrderDetails = () => {
             {/* Order Details */}
             <div className="w-full flex pl-3">
               <img
-                src={`${backend_url}/${selectedItem?.images[0]}`}
+                src={`${selectedItem?.images[0]?.url}`}
                 alt=""
                 className="w-[80px] h-[80px]"
               />

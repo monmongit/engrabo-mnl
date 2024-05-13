@@ -16,11 +16,12 @@ const CreateEvent = ({ setOpen }) => {
   const [images, setImages] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
   const [discountPrice, setDiscountPrice] = useState('');
-  const [stock, setStock] = useState();
+  const [stock, setStock] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
@@ -52,17 +53,27 @@ const CreateEvent = ({ setOpen }) => {
       toast.error(error);
     }
     if (success) {
-      toast.success('Event created successfully');
       navigate('/dashboard-events');
       window.location.reload();
+      toast.success('Event created successfully');
     }
   }, [dispatch, error, success, navigate]);
 
   const handleImageChange = (e) => {
-    e.preventDefault();
+    const files = Array.from(e.target.files);
 
-    let files = Array.from(e.target.files);
-    setImages((prevImages) => [...prevImages, ...files]);
+    setImages([]);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setImages((old) => [...old, reader.result]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleSubmit = (e) => {
@@ -73,19 +84,20 @@ const CreateEvent = ({ setOpen }) => {
     images.forEach((image) => {
       newForm.append('images', image);
     });
-
-    newForm.append('name', name);
-    newForm.append('description', description);
-    newForm.append('category', category);
-    newForm.append('tags', tags);
-    newForm.append('originalPrice', originalPrice);
-    newForm.append('discountPrice', discountPrice);
-    newForm.append('stock', stock);
-    newForm.append('adminId', admin._id);
-    newForm.append('start_Date', startDate.toISOString());
-    newForm.append('Finish_Date', endDate.toISOString());
-
-    dispatch(createEvent(newForm));
+    const data = {
+      name,
+      description,
+      category,
+      tags,
+      originalPrice,
+      discountPrice,
+      stock,
+      images,
+      adminId: admin._id,
+      start_Date: startDate?.toISOString(),
+      Finish_Date: endDate?.toISOString(),
+    };
+    dispatch(createEvent(data));
   };
 
   return (
@@ -231,13 +243,13 @@ const CreateEvent = ({ setOpen }) => {
           </label>
           <input
             type="date"
-            name="stock"
+            name="price"
             id="start-date"
             value={startDate ? startDate.toISOString().slice(0, 10) : ''}
             className="mt-2 appearance-none block w-full px-3 h-[35px]  border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
             onChange={handleStartDateChange}
             min={today}
-            placeholder="Enter your event product stock..."
+            placeholder="Enter your event product start date..."
           />
         </div>
         <br />
@@ -249,13 +261,13 @@ const CreateEvent = ({ setOpen }) => {
           </label>
           <input
             type="date"
-            name="stock"
+            name="price"
             id="end-date"
             value={endDate ? endDate.toISOString().slice(0, 10) : ''}
             className="mt-2 appearance-none block w-full px-3 h-[35px]  border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
             onChange={handleEndDateChange}
             min={minEndDate}
-            placeholder="Enter your event product stock..."
+            placeholder="Enter your event product end date..."
           />
         </div>
         <br />
@@ -281,7 +293,7 @@ const CreateEvent = ({ setOpen }) => {
             {images &&
               images.map((i) => (
                 <img
-                  src={URL.createObjectURL(i)}
+                  src={i}
                   key={i}
                   alt=""
                   className="h-[120px] w-[120px] object-cover m-2"

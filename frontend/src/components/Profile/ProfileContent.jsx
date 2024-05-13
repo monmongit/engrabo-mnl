@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { backend_url, server } from '../../server';
+import { server } from '../../server';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   AiOutlineArrowRight,
@@ -24,13 +24,24 @@ import { RxCross1 } from 'react-icons/rx';
 import { getAllOrdersOfUser } from '../../redux/action/order';
 
 const ProfileContent = ({ active }) => {
-  const { user } = useSelector((state) => state.user);
+  const { user, error, successMessage } = useSelector((state) => state.user);
   const [name, setName] = useState(user && user.name);
   const [email, setEmail] = useState(user && user.email);
   const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
   const [password, setPassword] = useState('');
   const [avatar, setAvatar] = useState(null);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearErrors' });
+    }
+    if (successMessage) {
+      toast.success(successMessage);
+      dispatch({ type: 'clearMessages' });
+    }
+  }, [dispatch, error, successMessage]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -44,27 +55,29 @@ const ProfileContent = ({ active }) => {
   }, [user]);
 
   const handleImage = async (e) => {
-    const file = e.target.files[0];
-    setAvatar(file);
+    const reader = new FileReader();
 
-    const formData = new FormData();
-
-    formData.append('image', e.target.files[0]);
-
-    await axios
-      .put(`${server}/user/update-avatar`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        withCredentials: true,
-      })
-      .then((response) => {
-        dispatch(loadUser());
-        toast.success('Avatar updated successfully!');
-      })
-      .catch((error) => {
-        toast.error(error);
-      });
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setAvatar(reader.result);
+        axios
+          .put(
+            `${server}/user/update-avatar`,
+            { avatar: reader.result },
+            {
+              withCredentials: true,
+            }
+          )
+          .then((res) => {
+            dispatch(loadUser());
+            toast.success('Avatar updated successfully!');
+          })
+          .catch((error) => {
+            toast.error(error);
+          });
+      }
+    };
+    reader.readAsDataURL(e.target.files[0]);
   };
 
   return (
@@ -76,7 +89,7 @@ const ProfileContent = ({ active }) => {
           <div className="flex justify-center w-full">
             <div className="relative">
               <img
-                src={`${backend_url}/${user?.avatar.url}`}
+                src={avatar ? avatar : `${user?.avatar?.url}`}
                 className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#171203]"
                 alt="User Avatar"
               />
@@ -302,8 +315,11 @@ const AllRefundOrders = () => {
   }, [dispatch, user._id]);
 
   const eligibleOrders =
-    orders && orders.filter((item) => item.status === 'Processing Refund');
-
+    orders &&
+    orders.filter(
+      (item) =>
+        item.status === 'Refund Approved' || item.status === 'Processing Refund'
+    );
   const columns = [
     { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
 
@@ -470,7 +486,7 @@ const ChangePassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const passwordChangeHandler = async (e) => {
-    e.preventDefault(); // This stops the form from submitting traditionally, which refreshes the page
+    e.preventDefault();
 
     try {
       const response = await axios.put(
@@ -576,7 +592,7 @@ const Address = () => {
     e.preventDefault();
 
     if (addressType === '' || country === '' || state === '' || city === '') {
-      toast.error('Plesae fill all the fields!');
+      toast.error('Please fill all the fields!');
     } else {
       dispatch(
         updateUserAddress(

@@ -7,8 +7,6 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
 } from 'react-icons/ai';
-import { backend_url } from '../../../server';
-import { FaRegEdit } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { addTocart } from '../../../redux/action/cart';
@@ -99,7 +97,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
               <div className="w-full 800px:w-[50%]">
                 {/* Image of the Product View */}
                 <img
-                  src={`${backend_url}/${data.images && data.images[0]}`}
+                  src={`${data.images && data.images[0]?.url}`}
                   alt=""
                   className="w-[400px] h-[400px] 800px:pt-0 pt-5"
                 />
@@ -108,7 +106,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                 <div className="hidden 800px:flex pt-2">
                   <div className="flex pt-4">
                     <img
-                      src={`${backend_url}${data?.admin?.avatar}`}
+                      src={`${data.images && data.images[0?.url]}`}
                       alt=""
                       className="w-[50px] h-[50px] rounded-full mr-2"
                     />
@@ -116,8 +114,10 @@ const ProductDetailsCard = ({ setOpen, data }) => {
 
                   {/* Shop name */}
                   <div>
-                    <h3 className={`${styles.shop_name}`}>Engrabo MNL</h3>
-                    <h5 className="pb-3 text-[15px]">(4/5) Ratings</h5>
+                    <h3 className={`${styles.shop_name}`}>{data.admin.name}</h3>
+                    <h5 className="pb-3 text-[15px]">
+                      {data?.ratings}/5 Ratings
+                    </h5>
                   </div>
                 </div>
                 {/* Message shop of the Product View */}
@@ -212,13 +212,6 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                       Add to Cart <AiOutlineShoppingCart className="ml-1" />
                     </span>
                   </div>
-                  <div
-                    className={`${styles.button} mt-6 !rounded-[4px] !h-11 flex items-center hover:opacity-95 transition duration-300 ease-in-out`}
-                  >
-                    <span className="text-[#fff4d7] flex items-center">
-                      Edit Design <FaRegEdit className="ml-1" />
-                    </span>
-                  </div>
                 </div>
 
                 {/* Shop Mobile */}
@@ -226,7 +219,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                   <div className="flex">
                     <div className="pt-4">
                       <img
-                        src={`${backend_url}${data?.admin?.avatar}`}
+                        // src={`${backend_url}${data?.admin?.avatar}`}
                         alt=""
                         className="w-[50px] h-[50px] rounded-full mr-4"
                       />

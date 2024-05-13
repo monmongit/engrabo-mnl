@@ -11,8 +11,6 @@ const AllOrders = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
 
-  console.log(orders);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -71,7 +69,6 @@ const AllOrders = () => {
 
   orders &&
     orders.forEach((item) => {
-      console.log('Order item:', item.status);
       row.push({
         id: item._id,
         itemsQty: item.cart.length,

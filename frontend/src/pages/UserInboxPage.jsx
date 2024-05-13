@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { backend_url, server } from '../server';
+import React, { useEffect, useRef, useState } from 'react';
+import { server } from '../server';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ const ENDPOINT = 'http://localhost:4000/';
 const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
 
 const DashboardMessages = () => {
-  const { user } = useSelector((state) => state.user);
+  const { user, loading } = useSelector((state) => state.user);
   const [conversations, setConversations] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
@@ -22,8 +22,9 @@ const DashboardMessages = () => {
   const [userData, setUserData] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [activeStatus, setActiveStatus] = useState(false);
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState(null);
   const [open, setOpen] = useState(false);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     socketId.on('getMessage', (data) => {
@@ -61,8 +62,8 @@ const DashboardMessages = () => {
 
   useEffect(() => {
     if (user) {
-      const adminId = user?._id;
-      socketId.emit('addUser', adminId);
+      const userId = user?._id;
+      socketId.emit('addUser', userId);
       socketId.on('getUsers', (data) => {
         setOnlineUsers(data);
       });
@@ -105,7 +106,7 @@ const DashboardMessages = () => {
     );
 
     socketId.emit('sendMessage', {
-      senderId: user?._id,
+      senderId: user._id,
       receiverId,
       text: newMessage,
     });
@@ -146,6 +147,63 @@ const DashboardMessages = () => {
         console.log(error);
       });
   };
+
+  const handleImageUpload = async (e) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setImages(reader.result);
+        imageSendingHandler(reader.result);
+      }
+    };
+    reader.readAsDataURL(e.target.files[0]);
+  };
+
+  const imageSendingHandler = async (e) => {
+    const receiverId = currentChat.members.find(
+      (member) => member !== user._id
+    );
+
+    socketId.emit('sendMessage', {
+      senderId: user._id,
+      receiverId,
+      images: e,
+    });
+
+    console.log(user.id);
+    try {
+      await axios
+        .post(`${server}/message/create-new-message`, {
+          images: e,
+          sender: user._id,
+          text: newMessage,
+          conversationId: currentChat._id,
+        })
+        .then((res) => {
+          setImages();
+          setMessages([...messages, res.data.message]);
+          updateLastMessageForImage();
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const updateLastMessageForImage = async () => {
+    await axios.put(
+      `${server}/conversation/update-last-message/${currentChat._id}`,
+      {
+        lastMessage: 'Sent an image',
+        lastMessageId: user._id,
+      }
+    );
+  };
+
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behaviour: 'smooth' });
+  }, [messages]);
+
   return (
     <div className="w-full">
       {/* All messages list */}
@@ -168,6 +226,7 @@ const DashboardMessages = () => {
                 userData={userData}
                 online={onlineCheck(item)}
                 setActiveStatus={setActiveStatus}
+                loading={loading}
               />
             ))}
         </>
@@ -182,6 +241,8 @@ const DashboardMessages = () => {
           userId={user._id}
           userData={userData}
           activeStatus={activeStatus}
+          scrollRef={scrollRef}
+          handleImageUpload={handleImageUpload}
         />
       )}
     </div>
@@ -198,6 +259,7 @@ const MessageList = ({
   userData,
   online,
   setActiveStatus,
+  loading,
 }) => {
   const [active, setActive] = useState(0);
   const [user, setUser] = useState([]);
@@ -237,7 +299,7 @@ const MessageList = ({
     >
       <div className="relative">
         <img
-          src={`${backend_url}/${user?.avatar?.url}`}
+          src={`${user?.avatar?.url}`}
           alt=""
           className="w-[50px] h-[50px] rounded-full"
         />
@@ -250,9 +312,9 @@ const MessageList = ({
       <div className="pl-3">
         <h1 className="font-[600]">{user?.name}</h1>
         <p className="text-[14px] text-[#000000a1]">
-          {data?.lastMessageId !== user?._id
+          {!loading && data?.lastMessageId !== userData?._id
             ? 'You'
-            : user?.name?.split(' ')[0] + ' '}
+            : userData?.name?.split(' ')[0] + ' '}
           : {data?.lastMessage}
         </p>
       </div>
@@ -269,6 +331,8 @@ const AdminInbox = ({
   userId,
   userData,
   activeStatus,
+  scrollRef,
+  handleImageUpload,
 }) => {
   return (
     <div className="w-full min-h-full flex flex-col justify-between">
@@ -276,7 +340,7 @@ const AdminInbox = ({
       <div className="w-full flex p-3 items-center justify-between bg-[#b19b56]">
         <div className="flex">
           <img
-            src={`${backend_url}/${userData?.avatar?.url}`}
+            src={`${userData?.avatar?.url}`}
             alt=""
             className="w-[60px] h-[60px] rounded-full"
           />
@@ -307,28 +371,46 @@ const AdminInbox = ({
               {/* For messages from others, include the image to the left */}
               {item.sender !== userId && (
                 <img
-                  src={`${backend_url}/${userData?.avatar?.url}`}
+                  src={`${userData?.avatar?.url}`}
                   alt=""
                   className="w-[40px] h-[40px] rounded-full mr-3"
                 />
               )}
 
-              <div
-                className={`flex flex-col w-max ${
-                  item.sender === userId ? 'items-end' : 'items-start'
-                }`}
-              >
+              {/* Images */}
+              {item.images && (
                 <div
-                  className={`p-2 rounded ${
-                    item.sender === userId ? 'bg-[#000]' : 'bg-[#b19a5696]'
-                  } text-[#fff]`}
+                  className={`flex flex-col w-max ${
+                    item.sender === userId ? 'items-end' : 'items-start'
+                  }`}
                 >
-                  <p>{item.text}</p>
+                  <img
+                    src={item.images.url}
+                    alt="Description of the content"
+                    className="w-[200px] h-[200px]  rounded-[10px] mr-2"
+                  />
                 </div>
-                <p className="text-[12px] text-[#000000d3] pt-1">
-                  {format(item.createdAt)}
-                </p>
-              </div>
+              )}
+
+              {/* Text container */}
+              {item.text !== '' && (
+                <div
+                  className={`flex flex-col w-max ${
+                    item.sender === userId ? 'items-end' : 'items-start'
+                  }`}
+                >
+                  <div
+                    className={`p-2 rounded ${
+                      item.sender === userId ? 'bg-[#000]' : 'bg-[#b19a5696]'
+                    } text-[#fff]`}
+                  >
+                    <p>{item.text}</p>
+                  </div>
+                  <p className="text-[12px] text-[#000000d3] pt-1">
+                    {format(item.createdAt)}
+                  </p>
+                </div>
+              )}
             </div>
           ))}
       </div>
@@ -338,10 +420,20 @@ const AdminInbox = ({
         className="p-3 relative w-full flex justify-between items-center"
         onSubmit={sendMessageHandler}
       >
-        <div className="w-[3%]">
-          <GrGallery className="cursor-pointer" size={20} fill="#171203" />
+        <div className="w-[30]">
+          <input
+            type="file"
+            name=""
+            id="image"
+            className="hidden"
+            onChange={handleImageUpload}
+          />
+          <label htmlFor="image">
+            <GrGallery className="cursor-pointer" size={20} fill="#171203" />
+          </label>
         </div>
-        <div className="w-[97%]">
+
+        <div className="w-full">
           <input
             type="text"
             required

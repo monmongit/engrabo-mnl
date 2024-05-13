@@ -16,7 +16,6 @@ import Navbar from './Navbar';
 import { GoHeart } from 'react-icons/go';
 import { LuUserCircle2 } from 'react-icons/lu';
 import { useSelector } from 'react-redux';
-import { backend_url } from '../../server';
 import Cart from '../Cart/Cart';
 import Wishlist from '../Wishlist/Wishlist.jsx';
 import { RxCross1 } from 'react-icons/rx';
@@ -102,7 +101,7 @@ const Header = ({ activeHeading }) => {
                       <Link to={`/product/${i._id} `}>
                         <div className="w-full flex items-start-py-3 pb-2">
                           <img
-                            src={`${backend_url}/${i.images[0]}`}
+                            src={`${i.images[0]?.url}`}
                             alt=""
                             className="w-[40px] h-[40px] mr-[10px]"
                           />
@@ -116,12 +115,11 @@ const Header = ({ activeHeading }) => {
           </div>
 
           {/* Best Offer */}
-          <div
-            className={`${styles.button} hover:opacity-95 transition duration-300 ease-in-out`}
-          >
+          <div className={`${styles.button}`}>
             <Link to="/admin-login">
               <h1 className="text-[#fff4d7] flex items-center">
-                {isAdmin ? 'Go Dashboard' : 'Best Offer'} <IoIosArrowForward />
+                {isAdmin ? 'Go Dashboard' : 'Best Offer'}{' '}
+                <IoIosArrowForward className="ml-1" />
               </h1>
             </Link>
           </div>
@@ -202,7 +200,7 @@ const Header = ({ activeHeading }) => {
                 {isAuthenticated ? (
                   <Link to="/profile">
                     <img
-                      src={`${backend_url}/${user.avatar.url}`}
+                      src={`${user?.avatar?.url}`}
                       className="w-[35px] h-[35px] rounded-full"
                       alt="User Avatar"
                     />
@@ -243,13 +241,22 @@ const Header = ({ activeHeading }) => {
             </Link>
           </div>
           <div>
-            <div className="relative mr-[20px]">
+            <div
+              className="relative mr-[20px] cursor-pointer"
+              onClick={() => setOpenCart(true)}
+            >
               <AiOutlineShoppingCart size={30} color="#9c6f18" />
               <span className="absolute right-0 top-0 rounded-full bg-[#b19b56] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
                 {cart && cart.length}
               </span>
             </div>
           </div>
+
+          {/* Cart popup */}
+          {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+
+          {/* Wishlist popup */}
+          {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null}
         </div>
       </div>
 
@@ -350,17 +357,20 @@ const Header = ({ activeHeading }) => {
       {/* Mobile Header Sidebar */}
       {open && (
         <div
-          className={`fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-20 800px:hidden flex`}
+          className={`fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-20 `}
         >
-          <div className="fixed w-[60%] bg-[#fff] h-screen top-0 left-0 z-70 overflow-y-scroll hide-scrollbar">
+          <div className="fixed w-[70%] bg-[#fff] h-screen top-0 left-0 z-70 overflow-y-scroll hide-scrollbar">
             {/* Wishlist and X Icon */}
             <div className="w-full justify-between flex pr-3">
               {/* Wishlist Icon */}
               <div>
-                <div className="relative mr-[15px]">
+                <div
+                  className="relative mr-[15px]"
+                  onClick={() => setOpenWishlist(true) || setOpen(false)}
+                >
                   <AiOutlineHeart size={30} className="mt-5 ml-3" />
                   <span className="absolute right-0 top-0 rounded-full bg-[#b19b56] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                    0
+                    {wishlist && wishlist.length}
                   </span>
                 </div>
               </div>
@@ -392,7 +402,7 @@ const Header = ({ activeHeading }) => {
                       <Link to={`/product/${Product_name}`}>
                         <div className="w-full flex items-start-py-3 pt-1 pb-1">
                           <img
-                            src={`${backend_url}/${i.images[0]}`}
+                            src={i.image_Url[0]?.url}
                             alt=""
                             className="w-[40px] h-[40px] mr-[10px]"
                           />
@@ -439,8 +449,8 @@ const Header = ({ activeHeading }) => {
               {isAuthenticated ? (
                 <Link to="/profile">
                   <img
-                    src={`${backend_url}/${user.avatar.url}`}
-                    className="w-[60px] h-[60px] rounded-full border-[3px] border-[#171203]"
+                    src={`${user.avatar?.url}`}
+                    className="w-[60px] h-[60px] rounded-full border-[3px] border-green-400"
                     alt="User Avatar"
                   />
                 </Link>

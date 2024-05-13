@@ -1,6 +1,5 @@
 const express = require('express');
 const catchAsyncError = require('../middleware/catchAsyncError');
-const Admin = require('../model/admin');
 const ErrorHandler = require('../utils/ErrorHandler');
 const { isAdmin } = require('../middleware/auth');
 const CouponCode = require('../model/couponCode');
@@ -38,7 +37,7 @@ router.get(
   isAdmin,
   catchAsyncError(async (req, res, next) => {
     try {
-      const couponCodes = await CouponCode.find({ adminId: req.params.id });
+      const couponCodes = await CouponCode.find({ adminId: req.admin.id });
       res.status(201).json({
         success: true,
         couponCodes,
@@ -74,18 +73,16 @@ router.delete(
 router.get(
   '/get-coupon-value/:name',
   catchAsyncError(async (req, res, next) => {
-    try {
-      const regex = new RegExp(req.params.name, 'i'); // 'i' makes it case insensitive
-      const couponCode = await CouponCode.find({ name: { $regex: regex } });
+    const couponCode = await CouponCode.findOne({ name: req.params.name });
 
-      res.status(200).json({
-        success: true,
-        couponCodes: couponCode, // Consider returning an array since it's a search
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error, 400));
+    if (!couponCode) {
+      return next(new ErrorHandler('Coupon code does not exist.', 404));
     }
+
+    res.status(200).json({
+      success: true,
+      couponCode: couponCode,
+    });
   })
 );
-
 module.exports = router;

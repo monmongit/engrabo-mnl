@@ -8,7 +8,7 @@ const AdminProtectedRoute = ({ children }) => {
     return <Loader />;
   } else {
     if (!isAdmin) {
-      return <Navigate to={`/`} replace />;
+      return <Navigate to={`/admin-login`} replace />;
     }
     return children;
   }

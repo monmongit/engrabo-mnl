@@ -6,7 +6,7 @@ import { AiOutlineGift } from 'react-icons/ai';
 import { MdOutlineLocalOffer } from 'react-icons/md';
 import { FiPackage, FiShoppingBag } from 'react-icons/fi';
 import { BiMessageSquareDetail } from 'react-icons/bi';
-import { backend_url } from '../../../server';
+
 const DashboardHeader = () => {
   const { admin } = useSelector((state) => state.admin);
   return (
@@ -67,9 +67,9 @@ const DashboardHeader = () => {
           </Link>
 
           {/* Profile */}
-          <Link to={`/dashboard`}>
+          <Link to={`/admin/${admin._id}`}>
             <img
-              src={`${backend_url}/${admin.avatar.url}`}
+              src={`${admin?.avatar?.url}`}
               className="w-[35px] h-[35px] rounded-full"
               alt="User Avatar"
             />

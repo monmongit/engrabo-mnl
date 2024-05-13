@@ -12,7 +12,7 @@ export const createCategory = (categoryData) => async (dispatch) => {
     const config = { headers: { 'Content-Type': 'multipart/form-data' } }; // This ensures proper handling of FormData
 
     const { data } = await axios.post(
-      `${server}/category/create-category`, // Make sure the URL is correct
+      `${server}/category/create-category`,
       categoryData,
       config
     );

@@ -45,7 +45,6 @@ const AllProducts = () => {
   };
 
   useEffect(() => {
-    // The URL should be updated according to the new viewMode
     const newPath =
       viewMode === 'Product' ? '/dashboard-products' : '/dashboard-categories';
     window.history.pushState({}, '', newPath);
@@ -76,9 +75,24 @@ const AllProducts = () => {
     ...(viewMode === 'Product'
       ? [
           {
+            field: 'gross',
+            headerName: 'Price no tax',
+            minWidth: 100,
+            flex: 0.5,
+            hide: viewMode !== 'Product',
+          },
+
+          {
             field: 'price',
             headerName: 'Price',
             minWidth: 100,
+            flex: 0.5,
+            hide: viewMode !== 'Product',
+          },
+          {
+            field: 'discount',
+            headerName: 'Discount',
+            minWidth: 80,
             flex: 0.5,
             hide: viewMode !== 'Product',
           },
@@ -124,8 +138,11 @@ const AllProducts = () => {
       ? filteredProducts.map((item) => ({
           id: item._id,
           name: item.name,
+          gross: `₱ ${item.grossPrice}`,
           price: `₱ ${item.originalPrice}`,
+          discount: `₱ ${item.discountedPrice}`,
           stock: item.stock,
+          sold: item?.sold_out,
         }))
       : filteredCategories.map((item) => ({
           id: item._id,

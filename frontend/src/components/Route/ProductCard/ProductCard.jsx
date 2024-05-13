@@ -8,7 +8,6 @@ import {
 import { Link } from 'react-router-dom';
 import styles from '../../../styles/style';
 import ProductDetailsCard from '../ProductDetailsCard/ProductDetailsCard';
-import { backend_url } from '../../../server';
 import { FaRegEdit } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -19,7 +18,7 @@ import { toast } from 'react-toastify';
 import { addTocart } from '../../../redux/action/cart';
 import Ratings from '../../Products/Ratings';
 
-const ProductCard = ({ data }) => {
+const ProductCard = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
 
@@ -67,16 +66,27 @@ const ProductCard = ({ data }) => {
   return (
     <>
       <div className="800px:w-full w-[300px] h-[370px]  bg-white rounded-lg shadow-sm p-3 relative cursor-pointer">
-        {/* Image of Product */}
-        <Link to={`/product/${data._id}`}>
+        <Link
+          to={`${
+            isEvent === true
+              ? `/product/${data._id}?isEvent=true`
+              : `/product/${data._id}`
+          }`}
+        >
           <img
-            src={`${backend_url}/${data.images && data.images[0]}`}
-            alt={data.name}
+            src={`${data.images && data.images[0]?.url} `}
+            alt=""
             className="w-full h-[170px] object-contain"
           />
         </Link>
 
-        <Link to={`/product/${data._id}`}>
+        <Link
+          to={`${
+            isEvent === true
+              ? `/product/${data._id}?isEvent=true`
+              : `/product/${data._id}`
+          }`}
+        >
           {/* Name of Product */}
           <h4 className="pb-1 pt-4 font-[500]">
             {data.name.length > 40 ? data.name.slice(0, 40) + '...' : data.name}

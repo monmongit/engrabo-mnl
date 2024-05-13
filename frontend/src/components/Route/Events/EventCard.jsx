@@ -1,79 +1,74 @@
 import React from 'react';
 import styles from '../../../styles/style';
 import CountDown from './CountDown';
-import { backend_url } from '../../../server';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
-import { addTocart } from '../../../redux/action/cart';
 
-const EventCard = ({ data }) => {
+import { addTocart } from '../../../redux/action/cart';
+import { useDispatch, useSelector } from 'react-redux';
+
+const EventCard = ({ active, data }) => {
   const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
-  // Add a guard clause to check if data is available
-  if (!data || !data.images || data.images.length === 0) {
-    console.log('Data or images not provided or empty in EventCard');
-    return <div>Loading event data...</div>; // Render a fallback or a loading indicator
-  }
-
-  const addToCartHandler = (id) => {
+  const addToCartHandler = (data) => {
     const isItemExists = cart && cart.find((i) => i._id === data._id);
     if (isItemExists) {
-      toast.error(`${data.name} already in a cart!`);
+      toast.error('Item already in cart!');
     } else {
       if (data.stock < 1) {
         toast.error(
-          `${data.name} stock is limited! Please contact us to reserve your order!`
+          'Product stock is limited, kindly message us to reserve your order!'
         );
       } else {
         const cartData = { ...data, qty: 1 };
         dispatch(addTocart(cartData));
-        toast.success(`${data.name} added to cart successfully!`);
+        toast.success('Item added to cart successfull!');
       }
     }
   };
-
   return (
     <div
-      className={`flex flex-col lg:flex-row w-full bg-white rounded-lg mb-12 p-2 justify-center items-center`}
+      className={`flex flex-col lg:flex-row w-full bg-white rounded-lg ${
+        active ? 'unset' : 'mb-12'
+      } lg-flex p-2`}
     >
-      <div className="w-[400px] h-[420px] 800px:pt-3 800px:pb-3 pb-0 pt-3 lg:w-1/2 800px:pr-[140px] pr-0 flex justify-center">
-        <img
-          src={`${backend_url}/${data.images[0]}`}
-          alt={data.name || 'Event'}
-        />
+      {/* Event Images */}
+      <div className="w-full lg:w-[50%] m-auto">
+        <img src={`${data.images[0]?.url}`} alt="" />
       </div>
-      <div className="w-full lg:w-1/2 flex flex-col justify-center items-start p-4">
-        <h2 className={`${styles.productTitle} text-center lg:text-left`}>
-          {data.name}
-        </h2>
-        <p className="text-justify text-[#534723]">{data.description}</p>
-        <div className="flex py-2 justify-between w-full">
-          {/* Price of Product */}
+      <div className="w-full lg:w-[50%] flex flex-col justify-center">
+        <h2 className={`${styles.productTitle}`}>{data.name}</h2>
+        <p>{data.description}</p>
+        <div className="flex py-2 justify-between">
           <div className="flex">
             <h5 className="font-[500] text-[18px] text-[#d55b45] pr-3 line-through">
-              ₱ {data.originalPrice}
+              <p>₱ {data.originalPrice}</p>
             </h5>
-            <h5 className="font-bold text-[20px] text-[#171203]">
-              ₱ {data.discountPrice}
+            <h5 className="font-bold text-[20px] text-[#171203] font-Roboto">
+              <p>₱ {data.discountPrice}</p>
             </h5>
           </div>
-
+        </div>
+        <div className="flex py-2 pr-2 justify-between">
+          {/* Products Stock */}
+          <h4 className="font-[400] text-[#534723] font-Roboto">
+            Stocks: {data.stock}
+          </h4>
           {/* Sold of Product */}
           <span className="font-[400] text-[17px] text-[#b19b56]">
-            128 sold
+            {data?.sold_out} sold
           </span>
         </div>
         <CountDown data={data} />
         <br />
         <div className="flex items-center">
           <Link to={`/product/${data._id}?isEvent=true`}>
-            <div className={`${styles.button} text-[white]`}>See Details</div>
+            <div className={`${styles.button} text-[#fff]`}>See Details</div>
           </Link>
           <div
-            className={`${styles.button} text-[white] ml-5`}
-            onClick={(e) => addToCartHandler(data)}
+            className={`${styles.button} text-[#fff] ml-5`}
+            onClick={() => addToCartHandler(data)}
           >
             Add to cart
           </div>

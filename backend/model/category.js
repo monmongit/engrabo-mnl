@@ -6,10 +6,18 @@ const categorySchema = new mongoose.Schema({
     required: [true, 'Please enter category title'],
     unique: true,
   },
-  image_Url: {
-    type: String,
-    required: [true, 'Please provide an image URL for the category'],
-  },
+  images: [
+    {
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model('Category', categorySchema);

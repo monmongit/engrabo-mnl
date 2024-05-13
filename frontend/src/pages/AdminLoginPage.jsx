@@ -6,13 +6,13 @@ import { useSelector } from 'react-redux';
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
-  const { isAdmin, isLoading } = useSelector((state) => state.admin);
+  const { admin, isAdmin, isLoading } = useSelector((state) => state.admin);
 
   useEffect(() => {
     if (isAdmin === true) {
-      navigate(`/dashboard`);
+      navigate(`/admin/${admin._id}`);
     }
-  }, [isLoading, isAdmin, navigate]);
+  }, [isLoading, isAdmin, navigate, admin]);
 
   return (
     <div>

@@ -11,8 +11,6 @@ const AllRefundOrders = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
 
-  console.log(orders);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -23,7 +21,9 @@ const AllRefundOrders = () => {
     orders &&
     orders.filter(
       (item) =>
-        item.status === 'Processing Refund' || item.status === 'Refund Approved'
+        item.status === 'Processing Refund' ||
+        item.status === 'Refund Approved' ||
+        'Refund Received'
     );
 
   const columns = [

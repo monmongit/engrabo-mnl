@@ -5,7 +5,6 @@ import { HiOutlineMinus, HiPlus } from 'react-icons/hi';
 import { IoBagHandleOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { backend_url } from '../../server';
 import { addTocart, removeFromCart } from '../../redux/action/cart';
 import { toast } from 'react-toastify';
 const Cart = ({ setOpenCart }) => {
@@ -31,7 +30,7 @@ const Cart = ({ setOpenCart }) => {
 
   return (
     <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10 ">
-      <div className="fixed top-0 right-0 h-[100vh] w-[25%]  bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm !overflow-y-scroll hide-scrollbar">
+      <div className="fixed top-0 right-0 h-[100vh] w-[70%] 800px:w-[25%]   bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm !overflow-y-scroll hide-scrollbar">
         {cart && cart.length === 0 ? (
           <div className="w-full h-screen flex items-center justify-center">
             <div className="flex w-full justify-end pt-5 pr-5 fixed top-3 right-3">
@@ -102,7 +101,7 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
   const totalPrice = itemPrice * value;
 
   const increment = (data) => {
-    if (data.stock <= value) {
+    if (data.stock < value) {
       toast.error(
         `${data.name} stock is limited! Please contact us to reserve your order!`
       );
@@ -140,7 +139,7 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
 
         {/* Image Product */}
         <img
-          src={`${backend_url}/${data?.images[0]}`}
+          src={`${data?.images[0].url}`}
           alt=""
           className="w-[130px] h-min ml-2 rounded-[5px] "
         />
