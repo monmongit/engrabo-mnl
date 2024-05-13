@@ -36,6 +36,8 @@ export const getAllOrdersOfAdmin = (adminId) => async (dispatch) => {
       `${server}/order/get-admin-all-orders/${adminId}`
     );
 
+    console.log(data)
+
     dispatch({
       type: 'getAllOrdersAdminSuccess',
       payload: data.orders,
