@@ -8,8 +8,6 @@ import { getAllOrdersOfAdmin } from '../../redux/action/order';
 import { getAllProductsAdmin } from '../../redux/action/product';
 import { Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { FiShoppingBag } from 'react-icons/fi';
-import { HiOutlineReceiptRefund } from 'react-icons/hi';
 import {IoBagHandle, IoPieChart, IoPeople, IoCart} from 'react-icons/io5' 
 // import { LuUser2 } from 'react-icons/lu';
 
@@ -17,7 +15,6 @@ const DashboardHero = () => {
   const dispatch = useDispatch();
   const { orders } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
-  const { products } = useSelector((state) => state.products);
   const [deliveredOrder, setDeliveredOrder] = useState(null);
 
   // const {usersList} = useSelector((state) => state.users)
@@ -112,9 +109,6 @@ const DashboardHero = () => {
       });
     });
 
-  const refundApprovedCount = orders
-    ? orders.filter((order) => order.status === 'Refund Approved').length
-    : 0;
   return (
     <div className="w-full p-8">
       <h3 className="text-[22px] font-Poppins pb-2">Overview</h3>
