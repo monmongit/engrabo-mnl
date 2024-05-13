@@ -20,6 +20,8 @@ const DashboardHero = () => {
   const { products } = useSelector((state) => state.products);
   const [deliveredOrder, setDeliveredOrder] = useState(null);
 
+  // const {usersList} = useSelector((state) => state.users)
+
   console.log(admin);
   useEffect(() => {
     if (admin && admin._id) {
@@ -116,7 +118,8 @@ const DashboardHero = () => {
   return (
     <div className="w-full p-8">
       <h3 className="text-[22px] font-Poppins pb-2">Overview</h3>
-      <div className="w-full block 800px:flex items-center justify-between">
+      <div className="data-drid-analytic grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+
         {/* Total Sales */}
          <BoxWrapper>
           <div className="rounded-full h-12 w-12 flex items-center justify-center bg-sky-500">
@@ -130,9 +133,34 @@ const DashboardHero = () => {
           </div>
         </BoxWrapper>
 
-        {/* TODO: Add total Expenses */}
+        {/* total expenses */}
+        <BoxWrapper>
+          <div className="rounded-full h-12 w-12 flex items-center justify-center bg-orange-600">
+            <IoPieChart className="text-2xl text-white" />
+          </div>
+          <div className="pl-4">
+            <span className="text-sm text-gray-500 font-light">Total Expenses</span>
+            <div className="flex items-center">
+              <strong className="text-xl text-gray-700 font-semibold">1234</strong>
+            </div>
+          </div>
+        </BoxWrapper>
 
-        {/* TODO: Add total Customers */}
+         {/* total customers */}
+        <Link to="/dashboard-users">
+          <BoxWrapper>
+            <div className="rounded-full h-12 w-12 flex items-center justify-center bg-yellow-400">
+                <IoPeople className="text-2xl text-white" />
+            </div>
+            <div className="pl-4">
+              <span className="text-sm text-gray-500 font-light">Total Customers</span>
+              <div className="flex items-center">
+                {/* <strong className="text-xl text-gray-700 font-semibold">{usersList && usersList.length}</strong> */}
+                <strong className="text-xl text-gray-700 font-semibold">35</strong>
+              </div>
+            </div>
+          </BoxWrapper>
+        </Link>
 
         {/* Total Orders */}
         <Link to="/dashboard-orders">
@@ -148,25 +176,8 @@ const DashboardHero = () => {
               </div>
           </BoxWrapper>
         </Link>
-        
-        {/* all users */}
-        {/* <div className="w-[80%] 800px:ml-0 ml-[40px] mb-4 800px:w-[18%] min-h-[20vh] bg-white shadow rounded px-2 py-5">
-          <div className="flex items-center">
-            <LuUser2 size={30} className="mr-2" />
-            <h3
-              className={`${styles.productTitle} !text-[18px] leading-5 !font-[400] text-[#534723]`}
-            >
-              All User
-            </h3>
-          </div>
-          <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
-            {users && users.length}
-          </h5>
-          <Link to="/dashboard-refunds">
-            <h5 className="pt-4 pl-2 text-[#171203]">View User</h5>
-          </Link>
-        </div> */}
       </div>
+      
       <br />
 
       {/* TODO: Add Analytics Bar Chart */}

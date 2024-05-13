@@ -6,13 +6,18 @@ import { AiOutlineGift } from 'react-icons/ai';
 import { MdOutlineLocalOffer } from 'react-icons/md';
 import { FiPackage, FiShoppingBag } from 'react-icons/fi';
 import { BiMessageSquareDetail } from 'react-icons/bi';
+import { FaBars } from 'react-icons/fa';
 
 const DashboardHeader = () => {
   const { admin } = useSelector((state) => state.admin);
   return (
     <div className="w-full h-[80px] bg-[#171203] shadow sticky top-0 left-0 z-30 flex items-center justify-between px-4">
       {/* Logo */}
+      <div className="sidebar text-white inline md:hidden"   >
+            <FaBars /> {/* This will render the bars icon as a sidebar icon */}
+      </div>
       <div>
+          
         <Link to="/dashboard">
           <img src={EngraboLogo} alt="" className="w-[120px] h-[60px]" />
         </Link>
