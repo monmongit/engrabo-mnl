@@ -26,12 +26,7 @@ router.post(
       messageData.sender = req.body.sender;
       messageData.text = req.body.text;
 
-      const message = new Messages({
-        conversationId: messageData.conversationId,
-        text: messageData.text,
-        sender: messageData.sender,
-        images: messageData.images ? messageData.images : undefined,
-      });
+      const message = new Messages(messageData);
 
       await message.save();
 
@@ -40,7 +35,7 @@ router.post(
         message,
       });
     } catch (error) {
-      return next(new ErrorHandler(error.response.meesage), 400);
+      return next(new ErrorHandler(error.response.message), 400);
     }
   })
 );
@@ -63,5 +58,22 @@ router.get(
     }
   })
 );
+
+// router.put(
+//   '/update-seen-status/:id',
+//   catchAsyncError(async (req, res) => {
+//     const { seen } = req.body;
+//     try {
+//       const message = await Messages.findByIdAndUpdate(
+//         req.params.id,
+//         { seen },
+//         { new: true }
+//       );
+//       res.status(200).json({ success: true, message });
+//     } catch (error) {
+//       return next(new ErrorHandler(error), 500);
+//     }
+//   })
+// );
 
 module.exports = router;
