@@ -1,7 +1,8 @@
 import React from 'react';
 import DashboardHeader from '../../components/Admin/Layout/DashboardHeader';
 import DashboardSideBar from '../../components/Admin/Layout/DashboardSideBar';
-// import AllUsers from '../../components/Admin/AllUsers';
+import AllUsers from './../../components/Admin/AllUsers';
+
 
 
 const AdminAllUsers = () => {
@@ -14,8 +15,7 @@ const AdminAllUsers = () => {
             <DashboardSideBar active={9} />
           </div>
           <div className="w-full justify-center flex">
-            {/* <AllUsers /> */}
-            <p>Hello world</p>
+            <AllUsers />
           </div>
         </div>
       </div>

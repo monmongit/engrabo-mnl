@@ -349,8 +349,8 @@ router.put(
 
 // Get all user by admin
 router.get(
-  '/admin-all-users',
-  isAuthenticated,
+  '/admin-all-users/:userID',
+  // isAuthenticated,
   isAdmin,
   catchAsyncErrors(async (req, res, next) => {
     try {
