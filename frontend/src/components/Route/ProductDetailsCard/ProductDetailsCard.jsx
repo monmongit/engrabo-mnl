@@ -150,16 +150,18 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                   <h3 className={`${styles.price}`}>
                     {data.discountPrice ? '₱' + data.discountPrice : null}
                   </h3>
-                  {/* Sold Product View */}
-                  <h5 className="text-[16px] text-[#b19b56]">
-                    {data?.sold_out} sold
-                  </h5>
                 </div>
-                <div className="flex pt-3">
+
+                {/* Sold and stocks */}
+                <div className="flex pt-4 justify-between">
                   {/* Products Stock */}
                   <h4 className="font-[400] text-[#534723] font-Roboto">
                     Stocks: {data.stock}
                   </h4>
+                  {/* Sold of Product */}
+                  <span className="font-[400] text-[17px] text-[#b19b56]">
+                    {data?.sold_out} sold
+                  </span>
                 </div>
 
                 <div className="flex items-center mt-12 justify-between pr-3">
