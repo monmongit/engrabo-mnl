@@ -8,8 +8,9 @@ import styles from '../../styles/style';
 import { GrGallery } from 'react-icons/gr';
 import socketIO from 'socket.io-client';
 import { format } from 'timeago.js';
+
 const ENDPOINT = 'http://localhost:4000/';
-const socketId = socketIO(ENDPOINT, { transports: ['websocket'] });
+const socket = socketIO(ENDPOINT, { transports: ['websocket'] });
 
 const DashboardMessages = () => {
   const { admin, isLoading } = useSelector((state) => state.admin);
@@ -26,34 +27,37 @@ const DashboardMessages = () => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    socketId.on('getMessage', (data) => {
+    socket.on('getMessage', (data) => {
       setArrivalMessage({
         sender: data.senderId,
         text: data.text,
+        images: data.images,
         createdAt: Date.now(),
       });
     });
   }, []);
 
   useEffect(() => {
-    arrivalMessage &&
-      currentChat?.members.includes(arrivalMessage.sender) &&
-      setMessages((prevMessages) => [...prevMessages, arrivalMessage]);
+    if (
+      arrivalMessage &&
+      currentChat?.members.includes(arrivalMessage.sender)
+    ) {
+      setMessages((prev) => [...prev, arrivalMessage]);
+    }
   }, [arrivalMessage, currentChat]);
 
   useEffect(() => {
     const getConversation = async () => {
       try {
-        const resonse = await axios.get(
+        const response = await axios.get(
           `${server}/conversation/get-all-conversation-admin/${admin?._id}`,
           {
             withCredentials: true,
           }
         );
-
-        setConversations(resonse.data.conversations);
+        setConversations(response.data.conversations);
       } catch (error) {
-        // console.log(error);
+        console.log(error);
       }
     };
     getConversation();
@@ -61,9 +65,8 @@ const DashboardMessages = () => {
 
   useEffect(() => {
     if (admin) {
-      const adminId = admin?._id;
-      socketId.emit('addUser', adminId);
-      socketId.on('getUsers', (data) => {
+      socket.emit('addUser', admin?._id);
+      socket.on('getUsers', (data) => {
         setOnlineUsers(data);
       });
     }
@@ -75,36 +78,36 @@ const DashboardMessages = () => {
     return online ? true : false;
   };
 
-  // Get messages
   useEffect(() => {
     const getMessage = async () => {
-      try {
-        const response = await axios.get(
-          `${server}/message/get-all-messages/${currentChat?._id}`
-        );
-        setMessages(response.data.messages);
-      } catch (error) {
-        console.log(error);
+      if (currentChat) {
+        try {
+          const response = await axios.get(
+            `${server}/message/get-all-messages/${currentChat?._id}`
+          );
+          setMessages(response.data.messages);
+        } catch (error) {
+          console.log(error);
+        }
       }
     };
     getMessage();
   }, [currentChat]);
 
-  // Create new messages
   const sendMessageHandler = async (e) => {
     e.preventDefault();
 
     const message = {
-      sender: admin._id,
+      sender: admin?._id,
       text: newMessage,
       conversationId: currentChat._id,
     };
 
     const receiverId = currentChat.members.find(
-      (member) => member.id !== admin?._id
+      (member) => member !== admin?._id
     );
 
-    socketId.emit('sendMessage', {
+    socket.emit('sendMessage', {
       senderId: admin._id,
       receiverId,
       text: newMessage,
@@ -112,15 +115,12 @@ const DashboardMessages = () => {
 
     try {
       if (newMessage !== '') {
-        await axios
-          .post(`${server}/message/create-new-message`, message)
-          .then((res) => {
-            setMessages([...messages, res.data.message]);
-            updateLastMessage();
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        const res = await axios.post(
+          `${server}/message/create-new-message`,
+          message
+        );
+        setMessages([...messages, res.data.message]);
+        updateLastMessage();
       }
     } catch (error) {
       console.log(error);
@@ -128,28 +128,27 @@ const DashboardMessages = () => {
   };
 
   const updateLastMessage = async () => {
-    socketId.emit('updateLastMessage', {
+    socket.emit('updateLastMessage', {
       lastMessage: newMessage,
       lastMessageId: admin._id,
     });
 
-    await axios
-      .put(`${server}/conversation/update-last-message/${currentChat._id}`, {
-        lastMessage: newMessage,
-        lastMessageId: admin._id,
-      })
-      .then((res) => {
-        console.log(res.data.conversation);
-        setNewMessage('');
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      await axios.put(
+        `${server}/conversation/update-last-message/${currentChat._id}`,
+        {
+          lastMessage: newMessage,
+          lastMessageId: admin._id,
+        }
+      );
+      setNewMessage('');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleImageUpload = async (e) => {
     const reader = new FileReader();
-
     reader.onload = () => {
       if (reader.readyState === 2) {
         setImages(reader.result);
@@ -159,71 +158,71 @@ const DashboardMessages = () => {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const imageSendHandler = async (e) => {
+  const imageSendHandler = async (image) => {
     const receiverId = currentChat.members.find(
       (member) => member !== admin._id
     );
-    socketId.emit('sendMessage', {
+    socket.emit('sendMessage', {
       senderId: admin._id,
       receiverId,
-      images: e,
+      images: image, // Include image in the event
     });
 
     try {
-      await axios
-        .post(`${server}/message/create-new-message`, {
-          images: e,
-          sender: admin._id,
-          text: newMessage,
-          conversationId: currentChat._id,
-        })
-        .then((res) => {
-          setImages();
-          setMessages([...messages, res.data.message]);
-          updateLastMessageForImage();
-        });
+      const res = await axios.post(`${server}/message/create-new-message`, {
+        images: image,
+        sender: admin._id,
+        text: newMessage,
+        conversationId: currentChat._id,
+      });
+      setImages(null);
+      setMessages([...messages, res.data.message]);
+      updateLastMessageForImage();
     } catch (error) {
       console.log(error);
     }
   };
 
   const updateLastMessageForImage = async () => {
-    await axios.put(
-      `${server}/conversation/update-last-message/${currentChat._id}`,
-      {
-        lastMessage: 'Sent an image',
-        lastMessageId: admin._id,
-      }
-    );
+    try {
+      await axios.put(
+        `${server}/conversation/update-last-message/${currentChat._id}`,
+        {
+          lastMessage: 'Sent an image',
+          lastMessageId: admin._id,
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behaviour: 'smooth' });
+    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
   return (
     <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll hide-scrollbar rounded">
-      {/* All messages list */}
       {!open && (
         <>
-          <h1 className="text-center text-[30px] py-3 font-Poppins ">
+          <h1 className="text-center text-[30px] py-3 font-Poppins">
             All Messages
           </h1>
-          {conversations &&
-            conversations.map((item, index) => (
-              <MessageList
-                data={item}
-                key={index}
-                index={index}
-                setOpen={setOpen}
-                setCurrentChat={setCurrentChat}
-                me={admin._id}
-                setUserData={setUserData}
-                userData={userData}
-                online={onlineCheck(item)}
-                setActiveStatus={setActiveStatus}
-                isLoading={isLoading}
-              />
-            ))}
+          {conversations.map((item, index) => (
+            <MessageList
+              key={index}
+              data={item}
+              index={index}
+              setOpen={setOpen}
+              setCurrentChat={setCurrentChat}
+              me={admin._id}
+              setUserData={setUserData}
+              userData={userData}
+              online={onlineCheck(item)}
+              setActiveStatus={setActiveStatus}
+              isLoading={isLoading}
+            />
+          ))}
         </>
       )}
       {open && (
@@ -257,13 +256,32 @@ const MessageList = ({
   setActiveStatus,
   isLoading,
 }) => {
-  setActiveStatus(online);
-  const [user, setUser] = useState([]);
-  const [active, setActive] = useState(0);
+  const [user, setUser] = useState({});
   const navigate = useNavigate();
-  const handleClick = (id) => {
+
+  const handleClick = async (id) => {
     navigate(`/dashboard-messages?${id}`);
     setOpen(true);
+    setCurrentChat(data);
+    setUserData(user); // Ensure the correct data is set
+    setActiveStatus(online);
+
+    // // Emit updateSeenStatus event
+    // socket.emit('updateSeenStatus', {
+    //   messageId: data._id, // Ensure you are passing the right ID here
+    //   seen: true,
+    // });
+
+    // // Optionally, call API directly if socket is not preferred
+    // await axios.put(`${server}/message/update-seen-status/${data._id}`, {
+    //   seen: true,
+    // });
+
+    // // Update the local state to reflect the seen status
+    // setCurrentChat((prev) => ({
+    //   ...prev,
+    //   seen: true,
+    // }));
   };
 
   useEffect(() => {
@@ -278,20 +296,14 @@ const MessageList = ({
       }
     };
     getUser();
-  }, [me, data, setUser]);
+  }, [me, data]);
 
   return (
     <div
       className={`w-full flex p-3 py-3 ${
-        active === index ? 'bg-[#00000010]' : 'bg-transparent'
+        data.seen ? 'bg-transparent' : 'bg-[#00000010]'
       } cursor-pointer`}
-      onClick={(e) =>
-        setActive(index) ||
-        handleClick(data._id) ||
-        setCurrentChat(data) ||
-        setUserData(user) ||
-        setActiveStatus(online)
-      }
+      onClick={() => handleClick(data._id)}
     >
       <div className="relative">
         <img
@@ -308,12 +320,10 @@ const MessageList = ({
       <div className="pl-3">
         <h1 className="font-[600]">{user?.name}</h1>
         <p className="text-[14px] text-[#000000a1]">
-          <p className="text-[14px] text-[#000000a1]">
-            {data?.lastMessageId !== userData?._id
-              ? 'You'
-              : userData?.name?.split(' ')[0] + ' '}
-            : {data?.lastMessage}
-          </p>
+          {!isLoading && data?.lastMessageId !== user?._id
+            ? 'You'
+            : `${user?.name?.split(' ')[0]} `}
+          : {data?.lastMessage}
         </p>
       </div>
     </div>
@@ -358,60 +368,60 @@ const AdminInbox = ({
 
       {/* messages */}
       <div className="px-3 h-[65vh] py-3 overflow-y-scroll hide-scrollbar">
-        {messages &&
-          messages.map((item, index) => (
-            <div
-              key={index} // It's good to use a unique key for each child in a list
-              className={`flex w-full my-2 ${
-                item.sender === adminId ? 'justify-end' : 'justify-start'
-              }`}
-              ref={scrollRef}
-            >
-              {/* For messages from others, include the image to the left */}
-              {item.sender !== adminId && (
+        {messages.map((item, index) => (
+          <div
+            key={index}
+            className={`flex w-full my-2 ${
+              item.sender === adminId ? 'justify-end' : 'justify-start'
+            }`}
+            ref={scrollRef}
+          >
+            {item.sender !== adminId && (
+              <img
+                src={`${userData?.avatar?.url}`}
+                alt=""
+                className="w-[40px] h-[40px] rounded-full mr-3"
+              />
+            )}
+
+            {item.images && (
+              <div
+                className={`flex flex-col w-max ${
+                  item.sender === adminId ? 'items-end' : 'items-start'
+                }`}
+              >
                 <img
-                  src={`${userData?.avatar?.url}`}
-                  alt=""
-                  className="w-[40px] h-[40px] rounded-full mr-3"
+                  src={
+                    typeof item.images === 'string'
+                      ? item.images
+                      : item.images.url
+                  }
+                  alt="Description of the content"
+                  className="w-[200px] h-[200px] rounded-[10px] mr-2"
                 />
-              )}
+              </div>
+            )}
 
-              {/* Images */}
-              {item.images && (
+            {item.text && (
+              <div
+                className={`flex flex-col w-max ${
+                  item.sender === adminId ? 'items-end' : 'items-start'
+                }`}
+              >
                 <div
-                  className={`flex flex-col w-max ${
-                    item.sender === adminId ? 'items-end' : 'items-start'
-                  }`}
+                  className={`p-2 rounded ${
+                    item.sender === adminId ? 'bg-[#000]' : 'bg-[#b19a5696]'
+                  } text-[#fff]`}
                 >
-                  <img
-                    src={item.images.url}
-                    alt="Description of the content"
-                    className="w-[200px] h-[200px]  rounded-[10px] mr-2"
-                  />
+                  <p>{item.text}</p>
                 </div>
-              )}
-
-              {/* Text container */}
-              {item.text !== '' && (
-                <div
-                  className={`flex flex-col w-max ${
-                    item.sender === adminId ? 'items-end' : 'items-start'
-                  }`}
-                >
-                  <div
-                    className={`p-2 rounded ${
-                      item.sender === adminId ? 'bg-[#000]' : 'bg-[#b19a5696]'
-                    } text-[#fff]`}
-                  >
-                    <p>{item.text}</p>
-                  </div>
-                  <p className="text-[12px] text-[#000000d3] pt-1">
-                    {format(item.createdAt)}
-                  </p>
-                </div>
-              )}
-            </div>
-          ))}
+                <p className="text-[12px] text-[#000000d3] pt-1">
+                  {format(item.createdAt)}
+                </p>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       {/* Send Message */}
@@ -453,4 +463,5 @@ const AdminInbox = ({
     </div>
   );
 };
+
 export default DashboardMessages;
