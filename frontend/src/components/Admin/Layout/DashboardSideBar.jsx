@@ -30,7 +30,7 @@ const DashboardSideBar = ({ active }) => {
       });
   };
   return (
-    <div className="w-full h-[89vh] bg-[#f7ebca] shadow-sm overflow-y-scroll hide-scrollbar  sticky top-0 left-0 z-10 hidden lg:block">
+    <div className="w-full h-[89vh] bg-[#f7ebca] shadow-sm overflow-y-scroll hide-scrollbar  sticky top-0 left-0 z-10">
       {/* Dashboard */}
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard" className="w-full flex items-center">
