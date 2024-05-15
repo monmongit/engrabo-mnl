@@ -291,6 +291,7 @@ const MessageList = ({
     getUser();
   }, [me, data]);
 
+  console.log(online);
   return (
     <div
       className={`w-full flex p-3 py-3 ${
