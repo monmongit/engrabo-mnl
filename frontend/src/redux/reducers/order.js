@@ -2,6 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 
 const initialState = {
   products: [],
+  orders: [],
   isLoading: false,
   error: null,
   product: null,
@@ -42,6 +43,7 @@ export const orderReducer = createReducer(initialState, (builder) => {
     .addCase('getAllOrdersAdminRequest', (state) => {
       state.isLoading = true;
     })
+
     .addCase('getAllOrdersAdminSuccess', (state, action) => {
       state.isLoading = false;
       state.orders = action.payload;
