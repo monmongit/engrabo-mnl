@@ -116,12 +116,14 @@ const Header = ({ activeHeading }) => {
 
           {/* Best Offer */}
           <div className={`${styles.button}`}>
-            <Link to="/admin-login">
-              <h1 className="text-[#fff4d7] flex items-center">
-                {isAdmin ? 'Go Dashboard' : 'Best Offer'}{' '}
-                <IoIosArrowForward className="ml-1" />
-              </h1>
-            </Link>
+            {isAdmin ? (
+              <Link to="/admin-login">
+                <h1 className="text-[#fff4d7] flex items-center">
+                  {isAdmin ? 'Go Dashboard' : null}
+                  <IoIosArrowForward className="ml-1" />
+                </h1>
+              </Link>
+            ) : null}
           </div>
         </div>
       </div>
