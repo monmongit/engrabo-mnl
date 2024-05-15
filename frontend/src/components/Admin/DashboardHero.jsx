@@ -6,6 +6,8 @@ import { MdBorderClear } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllOrdersOfAdmin } from '../../redux/action/order';
 import { getAllProductsAdmin } from '../../redux/action/product';
+import { getAllUsers } from '../../redux/action/user';
+
 import { Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import {IoBagHandle, IoPieChart, IoPeople, IoCart} from 'react-icons/io5' 
@@ -15,15 +17,15 @@ const DashboardHero = () => {
   const dispatch = useDispatch();
   const { orders } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
+  const {usersList} = useSelector((state) => state.user)
   const [deliveredOrder, setDeliveredOrder] = useState(null);
-
-  // const {usersList} = useSelector((state) => state.users)
-
+  
   console.log(admin);
   useEffect(() => {
     if (admin && admin._id) {
       dispatch(getAllOrdersOfAdmin(admin._id));
       dispatch(getAllProductsAdmin(admin._id));
+      dispatch(getAllUsers(admin._id));
     }
   }, [dispatch, admin]);
 
@@ -149,8 +151,7 @@ const DashboardHero = () => {
             <div className="pl-4">
               <span className="text-sm text-gray-500 font-light">Total Customers</span>
               <div className="flex items-center">
-                {/* <strong className="text-xl text-gray-700 font-semibold">{usersList && usersList.length}</strong> */}
-                <strong className="text-xl text-gray-700 font-semibold">35</strong>
+                <strong className="text-xl text-gray-700 font-semibold">{usersList && usersList.length}</strong>
               </div>
             </div>
           </BoxWrapper>
