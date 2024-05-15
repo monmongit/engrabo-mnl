@@ -75,8 +75,8 @@ const AllProducts = () => {
     ...(viewMode === 'Product'
       ? [
           {
-            field: 'gross',
-            headerName: 'Price no tax',
+            field: 'grossprice',
+            headerName: 'Gross Price',
             minWidth: 100,
             flex: 0.5,
             hide: viewMode !== 'Product',
@@ -84,7 +84,7 @@ const AllProducts = () => {
 
           {
             field: 'price',
-            headerName: 'Price',
+            headerName: 'Selling Price',
             minWidth: 100,
             flex: 0.5,
             hide: viewMode !== 'Product',
@@ -138,10 +138,10 @@ const AllProducts = () => {
       ? filteredProducts.map((item) => ({
           id: item._id,
           name: item.name,
-          gross: `₱ ${item.grossPrice}`,
+          grossprice: `₱ ${item.grossPrice}`, 
           price: `₱ ${item.originalPrice}`,
-          discount: `₱ ${item.discountedPrice}`,
-          stock: item.stock,
+          discount: item.discount !== undefined ? `₱ ${item.discountedPrice}`: "No Discount",
+          stock: item.stock, 
           sold: item?.sold_out,
         }))
       : filteredCategories.map((item) => ({
