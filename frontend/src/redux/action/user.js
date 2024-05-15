@@ -83,29 +83,6 @@ export const updateUserInformation =
     }
   };
 
-// Get all user by admin
-export const getAllUsers = () => async (dispatch) => {
-  try {
-    dispatch({
-      type: 'getAllUsersRequest',
-    });
-
-    const { data } = await axios.get(`${server}/user/admin-all-users`, {
-      withCredentials: true,
-    });
-
-    dispatch({
-      type: 'getAllUsersSuccess',
-      payload: { users: data.users },
-    });
-  } catch (error) {
-    dispatch({
-      type: 'getAllUsersFailed',
-      payload: error.response.data.message,
-    });
-  }
-};
-
 // Update user address
 export const updateUserAddress =
   (country, state, city, address1, address2, zipCode, addressType) =>
@@ -162,6 +139,33 @@ export const deleteUserAddress = (id) => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: 'deleteUserAddressFailed',
+      payload: error.response.data.message,
+    });
+  }
+};
+
+// Get all user by admin
+export const getAllUsers = (adminId) => async (dispatch) => {
+  try {
+    dispatch({
+      type: 'getAllUsersRequest',
+    });
+    console.log("admin id from redux: ", adminId)
+   
+    const { data } = await axios.get(`${server}/user/admin-all-users/${adminId}`, {
+      withCredentials: true,
+    });
+
+     console.log("data: ", data);
+
+  
+    dispatch({
+      type: 'getAllUsersSuccess',
+      payload: { users: data.users },
+    });
+  } catch (error) {
+    dispatch({
+      type: 'getAllUsersFailed',
       payload: error.response.data.message,
     });
   }

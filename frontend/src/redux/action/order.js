@@ -26,7 +26,7 @@ export const getAllOrdersOfUser = (userId) => async (dispatch) => {
 
 // Get all order of user on admin
 export const getAllOrdersOfAdmin = (adminId) => async (dispatch) => {
-  console.log(adminId);
+  console.log("admin: ", adminId);
   try {
     dispatch({
       type: 'getAllOrdersAdminRequest',
@@ -35,6 +35,8 @@ export const getAllOrdersOfAdmin = (adminId) => async (dispatch) => {
     const { data } = await axios.get(
       `${server}/order/get-admin-all-orders/${adminId}`
     );
+
+    console.log("data: ", data)
 
     dispatch({
       type: 'getAllOrdersAdminSuccess',
