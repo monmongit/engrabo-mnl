@@ -18,6 +18,7 @@ const DashboardHero = () => {
   const { orders } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
   const {usersList} = useSelector((state) => state.user)
+  const { products } = useSelector((state) => state.products);
   const [deliveredOrder, setDeliveredOrder] = useState(null);
   
   console.log(admin);
@@ -46,6 +47,23 @@ const DashboardHero = () => {
   const availableBalance = totalEarningWithoutTax
     ? totalEarningWithoutTax - serviceCharge
     : 0;
+
+  // computes the total expenses
+   const ComputetotalExpenses = () => {
+    if (!products || products.length === 0) {
+      return 0;
+    }
+
+    // Iterate over each product and calculate its total cost based on stock and original price
+    const totalExpenses = products.reduce((total, product) => {
+      const productExpense = product.stock * product.originalPrice;
+      return total + productExpense;
+    }, 0);
+
+    return totalExpenses;
+ }
+
+ const totalExpenses = ComputetotalExpenses();
 
   const columns = [
     { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
@@ -137,7 +155,7 @@ const DashboardHero = () => {
           <div className="pl-4">
             <span className="text-sm text-gray-500 font-light">Total Expenses</span>
             <div className="flex items-center">
-              <strong className="text-xl text-gray-700 font-semibold">1234</strong>
+              <strong className="text-xl text-gray-700 font-semibold">₱ {totalExpenses.toFixed(2)}</strong>
             </div>
           </div>
         </BoxWrapper>
