@@ -146,7 +146,7 @@ const computeTotalSales = (deliveredOrder) => {
     : 0;
 
   const availableBalance = totalEarningWithoutTax
-    ? totalEarningWithoutTax - serviceCharge
+    ? totalEarningWithoutTax
     : 0;
 
   return availableBalance;
@@ -259,7 +259,7 @@ const transactionChart = (orders,products) => {
       const year = paidAt.getFullYear();
       const key = `${year}-${month}`;
       
-      if (order.status === "Delivered" || order.status === "Transferred to delivery partner") {
+      if (order.status === "Delivered") {
         monthlySales[key].sales += order.totalPrice;
         monthlySales[key].delivered_orders++ ;
       } 
