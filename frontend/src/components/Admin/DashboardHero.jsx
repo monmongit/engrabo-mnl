@@ -12,6 +12,8 @@ import { Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import {IoBagHandle, IoPieChart, IoPeople, IoCart} from 'react-icons/io5' 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import ApexCharts from 'apexcharts'
+import Chart from 'react-apexcharts'
 
 const DashboardHero = () => {
   const dispatch = useDispatch();
@@ -49,7 +51,7 @@ const DashboardHero = () => {
   return (
     <div className="w-full p-8">
       <h3 className="text-[22px] font-Poppins pb-2">Overview</h3>
-      <div className="data-drid-analytic grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div className="data-drid-analytic grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
         {/* Total Sales */}
          <BoxWrapper>
@@ -127,6 +129,7 @@ const DashboardHero = () => {
           autoHeight
         />
       </div>
+      <div id='chart'></div>
     </div>
   );
 };
@@ -229,13 +232,15 @@ const ordersDashboard = (orders) => {
 }
 
 const transactionChart = (orders,products) => {
-  // check if ordrers 
   if(!orders || !orders.length ){
     console.log("orders data not available")
   } 
+
   // Initialize monthly sales object with zeros for all months
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
+
+  // Monthly Sales 
   const monthlySales = {};
   for (let month = 0; month < 12; month++) {
     const key = `${currentYear}-${month}`;
@@ -243,24 +248,25 @@ const transactionChart = (orders,products) => {
       month: month,
       year: currentYear,
       sales: 0,
-      orders: 0
+      orders: 0, 
+      delivered_orders: 0,
     };
   }
-
-  // Group orders by month
+  // Orders and Sales per Month
   orders.forEach(order => { 
       const paidAt = new Date(order.paidAt);
       const month = paidAt.getMonth();
       const year = paidAt.getFullYear();
       const key = `${year}-${month}`;
+      
+      if (order.status === "Delivered" || order.status === "Transferred to delivery partner") {
+        monthlySales[key].sales += order.totalPrice;
+        monthlySales[key].delivered_orders++ ;
+      } 
       monthlySales[key].orders++;
-      if (order.status === "Delivered") {
-      monthlySales[key].sales += order.totalPrice;
-    }
   });
 
-  console.log("Product for computing expenses: ", products)
-  // Group expenses by month
+  // Expenses per month
   const monthlyExpenses = {};
   products.forEach(product => {
     const createdAt = new Date(product.createAt);
@@ -279,31 +285,31 @@ const transactionChart = (orders,products) => {
     }
   });
 
-  console.log("monthly expenses: ", monthlyExpenses)
-
+  
   // Convert object to array of monthly sales with sales formatted to two decimal places
   const formattedData = Object.values(monthlySales).map(item => ({
     month: new Date(item.year, item.month, 1).toLocaleString('en-US', { month: 'long' }),
     sales: item.sales.toFixed(2), // Format sales to two decimal places
     orders: item.orders,
+    delivered_orders: item.delivered_orders,
     expenses: monthlyExpenses[`${item.year}-${item.month}`] ? monthlyExpenses[`${item.year}-${item.month}`].expenses.toFixed(2) : 0
   }));
 
   console.log("Formatted Data: ",formattedData);
+  console.log("monthly expenses: ", monthlyExpenses)
+  console.log("monthly sales: ", monthlySales)
+  console.log("all products: ", products)
+  console.log("all orders: ", orders)
 
 
-  const data = formattedData;
   return (
-    <div className="h-[22rem] bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
+    <>
+    {/* <div className="h-[22rem] bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
       <div className='flex justify-between items-center'>
         <div className='align-middle'>
           <strong className="text-gray-700 font-medium">Transactions</strong>
         </div>
-        <div className="mb-2 align-middle">
-          {/* <button className="bg-blue-400 hover:bg-blue-700 text-white font-medium py-1 px-2 rounded" onClick={downloadCsv}>
-            Download CSV
-          </button> */}
-        </div>
+
       </div>
       <div className="mt-3 w-full flex-1 text-xs">
         <ResponsiveContainer width="100%" height="100%">
@@ -329,11 +335,252 @@ const transactionChart = (orders,products) => {
           </BarChart>
         </ResponsiveContainer>
       </div>
+    </div> */}
+    <div>
+      {MyChartComponentSales(formattedData)}
     </div>
+    <div>
+      {MyChartComponentOrders(formattedData)}
+    </div>
+    </>
   );
 }
+const MyChartComponentSales = (formattedData) => {
+  // Extracting data from formattedData
+  const categories = formattedData.map(item => item.month);
+  const salesData = formattedData.map(item => parseFloat(item.sales));
+  const expensesData = formattedData.map(item => parseFloat(item.expenses));
 
-// To do: Y axix of analytics, Use ApexCharts instead, Functionality to download the reports
+  // Chart options
+  const options = {
+    chart: {
+      type: 'bar'
+    },
+    title: {
+      text: 'Sales and Expenses By Month',
+      align: 'center',
+      margin: 10,
+      offsetX: 0,
+      offsetY: 0,
+      floating: false,
+      style: {
+        fontSize: '18px',
+        fontWeight: 'bold',
+        color: '#333'
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '55%',
+        endingShape: 'rounded'
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: categories
+    },
+    yaxis: {
+      title: {
+        text: 'Amount ($)'
+      }
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return "P" + val.toFixed(2); // Fixed to two decimal places
+        }
+      }
+    }
+  };
+
+  // Chart series data
+  const series = [
+    {
+      name: 'Sales',
+      data: salesData,
+      color: '#228B22'
+    },
+    {
+      name: 'Expenses',
+      data: expensesData,
+      color: '#B22222'
+    }
+  ];
+
+  return (
+    <div className='bg-white rounded-sm p-5'>
+      <Chart options={options} series={series} type="bar" width="100%" height="400" />
+    </div>
+  );
+};
+
+// const MyChartComponentOrders = (formattedData) => {
+//   console.log("Chart Component forOrders: ", formattedData)
+
+//   const categories = formattedData.map(item => item.month);
+//   const total_orders = formattedData.map(item => item.orders);
+//   const delivered_orders = formattedData.map(item => item.delivered_orders);
+
+
+//   // Set up chart options
+//   const options = {
+//     chart: {
+//       type: 'bar'
+//     },
+//     title: {
+//     text: 'Total Orders and Delivered Orders By Month',
+//     align: 'center', // Alignment of the title (left, center, right)
+//     margin: 10, // Margin around the title
+//     offsetX: 0, // Horizontal offset from the default position
+//     offsetY: 0, // Vertical offset from the default position
+//     floating: false, // If true, the title will be rendered outside the plot area
+//     style: {
+//         fontSize: '18px', // Font size of the title
+//         fontWeight: 'bold', // Font weight of the title
+//         color: '#333' // Color of the title
+//         // Other style properties
+//     }
+//     },
+//     plotOptions: {
+//       bar: {
+//         horizontal: false,
+//         columnWidth: '55%',
+//         endingShape: 'rounded'
+//       }
+//     },
+//     dataLabels: {
+//       enabled: false
+//     },
+//     stroke: {
+//       show: true,
+//       width: 2,
+//       colors: ['transparent']
+//     },
+//     xaxis: {
+//       categories: categories
+//     },
+//     yaxis: {
+//       title: {
+//         text: 'Amount'
+//       }
+//     },
+//     tooltip: {
+//       y: {
+//         formatter: function (val) {
+//           return "$" + val
+//         }
+//       }
+//     }
+//   };
+
+//   // Set up chart series data
+//   const series = [
+//     {
+//       name: 'Total Orders',
+//       data: total_orders,
+//       color:'#000080'
+//     },
+//     {
+//       name: 'Delivered Orders',
+//       data: delivered_orders,
+//       color:'#FFA500 '
+//     }
+//   ];
+
+//   return (
+//     // <div className="h-[22rem] bg-white rounded-sm border border-gray-200 flex flex-col flex-1" >
+//     <div className='bg-white rounded-sm p-5'>
+//       <Chart options={options} series={series} type="bar" width="100%" height="400" />
+//     </div>
+//   );
+// }
+
+const MyChartComponentOrders = (formattedData) => {
+
+  console.log("Component Orders: ", formattedData);
+  // Extracting data from formattedData
+  const categories = formattedData.map(item => item.month);
+  const total_orders = formattedData.map(item => item.orders.toLocaleString());
+  const delivered_orders = formattedData.map(item => item.delivered_orders.toLocaleString());
+
+  // Chart options
+  const options = {
+    chart: {
+      type: 'bar'
+    },
+    title: {
+      text: 'Total Orders and Delivered Orders By Month',
+      align: 'center',
+      margin: 10,
+      offsetX: 0,
+      offsetY: 0,
+      floating: false,
+      style: {
+        fontSize: '18px',
+        fontWeight: 'bold',
+        color: '#333'
+      }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '55%',
+        endingShape: 'rounded'
+      }
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    xaxis: {
+      categories: categories
+    },
+    yaxis: {
+      title: {
+        text: '# of Orders'
+      }
+    },
+    tooltip: {
+      y: {
+        formatter: function (val) {
+          return "P" + val.toFixed(2); // Fixed to two decimal places
+        }
+      }
+    }
+  };
+
+  // Chart series data
+  const series = [
+    {
+      name: 'Total Orders',
+      data: total_orders,
+      color: '#000080'
+    },
+    {
+      name: 'Delivered Orders',
+      data: delivered_orders,
+      color: '#FFA500'
+    }
+  ];
+
+  return (
+    <div className='bg-white rounded-sm p-5 mt-5'>
+      <Chart options={options} series={series} type="bar" width="100%" height="400" />
+    </div>
+  );
+};
 
 
 export default DashboardHero;

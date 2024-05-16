@@ -13,4 +13,4 @@ node_modules/
 .vscode/
 .idea/
 
-install-dependencies.sh
+install-dep.sh
