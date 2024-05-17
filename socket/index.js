@@ -25,11 +25,13 @@ let users = [];
 const addUser = (userId, socketId) => {
   if (!users.some((user) => user.userId === userId)) {
     users.push({ userId, socketId });
+    io.emit('getUsers', users); // Emit users after adding
   }
 };
 
 const removeUser = (socketId) => {
   users = users.filter((user) => user.socketId !== socketId);
+  io.emit('getUsers', users); // Emit users after removing
 };
 
 const getUser = (userId) => {
@@ -45,7 +47,6 @@ io.on('connection', (socket) => {
 
   socket.on('addUser', (userId) => {
     addUser(userId, socket.id);
-    io.emit('getUsers', users);
   });
 
   socket.on('sendMessage', async ({ senderId, receiverId, text, images }) => {
@@ -84,13 +85,37 @@ io.on('connection', (socket) => {
         images,
         createdAt: Date.now(),
       });
+    } else if (!isAdmin) {
+      // Only send the thank you response if the receiver (admin) is offline
+      const thankYouMessage =
+        'Thank you for your message. We will get back to you soon.';
+      const messageData = {
+        sender: receiverId,
+        text: thankYouMessage,
+        conversationId: await getConversationId(senderId, receiverId),
+      };
+
+      const thankYouAutoMessage = new Messages(messageData);
+      await thankYouAutoMessage.save();
+
+      io.to(socket.id).emit('getMessage', {
+        senderId: receiverId,
+        text: thankYouMessage,
+        images: null,
+        createdAt: Date.now(),
+      });
+
+      await updateLastMessage(
+        messageData.conversationId,
+        thankYouMessage,
+        receiverId
+      );
     }
   });
 
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
     removeUser(socket.id);
-    io.emit('getUsers', users);
   });
 });
 
@@ -106,16 +131,20 @@ const getAutoResponse = (userMessage) => {
       question: 'how to order',
       response:
         'You can order by selecting products and adding them to your cart.',
+      variations: ['order', 'how do I order', 'ordering'],
     },
     {
       question: 'how to refund',
       response:
         'To initiate a refund, please contact our support team with your order details.',
+      variations: ['refund', 'how do I refund', 'return'],
     },
   ];
 
   const matchedFaq = faqs.find((faq) =>
-    userMessage.toLowerCase().includes(faq.question)
+    faq.variations.some((variation) =>
+      userMessage.toLowerCase().includes(variation)
+    )
   );
   return matchedFaq
     ? matchedFaq.response
