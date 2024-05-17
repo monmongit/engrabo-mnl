@@ -100,16 +100,20 @@ const UserInboxPage = () => {
         question: 'how to order',
         response:
           'You can order by selecting products and adding them to your cart.',
+        variations: ['order', 'how do I order', 'ordering'],
       },
       {
         question: 'how to refund',
         response:
           'To initiate a refund, please contact our support team with your order details.',
+        variations: ['refund', 'how do I refund', 'return'],
       },
     ];
 
     const matchedFaq = faqs.find((faq) =>
-      messageText.toLowerCase().includes(faq.question)
+      faq.variations.some((variation) =>
+        messageText.toLowerCase().includes(variation)
+      )
     );
     return matchedFaq
       ? matchedFaq.response
@@ -144,20 +148,27 @@ const UserInboxPage = () => {
         setMessages([...messages, res.data.message]);
         updateLastMessage(newMessage, user._id);
 
-        const autoResponse = handleAutomaticResponse(newMessage);
-        if (autoResponse) {
-          const autoMessage = {
-            sender: receiverId,
-            text: autoResponse,
-            conversationId: currentChat._id,
-          };
+        // Check if admin is online
+        const isAdminOnline = onlineUsers.some(
+          (onlineUser) => onlineUser.userId === receiverId
+        );
 
-          const autoRes = await axios.post(
-            `${server}/message/create-new-message`,
-            autoMessage
-          );
-          setMessages([...messages, res.data.message, autoRes.data.message]);
-          updateLastMessage(autoResponse, receiverId);
+        if (!isAdminOnline) {
+          const autoResponse = handleAutomaticResponse(newMessage);
+          if (autoResponse) {
+            const autoMessage = {
+              sender: receiverId,
+              text: autoResponse,
+              conversationId: currentChat._id,
+            };
+
+            const autoRes = await axios.post(
+              `${server}/message/create-new-message`,
+              autoMessage
+            );
+            setMessages([...messages, res.data.message, autoRes.data.message]);
+            updateLastMessage(autoResponse, receiverId);
+          }
         }
       }
     } catch (error) {
@@ -184,6 +195,7 @@ const UserInboxPage = () => {
       console.log(error);
     }
   };
+
   const handleImageUpload = async (e) => {
     const reader = new FileReader();
     reader.onload = () => {
