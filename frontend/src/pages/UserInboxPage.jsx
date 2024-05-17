@@ -94,6 +94,28 @@ const UserInboxPage = () => {
     }
   }, [currentChat]);
 
+  const handleAutomaticResponse = (messageText) => {
+    const faqs = [
+      {
+        question: 'how to order',
+        response:
+          'You can order by selecting products and adding them to your cart.',
+      },
+      {
+        question: 'how to refund',
+        response:
+          'To initiate a refund, please contact our support team with your order details.',
+      },
+    ];
+
+    const matchedFaq = faqs.find((faq) =>
+      messageText.toLowerCase().includes(faq.question)
+    );
+    return matchedFaq
+      ? matchedFaq.response
+      : 'Thank you for your message. We will get back to you soon.';
+  };
+
   const sendMessageHandler = async (e) => {
     e.preventDefault();
 
@@ -120,25 +142,41 @@ const UserInboxPage = () => {
           message
         );
         setMessages([...messages, res.data.message]);
-        updateLastMessage();
+        updateLastMessage(newMessage, user._id);
+
+        const autoResponse = handleAutomaticResponse(newMessage);
+        if (autoResponse) {
+          const autoMessage = {
+            sender: receiverId,
+            text: autoResponse,
+            conversationId: currentChat._id,
+          };
+
+          const autoRes = await axios.post(
+            `${server}/message/create-new-message`,
+            autoMessage
+          );
+          setMessages([...messages, res.data.message, autoRes.data.message]);
+          updateLastMessage(autoResponse, receiverId);
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const updateLastMessage = async () => {
+  const updateLastMessage = async (lastMessage, senderId) => {
     socket.emit('updateLastMessage', {
-      lastMessage: newMessage,
-      lastMessageId: user._id,
+      lastMessage,
+      lastMessageId: senderId,
     });
 
     try {
       await axios.put(
         `${server}/conversation/update-last-message/${currentChat._id}`,
         {
-          lastMessage: newMessage,
-          lastMessageId: user._id,
+          lastMessage,
+          lastMessageId: senderId,
         }
       );
       setNewMessage('');
@@ -146,7 +184,6 @@ const UserInboxPage = () => {
       console.log(error);
     }
   };
-
   const handleImageUpload = async (e) => {
     const reader = new FileReader();
     reader.onload = () => {
