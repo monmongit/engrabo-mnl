@@ -4,8 +4,10 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const server = http.createServer(app);
-const io = socketIO(server, { transports: ['websocket', 'polling'] }); // ensure transports fallback
-// const Messages = require('../backend/model/messages');
+const io = socketIO(server, { transports: ['websocket', 'polling'] });
+const mongoose = require('mongoose');
+const Messages = require('../backend/model/messages');
+const Conversation = require('../backend/model/conversation');
 
 require('dotenv').config({
   path: './.env',
@@ -34,6 +36,10 @@ const getUser = (userId) => {
   return users.find((user) => user.userId === userId);
 };
 
+const isAdminOnline = (adminId) => {
+  return users.some((user) => user.userId === adminId);
+};
+
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
@@ -42,8 +48,35 @@ io.on('connection', (socket) => {
     io.emit('getUsers', users);
   });
 
-  socket.on('sendMessage', ({ senderId, receiverId, text, images }) => {
+  socket.on('sendMessage', async ({ senderId, receiverId, text, images }) => {
     const user = getUser(receiverId);
+    const isAdmin = await isAdminCheck(senderId);
+
+    if (!isAdmin && !isAdminOnline(receiverId)) {
+      const autoResponse = getAutoResponse(text);
+      const messageData = {
+        sender: receiverId,
+        text: autoResponse,
+        conversationId: await getConversationId(senderId, receiverId),
+      };
+
+      const autoMessage = new Messages(messageData);
+      await autoMessage.save();
+
+      io.to(socket.id).emit('getMessage', {
+        senderId: receiverId,
+        text: autoResponse,
+        images: null,
+        createdAt: Date.now(),
+      });
+
+      await updateLastMessage(
+        messageData.conversationId,
+        autoResponse,
+        receiverId
+      );
+    }
+
     if (user) {
       io.to(user.socketId).emit('getMessage', {
         senderId,
@@ -54,26 +87,54 @@ io.on('connection', (socket) => {
     }
   });
 
-  // // Handle seen status update
-  // socket.on('updateSeenStatus', async ({ messageId, seen }) => {
-  //   try {
-  //     const updatedMessage = await Messages.findByIdAndUpdate(
-  //       messageId,
-  //       { seen },
-  //       { new: true }
-  //     );
-  //     console.log(`Message ${messageId} marked as seen`, updatedMessage);
-  //   } catch (error) {
-  //     console.error('Error updating message seen status:', error);
-  //   }
-  // });
-
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
     removeUser(socket.id);
     io.emit('getUsers', users);
   });
 });
+
+const isAdminCheck = async (userId) => {
+  const User = mongoose.model('User', new mongoose.Schema({ role: String }));
+  const user = await User.findById(userId);
+  return user.role === 'admin';
+};
+
+const getAutoResponse = (userMessage) => {
+  const faqs = [
+    {
+      question: 'how to order',
+      response:
+        'You can order by selecting products and adding them to your cart.',
+    },
+    {
+      question: 'how to refund',
+      response:
+        'To initiate a refund, please contact our support team with your order details.',
+    },
+  ];
+
+  const matchedFaq = faqs.find((faq) =>
+    userMessage.toLowerCase().includes(faq.question)
+  );
+  return matchedFaq
+    ? matchedFaq.response
+    : 'Thank you for your message. We will get back to you soon.';
+};
+
+const getConversationId = async (userId, adminId) => {
+  const conversation = await Conversation.findOne({
+    members: { $all: [userId, adminId] },
+  });
+  return conversation._id;
+};
+
+const updateLastMessage = async (conversationId, lastMessage, senderId) => {
+  await Conversation.findByIdAndUpdate(conversationId, {
+    lastMessage,
+    lastMessageId: senderId,
+  });
+};
 
 server.listen(process.env.PORT || 4000, () => {
   console.log(`Server is running on port ${process.env.PORT || 4000}`);
