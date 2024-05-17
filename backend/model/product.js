@@ -21,10 +21,10 @@ const productSchema = new mongoose.Schema({
     required: [true, 'Please enter your product description'],
   },
 
-  // grossPrice: {
-  //   type: Number,
-  //   required: [true, 'Please enter your product gross price'],
-  // },
+  grossPrice: {
+    type: Number,
+    required: [true, 'Please enter your product gross price'],
+  },
 
   originalPrice: {
     type: Number,
