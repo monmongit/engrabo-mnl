@@ -94,32 +94,6 @@ const UserInboxPage = () => {
     }
   }, [currentChat]);
 
-  const handleAutomaticResponse = (messageText) => {
-    const faqs = [
-      {
-        question: 'how to order',
-        response:
-          'You can order by selecting products and adding them to your cart.',
-        variations: ['order', 'how do I order', 'ordering'],
-      },
-      {
-        question: 'how to refund',
-        response:
-          'To initiate a refund, please contact our support team with your order details.',
-        variations: ['refund', 'how do I refund', 'return'],
-      },
-    ];
-
-    const matchedFaq = faqs.find((faq) =>
-      faq.variations.some((variation) =>
-        messageText.toLowerCase().includes(variation)
-      )
-    );
-    return matchedFaq
-      ? matchedFaq.response
-      : 'Thank you for your message. We will get back to you soon.';
-  };
-
   const sendMessageHandler = async (e) => {
     e.preventDefault();
 
@@ -146,48 +120,25 @@ const UserInboxPage = () => {
           message
         );
         setMessages([...messages, res.data.message]);
-        updateLastMessage(newMessage, user._id);
-
-        // Check if admin is online
-        const isAdminOnline = onlineUsers.some(
-          (onlineUser) => onlineUser.userId === receiverId
-        );
-
-        if (!isAdminOnline) {
-          const autoResponse = handleAutomaticResponse(newMessage);
-          if (autoResponse) {
-            const autoMessage = {
-              sender: receiverId,
-              text: autoResponse,
-              conversationId: currentChat._id,
-            };
-
-            const autoRes = await axios.post(
-              `${server}/message/create-new-message`,
-              autoMessage
-            );
-            setMessages([...messages, res.data.message, autoRes.data.message]);
-            updateLastMessage(autoResponse, receiverId);
-          }
-        }
+        updateLastMessage();
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const updateLastMessage = async (lastMessage, senderId) => {
+  const updateLastMessage = async () => {
     socket.emit('updateLastMessage', {
-      lastMessage,
-      lastMessageId: senderId,
+      lastMessage: newMessage,
+      lastMessageId: user._id,
     });
 
     try {
       await axios.put(
         `${server}/conversation/update-last-message/${currentChat._id}`,
         {
-          lastMessage,
-          lastMessageId: senderId,
+          lastMessage: newMessage,
+          lastMessageId: user._id,
         }
       );
       setNewMessage('');
