@@ -10,20 +10,29 @@ import { getAllUsers } from '../../redux/action/user';
 
 import { Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import {IoBagHandle, IoPieChart, IoPeople, IoCart} from 'react-icons/io5' 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import ApexCharts from 'apexcharts'
-import Chart from 'react-apexcharts'
+import { IoBagHandle, IoPieChart, IoPeople, IoCart } from 'react-icons/io5';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import ApexCharts from 'apexcharts';
+import Chart from 'react-apexcharts';
 
 const DashboardHero = () => {
   const dispatch = useDispatch();
   const { orders } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
-  const {usersList} = useSelector((state) => state.user)
+  const { usersList } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
   const [deliveredOrder, setDeliveredOrder] = useState(null);
-  
-  console.log("orders: ",orders)
+
+  console.log('orders: ', orders);
   console.log(admin);
   useEffect(() => {
     if (admin && admin._id) {
@@ -39,29 +48,38 @@ const DashboardHero = () => {
     setDeliveredOrder(orderData);
   }, [orders]);
 
-  // Call our Computation Functions, Order Dashboard and Analytics 
+  // Call our Computation Functions, Order Dashboard and Analytics
   const availableBalance = computeTotalSales(deliveredOrder);
   const totalExpenses = computeTotalExpenses(products);
-  const {columns, row} = ordersDashboard(orders)
-  const displayAnalytics = transactionChart(orders, products)
+  const { columns, row } = ordersDashboard(orders);
+  const displayAnalytics = transactionChart(orders, products);
 
-  // css stying custom 
-  const BoxWrapper = ({children}) =>{return <div className="bg-white rounded-sm p-4 flex-1 border border-gray-200 flex items-center">{children}</div>}
-  
+  // css stying custom
+  const BoxWrapper = ({ children }) => {
+    return (
+      <div className="bg-white rounded-sm p-4 flex-1 border border-gray-200 flex items-center">
+        {children}
+      </div>
+    );
+  };
+
   return (
     <div className="w-full p-8">
       <h3 className="text-[22px] font-Poppins pb-2">Overview</h3>
       <div className="data-drid-analytic grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
         {/* Total Sales */}
-         <BoxWrapper>
+        <BoxWrapper>
           <div className="rounded-full h-12 w-12 flex items-center justify-center bg-sky-500">
-            <IoBagHandle className='text-2xl text-white'/>
+            <IoBagHandle className="text-2xl text-white" />
           </div>
           <div className="pl-4">
-            <span className="text-sm text-gray-500 font-light">Total Sales</span>
+            <span className="text-sm text-gray-500 font-light">
+              Total Sales
+            </span>
             <div className="flex items-center">
-              <strong className='text-xl text-gray-700 font-semibold'>₱ {availableBalance.toFixed(2)}</strong>
+              <strong className="text-xl text-gray-700 font-semibold">
+                ₱ {availableBalance.toFixed(2)}
+              </strong>
             </div>
           </div>
         </BoxWrapper>
@@ -72,23 +90,31 @@ const DashboardHero = () => {
             <IoPieChart className="text-2xl text-white" />
           </div>
           <div className="pl-4">
-            <span className="text-sm text-gray-500 font-light">Total Expenses</span>
+            <span className="text-sm text-gray-500 font-light">
+              Total Expenses
+            </span>
             <div className="flex items-center">
-              <strong className="text-xl text-gray-700 font-semibold">₱ {totalExpenses.toFixed(2)}</strong>
+              <strong className="text-xl text-gray-700 font-semibold">
+                ₱ {totalExpenses.toFixed(2)}
+              </strong>
             </div>
           </div>
         </BoxWrapper>
 
-         {/* total customers */}
+        {/* total customers */}
         <Link to="/dashboard-users">
           <BoxWrapper>
             <div className="rounded-full h-12 w-12 flex items-center justify-center bg-yellow-400">
-                <IoPeople className="text-2xl text-white" />
+              <IoPeople className="text-2xl text-white" />
             </div>
             <div className="pl-4">
-              <span className="text-sm text-gray-500 font-light">Total Customers</span>
+              <span className="text-sm text-gray-500 font-light">
+                Total Customers
+              </span>
               <div className="flex items-center">
-                <strong className="text-xl text-gray-700 font-semibold">{usersList && usersList.length}</strong>
+                <strong className="text-xl text-gray-700 font-semibold">
+                  {usersList && usersList.length}
+                </strong>
               </div>
             </div>
           </BoxWrapper>
@@ -97,24 +123,26 @@ const DashboardHero = () => {
         {/* Total Orders */}
         <Link to="/dashboard-orders">
           <BoxWrapper>
-              <div className="rounded-full h-12 w-12 flex items-center justify-center bg-green-600">
-                  <IoCart className="text-2xl text-white" />
+            <div className="rounded-full h-12 w-12 flex items-center justify-center bg-green-600">
+              <IoCart className="text-2xl text-white" />
+            </div>
+            <div className="pl-4">
+              <span className="text-sm text-gray-500 font-light">
+                Total Orders
+              </span>
+              <div className="flex items-center">
+                <strong className="text-xl text-gray-700 font-semibold">
+                  {orders && orders.length}
+                </strong>
               </div>
-              <div className="pl-4">
-                <span className="text-sm text-gray-500 font-light">Total Orders</span>
-                <div className="flex items-center">
-                  <strong className="text-xl text-gray-700 font-semibold">{orders && orders.length}</strong>
-                </div>
-              </div>
+            </div>
           </BoxWrapper>
         </Link>
       </div>
-      
+
       <br />
       {/* transactions */}
-      <div className="transaction-analytic">
-        {displayAnalytics}
-      </div>
+      <div className="transaction-analytic">{displayAnalytics}</div>
 
       {/* Section for Latest Orders */}
       <h3 className="text-[22px] font-Poppins pb-2 text-[171203]">
@@ -129,11 +157,10 @@ const DashboardHero = () => {
           autoHeight
         />
       </div>
-      <div id='chart'></div>
+      <div id="chart"></div>
     </div>
   );
 };
-
 
 // FUNCTION DEFINITIONS
 const computeTotalSales = (deliveredOrder) => {
@@ -145,12 +172,10 @@ const computeTotalSales = (deliveredOrder) => {
     ? totalEarningWithoutTax * 0.1
     : 0;
 
-  const availableBalance = totalEarningWithoutTax
-    ? totalEarningWithoutTax
-    : 0;
+  const availableBalance = totalEarningWithoutTax ? totalEarningWithoutTax : 0;
 
   return availableBalance;
-}
+};
 const computeTotalExpenses = (products) => {
   if (!products || products.length === 0) {
     return 0;
@@ -163,10 +188,9 @@ const computeTotalExpenses = (products) => {
   }, 0);
 
   return totalExpenses;
-}
+};
 
 const ordersDashboard = (orders) => {
-
   const columns = [
     { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
     {
@@ -217,7 +241,6 @@ const ordersDashboard = (orders) => {
 
   const row = [];
 
-  
   orders &&
     orders.forEach((item) => {
       row.push({
@@ -228,19 +251,19 @@ const ordersDashboard = (orders) => {
       });
     });
 
-  return {columns, row}
-}
+  return { columns, row };
+};
 
-const transactionChart = (orders,products) => {
-  if(!orders || !orders.length ){
-    console.log("orders data not available")
-  } 
+const transactionChart = (orders, products) => {
+  if (!orders || !orders.length) {
+    console.log('orders data not available');
+  }
 
   // Initialize monthly sales object with zeros for all months
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
 
-  // Monthly Sales 
+  // Monthly Sales
   const monthlySales = {};
   for (let month = 0; month < 12; month++) {
     const key = `${currentYear}-${month}`;
@@ -248,27 +271,27 @@ const transactionChart = (orders,products) => {
       month: month,
       year: currentYear,
       sales: 0,
-      orders: 0, 
+      orders: 0,
       delivered_orders: 0,
     };
   }
   // Orders and Sales per Month
-  orders.forEach(order => { 
-      const paidAt = new Date(order.paidAt);
-      const month = paidAt.getMonth();
-      const year = paidAt.getFullYear();
-      const key = `${year}-${month}`;
-      
-      if (order.status === "Delivered") {
-        monthlySales[key].sales += order.totalPrice;
-        monthlySales[key].delivered_orders++ ;
-      } 
-      monthlySales[key].orders++;
+  orders.forEach((order) => {
+    const paidAt = new Date(order.paidAt);
+    const month = paidAt.getMonth();
+    const year = paidAt.getFullYear();
+    const key = `${year}-${month}`;
+
+    if (order.status === 'Delivered') {
+      monthlySales[key].sales += order.totalPrice;
+      monthlySales[key].delivered_orders++;
+    }
+    monthlySales[key].orders++;
   });
 
   // Expenses per month
   const monthlyExpenses = {};
-  products.forEach(product => {
+  products.forEach((product) => {
     const createdAt = new Date(product.createAt);
     const month = createdAt.getMonth();
     const year = createdAt.getFullYear();
@@ -278,33 +301,35 @@ const transactionChart = (orders,products) => {
       monthlyExpenses[key] = {
         month: month,
         year: year,
-        expenses: productExpenses
+        expenses: productExpenses,
       };
     } else {
       monthlyExpenses[key].expenses += productExpenses;
     }
   });
 
-  
   // Convert object to array of monthly sales with sales formatted to two decimal places
-  const formattedData = Object.values(monthlySales).map(item => ({
-    month: new Date(item.year, item.month, 1).toLocaleString('en-US', { month: 'long' }),
+  const formattedData = Object.values(monthlySales).map((item) => ({
+    month: new Date(item.year, item.month, 1).toLocaleString('en-US', {
+      month: 'long',
+    }),
     sales: item.sales.toFixed(2), // Format sales to two decimal places
     orders: item.orders,
     delivered_orders: item.delivered_orders,
-    expenses: monthlyExpenses[`${item.year}-${item.month}`] ? monthlyExpenses[`${item.year}-${item.month}`].expenses.toFixed(2) : 0
+    expenses: monthlyExpenses[`${item.year}-${item.month}`]
+      ? monthlyExpenses[`${item.year}-${item.month}`].expenses.toFixed(2)
+      : 0,
   }));
 
-  console.log("Formatted Data: ",formattedData);
-  console.log("monthly expenses: ", monthlyExpenses)
-  console.log("monthly sales: ", monthlySales)
-  console.log("all products: ", products)
-  console.log("all orders: ", orders)
-
+  console.log('Formatted Data: ', formattedData);
+  console.log('monthly expenses: ', monthlyExpenses);
+  console.log('monthly sales: ', monthlySales);
+  console.log('all products: ', products);
+  console.log('all orders: ', orders);
 
   return (
     <>
-    {/* <div className="h-[22rem] bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
+      {/* <div className="h-[22rem] bg-white p-4 rounded-sm border border-gray-200 flex flex-col flex-1">
       <div className='flex justify-between items-center'>
         <div className='align-middle'>
           <strong className="text-gray-700 font-medium">Transactions</strong>
@@ -336,25 +361,21 @@ const transactionChart = (orders,products) => {
         </ResponsiveContainer>
       </div>
     </div> */}
-    <div>
-      {MyChartComponentSales(formattedData)}
-    </div>
-    <div>
-      {MyChartComponentOrders(formattedData)}
-    </div>
+      <div>{MyChartComponentSales(formattedData)}</div>
+      <div>{MyChartComponentOrders(formattedData)}</div>
     </>
   );
-}
+};
 const MyChartComponentSales = (formattedData) => {
   // Extracting data from formattedData
-  const categories = formattedData.map(item => item.month);
-  const salesData = formattedData.map(item => parseFloat(item.sales));
-  const expensesData = formattedData.map(item => parseFloat(item.expenses));
+  const categories = formattedData.map((item) => item.month);
+  const salesData = formattedData.map((item) => parseFloat(item.sales));
+  const expensesData = formattedData.map((item) => parseFloat(item.expenses));
 
   // Chart options
   const options = {
     chart: {
-      type: 'bar'
+      type: 'bar',
     },
     title: {
       text: 'Sales and Expenses By Month',
@@ -366,39 +387,39 @@ const MyChartComponentSales = (formattedData) => {
       style: {
         fontSize: '18px',
         fontWeight: 'bold',
-        color: '#333'
-      }
+        color: '#333',
+      },
     },
     plotOptions: {
       bar: {
         horizontal: false,
         columnWidth: '55%',
-        endingShape: 'rounded'
-      }
+        endingShape: 'rounded',
+      },
     },
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     stroke: {
       show: true,
       width: 2,
-      colors: ['transparent']
+      colors: ['transparent'],
     },
     xaxis: {
-      categories: categories
+      categories: categories,
     },
     yaxis: {
       title: {
-        text: 'Amount ($)'
-      }
+        text: 'Amount ($)',
+      },
     },
     tooltip: {
       y: {
         formatter: function (val) {
-          return "P" + val.toFixed(2); // Fixed to two decimal places
-        }
-      }
-    }
+          return 'P' + val.toFixed(2); // Fixed to two decimal places
+        },
+      },
+    },
   };
 
   // Chart series data
@@ -406,18 +427,24 @@ const MyChartComponentSales = (formattedData) => {
     {
       name: 'Sales',
       data: salesData,
-      color: '#228B22'
+      color: '#228B22',
     },
     {
       name: 'Expenses',
       data: expensesData,
-      color: '#B22222'
-    }
+      color: '#B22222',
+    },
   ];
 
   return (
-    <div className='bg-white rounded-sm p-5'>
-      <Chart options={options} series={series} type="bar" width="100%" height="400" />
+    <div className="bg-white rounded-sm p-5">
+      <Chart
+        options={options}
+        series={series}
+        type="bar"
+        width="100%"
+        height="400"
+      />
     </div>
   );
 };
@@ -428,7 +455,6 @@ const MyChartComponentSales = (formattedData) => {
 //   const categories = formattedData.map(item => item.month);
 //   const total_orders = formattedData.map(item => item.orders);
 //   const delivered_orders = formattedData.map(item => item.delivered_orders);
-
 
 //   // Set up chart options
 //   const options = {
@@ -504,17 +530,20 @@ const MyChartComponentSales = (formattedData) => {
 // }
 
 const MyChartComponentOrders = (formattedData) => {
-
-  console.log("Component Orders: ", formattedData);
+  console.log('Component Orders: ', formattedData);
   // Extracting data from formattedData
-  const categories = formattedData.map(item => item.month);
-  const total_orders = formattedData.map(item => item.orders.toLocaleString());
-  const delivered_orders = formattedData.map(item => item.delivered_orders.toLocaleString());
+  const categories = formattedData.map((item) => item.month);
+  const total_orders = formattedData.map((item) =>
+    item.orders.toLocaleString()
+  );
+  const delivered_orders = formattedData.map((item) =>
+    item.delivered_orders.toLocaleString()
+  );
 
   // Chart options
   const options = {
     chart: {
-      type: 'bar'
+      type: 'bar',
     },
     title: {
       text: 'Total Orders and Delivered Orders By Month',
@@ -526,39 +555,39 @@ const MyChartComponentOrders = (formattedData) => {
       style: {
         fontSize: '18px',
         fontWeight: 'bold',
-        color: '#333'
-      }
+        color: '#333',
+      },
     },
     plotOptions: {
       bar: {
         horizontal: false,
         columnWidth: '55%',
-        endingShape: 'rounded'
-      }
+        endingShape: 'rounded',
+      },
     },
     dataLabels: {
-      enabled: false
+      enabled: false,
     },
     stroke: {
       show: true,
       width: 2,
-      colors: ['transparent']
+      colors: ['transparent'],
     },
     xaxis: {
-      categories: categories
+      categories: categories,
     },
     yaxis: {
       title: {
-        text: '# of Orders'
-      }
+        text: '# of Orders',
+      },
     },
     tooltip: {
       y: {
         formatter: function (val) {
-          return "P" + val.toFixed(2); // Fixed to two decimal places
-        }
-      }
-    }
+          return 'P' + val.toFixed(2); // Fixed to two decimal places
+        },
+      },
+    },
   };
 
   // Chart series data
@@ -566,21 +595,26 @@ const MyChartComponentOrders = (formattedData) => {
     {
       name: 'Total Orders',
       data: total_orders,
-      color: '#000080'
+      color: '#000080',
     },
     {
       name: 'Delivered Orders',
       data: delivered_orders,
-      color: '#FFA500'
-    }
+      color: '#FFA500',
+    },
   ];
 
   return (
-    <div className='bg-white rounded-sm p-5 mt-5'>
-      <Chart options={options} series={series} type="bar" width="100%" height="400" />
+    <div className="bg-white rounded-sm p-5 mt-5">
+      <Chart
+        options={options}
+        series={series}
+        type="bar"
+        width="100%"
+        height="400"
+      />
     </div>
   );
 };
-
 
 export default DashboardHero;
