@@ -160,6 +160,10 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
           <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
             Total: ₱ {totalPrice.toFixed(2)}
           </h4>
+          <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
+            Note: {data.response}
+          </h4>
+          
         </div>
         <RxCross1
           className="cursor-pointer "

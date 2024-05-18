@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styles from '../../styles/style';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import styles from "../../styles/style";
 import {
   AiFillHeart,
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
-} from 'react-icons/ai';
-import { server } from '../../server';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductsAdmin } from '../../redux/action/product';
-import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
-import { toast } from 'react-toastify';
-import { addTocart } from '../../redux/action/cart';
-import Ratings from './Ratings';
-import axios from 'axios';
+} from "react-icons/ai";
+import { server } from "../../server";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsAdmin } from "../../redux/action/product";
+import { addToWishlist, removeFromWishlist } from "../../redux/action/wishlist";
+import { toast } from "react-toastify";
+import { addTocart } from "../../redux/action/cart";
+import Ratings from "./Ratings";
+import axios from "axios";
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -22,6 +22,7 @@ const ProductDetails = ({ data }) => {
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
 
+  const [insResponse, setInsResponse] = useState("");
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
@@ -49,7 +50,7 @@ const ProductDetails = ({ data }) => {
 
   const decrementCount = () => {
     if (count <= 1) {
-      toast.error('You cannot order less than 1 item.');
+      toast.error("You cannot order less than 1 item.");
       return;
     }
     setCount(count - 1);
@@ -73,7 +74,7 @@ const ProductDetails = ({ data }) => {
           toast.error(error.response.data.message);
         });
     } else {
-      toast.error('Please login to make an conversation');
+      toast.error("Please login to make an conversation");
     }
   };
 
@@ -99,7 +100,7 @@ const ProductDetails = ({ data }) => {
           `${data.name} stock is limited! Please contact us to reserve your order!`
         );
       } else {
-        const cartData = { ...data, qty: count };
+        const cartData = { ...data, qty: count, response: insResponse };
         dispatch(addTocart(cartData));
         toast.success(`${data.name} added to cart successfully!`);
       }
@@ -141,7 +142,7 @@ const ProductDetails = ({ data }) => {
                   data.images.map((i, index) => (
                     <div
                       className={`${
-                        select === index ? 'border' : 'null'
+                        select === index ? "border" : "null"
                       } cursor-pointer p-1`}
                     >
                       <img
@@ -165,7 +166,7 @@ const ProductDetails = ({ data }) => {
                 {/* Price of Product */}
                 <div className="flex">
                   <h5 className={`${styles.productDiscountPrice}`}>
-                    ₱{' '}
+                    ₱{" "}
                     {data.discountPrice > 0
                       ? data.discountPrice
                       : data.originalPrice}
@@ -215,7 +216,7 @@ const ProductDetails = ({ data }) => {
                       size={30}
                       className="cursor-pointer"
                       onClick={() => removeFromWishlistHandler(data)}
-                      color={click ? '#171203' : '#171203'}
+                      color={click ? "#171203" : "#171203"}
                       title="Removed from wishlist"
                     />
                   ) : (
@@ -223,7 +224,7 @@ const ProductDetails = ({ data }) => {
                       size={30}
                       className="cursor-pointer"
                       onClick={() => addToWishlistHandler(data)}
-                      color={click ? '#171203' : '#171203'}
+                      color={click ? "#171203" : "#171203"}
                       title="Added to wishlist"
                     />
                   )}
@@ -242,10 +243,25 @@ const ProductDetails = ({ data }) => {
 
               {/* provide the admin instruction for the product */}
               <div>
-                    <p>Instructions for Personalise Product</p>
-                    <span className="font-[200] text-[17px] text-[#b19b56]">
-                      {data?.instructions} 
-                    </span>
+                <p>Instructions for Personalise Product</p>
+                <span className="font-[200] text-[17px] text-[#b19b56]">
+                  {data?.instructions}
+                  {console.log("instruction: ", data.instructions)}
+                  {console.log("data: ", data)}
+
+                </span>
+              </div>
+              {/* Customer will provide message or response to instruction */}
+              <div>
+                {data?.instructions == undefined || data?.instructions !== "" ? (
+                  <div>
+                    <label>Response To Instructions</label>
+                    <textarea
+                      value={insResponse}
+                      onChange={(e) => setInsResponse(e.target.value)}
+                    />
+                  </div>
+                ) : null}
               </div>
 
               {/* Admin Profile */}
@@ -306,7 +322,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(1)}
           >
@@ -319,7 +335,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(2)}
           >
@@ -332,7 +348,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(3)}
           >
@@ -423,18 +439,18 @@ const ProductDetailsInfo = ({
               <h5 className="font-[600] text-[#171203]">
                 Joined on:
                 <span className="font-[500] text-[#534723]">
-                  {' '}
+                  {" "}
                   14 March, 2023
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Products:{' '}
+                Total Products:{" "}
                 <span className="font-[500]">
                   {products && products.length}
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Reviews:{' '}
+                Total Reviews:{" "}
                 <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">

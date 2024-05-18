@@ -250,6 +250,7 @@ const Header = ({ activeHeading }) => {
               <AiOutlineShoppingCart size={30} color="#9c6f18" />
               <span className="absolute right-0 top-0 rounded-full bg-[#b19b56] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
                 {cart && cart.length}
+                {console.log("Cart Information: ", cart)}
               </span>
             </div>
           </div>

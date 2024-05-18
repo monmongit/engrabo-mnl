@@ -340,7 +340,6 @@ const CreateProduct = ({ setOpen }) => {
             </label>
             <textarea
               cols="30"
-              required
               rows="8"
               name="description"
               value={instructions}
