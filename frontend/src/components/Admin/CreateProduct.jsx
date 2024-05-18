@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { AiOutlinePlusCircle } from "react-icons/ai";
-import { createProduct } from "../../redux/action/product";
-import { toast } from "react-toastify";
-import { RxCross1 } from "react-icons/rx";
-import { getAllCategories } from "../../redux/action/category";
-import { Button } from "@mui/material/Button";
-import { FaPlus, FaTrash } from "react-icons/fa";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { AiOutlinePlusCircle } from 'react-icons/ai';
+import { createProduct } from '../../redux/action/product';
+import { toast } from 'react-toastify';
+import { RxCross1 } from 'react-icons/rx';
+import { getAllCategories } from '../../redux/action/category';
+import { Button } from '@mui/material/Button';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const CreateProduct = ({ setOpen }) => {
   const { admin } = useSelector((state) => state.admin);
@@ -20,17 +20,17 @@ const CreateProduct = ({ setOpen }) => {
   const { categories } = useSelector((state) => state.categories);
 
   const [images, setImages] = useState([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [tags, setTags] = useState("");
-  const [grossPrice, setGrossPrice] = useState("");
-  const [originalPrice, setOriginalPrice] = useState("");
-  const [discountPrice, setDiscountPrice] = useState("");
-  const [stock, setStock] = useState("");
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [tags, setTags] = useState('');
+  const [grossPrice, setGrossPrice] = useState('');
+  const [originalPrice, setOriginalPrice] = useState('');
+  const [discountPrice, setDiscountPrice] = useState('');
+  const [stock, setStock] = useState('');
 
   // for personalization purposes
-  const [personalization, setPersonalization] = useState("");
+  const [personalization, setPersonalization] = useState('');
   const [dropdowns, setDropdowns] = useState([]);
 
   useEffect(() => {
@@ -42,20 +42,20 @@ const CreateProduct = ({ setOpen }) => {
       toast.error(error);
     }
     if (success) {
-      toast.success("Product created successfully");
-      navigate("/dashboard-products");
+      toast.success('Product created successfully');
+      navigate('/dashboard-products');
       window.location.reload();
     }
   }, [dispatch, error, success, navigate]);
 
   // Handlers for Dropdowns
   const handleAddDropdown = () => {
-    setDropdowns([...dropdowns, { name: "", options: [] }]);
+    setDropdowns([...dropdowns, { name: '', options: [] }]);
   };
   const handleAddOption = (index) => {
     const newDropdowns = dropdowns.map((dropdown, i) => {
       if (i === index) {
-        return { dropdown, options: [...dropdown.options, ""] };
+        return { dropdown, options: [...dropdown.options, ''] };
       }
       return dropdown;
     });
@@ -125,18 +125,18 @@ const CreateProduct = ({ setOpen }) => {
     const newForm = new FormData();
 
     images.forEach((image) => {
-      newForm.set("images", image);
+      newForm.set('images', image);
     });
 
-    newForm.append("name", name);
-    newForm.append("description", description);
-    newForm.append("category", category);
-    newForm.append("tags", tags);
-    newForm.append("grossPrice", grossPrice);
-    newForm.append("originalPrice", originalPrice);
-    newForm.append("discountPrice", discountPrice);
-    newForm.append("stock", stock);
-    newForm.append("adminId", admin._id);
+    newForm.append('name', name);
+    newForm.append('description', description);
+    newForm.append('category', category);
+    newForm.append('tags', tags);
+    newForm.append('grossPrice', grossPrice);
+    newForm.append('originalPrice', originalPrice);
+    newForm.append('discountPrice', discountPrice);
+    newForm.append('stock', stock);
+    newForm.append('adminId', admin._id);
 
     dispatch(
       createProduct({
@@ -307,6 +307,7 @@ const CreateProduct = ({ setOpen }) => {
             <input
               type="file"
               name=""
+              required
               id="upload"
               className="hidden"
               multiple
@@ -317,7 +318,7 @@ const CreateProduct = ({ setOpen }) => {
                 <AiOutlinePlusCircle
                   size={30}
                   className="mt-3 text-gray-600 hover:text-gray-800 cursor-pointer"
-                />{" "}
+                />{' '}
               </label>
               {images &&
                 images.map((i) => (
