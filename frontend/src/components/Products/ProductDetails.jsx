@@ -240,6 +240,14 @@ const ProductDetails = ({ data }) => {
                 </span>
               </div>
 
+              {/* provide the admin instruction for the product */}
+              <div>
+                    <p>Instructions for Personalise Product</p>
+                    <span className="font-[200] text-[17px] text-[#b19b56]">
+                      {data?.instructions} 
+                    </span>
+              </div>
+
               {/* Admin Profile */}
               <div className="flex items-center pt-8">
                 <Link to="/">

@@ -30,7 +30,7 @@ const CreateProduct = ({ setOpen }) => {
   const [stock, setStock] = useState("");
 
   // for personalization purposes
-  const [personalization, setPersonalization] = useState("");
+  const [instructions, setIntructions] = useState("");
   const [dropdowns, setDropdowns] = useState([]);
 
   useEffect(() => {
@@ -137,7 +137,8 @@ const CreateProduct = ({ setOpen }) => {
     newForm.append("discountPrice", discountPrice);
     newForm.append("stock", stock);
     newForm.append("adminId", admin._id);
-
+    newForm.append("intructions", instructions);
+    
     dispatch(
       createProduct({
         name,
@@ -150,6 +151,7 @@ const CreateProduct = ({ setOpen }) => {
         stock,
         adminId: admin._id,
         images,
+        instructions
       })
     );
   };
@@ -329,6 +331,23 @@ const CreateProduct = ({ setOpen }) => {
                   />
                 ))}
             </div>
+          </div>
+
+          {/* Instructions */}
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Instruction For Personalization <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              cols="30"
+              required
+              rows="8"
+              name="description"
+              value={instructions}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={(e) => setIntructions(e.target.value)}
+              placeholder="Enter your personalizationinstructions..."
+            ></textarea>
           </div>
 
           {/* Dynamic Dropdowns */}
