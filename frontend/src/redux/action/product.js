@@ -14,7 +14,8 @@ export const createProduct =
     stock,
     adminId,
     images,
-    instructions
+    instructions,
+    dropdowns
   ) =>
   async (dispatch) => {
     try {
@@ -34,8 +35,11 @@ export const createProduct =
         stock,
         adminId,
         images,
-        instructions
+        instructions,
+        dropdowns
       );
+
+      console.log("action-create new product data: ", data);
       dispatch({
         type: 'productCreateSuccess',
         payload: data.product,

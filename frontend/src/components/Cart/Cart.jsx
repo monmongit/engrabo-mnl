@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 const Cart = ({ setOpenCart }) => {
   const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
+  console.log("cart: ", cart)
 
   const removeFromCartHandler = (data) => {
     dispatch(removeFromCart(data));

@@ -58,6 +58,15 @@ const productSchema = new mongoose.Schema({
     type: String,
   }, 
 
+  // add fields for dropdown menus for product
+  dropdowns : [
+    {
+      name: String, 
+      options: [String]
+    }
+  ],
+
+
   reviews: [
     {
       user: {

@@ -18,6 +18,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
   },
 
+  // selectedOptions: {
+  //   type: Map,
+  //   of: String
+  // },
+
   totalPrice: {
     type: Number,
     required: true,

@@ -27,12 +27,17 @@ const CreateProduct = ({ setOpen }) => {
   const [grossPrice, setGrossPrice] = useState("");
   const [originalPrice, setOriginalPrice] = useState("");
   const [discountPrice, setDiscountPrice] = useState("");
-  const [stock, setStock] = useState("");
+  const [stock, setStock] = useState("")
 
   // for personalization purposes
   const [instructions, setIntructions] = useState("");
   const [dropdowns, setDropdowns] = useState([]);
-
+  
+  dropdowns.forEach((dropdown, index) => {
+    console.log(`Dropdown ${index + 1}:`);
+    console.log(`Name: ${dropdown.name}`);
+    console.log(`Options: ${dropdown.options.join(', ')}`);
+});
   useEffect(() => {
     dispatch(getAllCategories());
   }, [dispatch]);
@@ -55,7 +60,7 @@ const CreateProduct = ({ setOpen }) => {
   const handleAddOption = (index) => {
     const newDropdowns = dropdowns.map((dropdown, i) => {
       if (i === index) {
-        return { dropdown, options: [...dropdown.options, ""] };
+        return { ...dropdown, options: [...dropdown.options, ""] };
       }
       return dropdown;
     });
@@ -138,6 +143,7 @@ const CreateProduct = ({ setOpen }) => {
     newForm.append("stock", stock);
     newForm.append("adminId", admin._id);
     newForm.append("intructions", instructions);
+    newForm.append("dropdown", dropdowns);
     
     dispatch(
       createProduct({
@@ -151,7 +157,8 @@ const CreateProduct = ({ setOpen }) => {
         stock,
         adminId: admin._id,
         images,
-        instructions
+        instructions,
+        dropdowns
       })
     );
   };
