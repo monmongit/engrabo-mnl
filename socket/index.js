@@ -54,20 +54,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // // Handle seen status update
-  // socket.on('updateSeenStatus', async ({ messageId, seen }) => {
-  //   try {
-  //     const updatedMessage = await Messages.findByIdAndUpdate(
-  //       messageId,
-  //       { seen },
-  //       { new: true }
-  //     );
-  //     console.log(`Message ${messageId} marked as seen`, updatedMessage);
-  //   } catch (error) {
-  //     console.error('Error updating message seen status:', error);
-  //   }
-  // });
-
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
     removeUser(socket.id);
