@@ -17,6 +17,7 @@ const UserOrderDetails = () => {
   const [comment, setComment] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [rating, setRating] = useState(1);
+  const [isAnonymous, setIsAnonymous] = useState(false);
   const dispatch = useDispatch();
 
   const { id } = useParams();
@@ -37,6 +38,7 @@ const UserOrderDetails = () => {
           comment,
           productId: selectedItem?._id,
           orderId: id,
+          isAnonymous,
         },
         {
           withCredentials: true,
@@ -48,6 +50,7 @@ const UserOrderDetails = () => {
 
         setComment('');
         setRating(null);
+        setIsAnonymous(false);
         setOpen(false);
       })
       .catch((error) => {
@@ -216,6 +219,18 @@ const UserOrderDetails = () => {
                 placeholder="How was your product experience?"
                 className="mt-2 appearance-none block w-[95%] pt-2 px-3 border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
               ></textarea>
+            </div>
+            <div className="flex items-center mt-3">
+              <input
+                type="checkbox"
+                id="anonymous"
+                checked={isAnonymous}
+                onChange={(e) => setIsAnonymous(e.target.checked)}
+                className="mr-2"
+              />
+              <label htmlFor="anonymous" className="text-[#171203] text-[18px]">
+                Review Anonymously
+              </label>
             </div>
             <div
               className={`${styles.button}!w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 font-[600] text-[18px] text-[#fff4d7]`}
