@@ -64,6 +64,10 @@ const productSchema = new mongoose.Schema({
       comment: {
         type: String,
       },
+      isAnonymous: {
+        type: Boolean,
+        default: false,
+      },
       productId: {
         type: String,
       },
