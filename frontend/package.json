@@ -17,6 +17,7 @@
     "apexcharts": "^3.49.1",
     "axios": "^1.6.7",
     "country-state-city": "^3.2.1",
+    "konva": "^9.3.8",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18.2.0",

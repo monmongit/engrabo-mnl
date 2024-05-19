@@ -316,6 +316,12 @@ const UserOrderDetails = () => {
           <h4 className="pt-3 text-[20px]">{data?.shippingAddress.city}</h4>
           <h4 className="pt-3 text-[20px]">{data?.user?.phoneNumber}</h4>
         </div>
+        <div className="w-full 800px:w-[40%]">
+          <h4 className="pt-3 text-[20px] font-[600]">
+            Order Notes Information
+          </h4>
+          {cartInfo(data)}
+        </div>
         <div className="w-full 800px:w-[40%] ">
           <h4 className="pt-3 text-[20px] font-[600]">Payment Information</h4>
           <h4>
@@ -348,6 +354,42 @@ const UserOrderDetails = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const cartInfo = (datas) => {
+  console.log("data in cart info", datas);
+  const data = Object.entries(datas);
+  console.log("Datas : ", data);
+  return (
+    <div>
+    {data.map((item, index) => {
+      // Check if the item contains a cart array
+      if (item[0] === 'cart') {
+        return (
+          <div key={index}>
+            {item[1].map((cartItem, cartIndex) => (
+              <div key={cartIndex}>
+                <strong><h2>Item Ordered : {cartItem.name}</h2></strong>
+                <h2>Customer Note: <br /> {cartItem.response}</h2>
+                <h2>Selected Options:</h2>
+                 {cartItem.options ? (
+                  <ul>
+                    {Object.entries(cartItem.options).map(([key, value]) => (
+                      <li key={key}>{`${key}: ${value}`}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No options available.</p>
+                )}
+              </div>
+            ))}
+          </div>
+        );
+      }
+      return null;
+    })}
+  </div>
   );
 };
 

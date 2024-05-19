@@ -49,6 +49,10 @@ export const navItems = [
     title: "Create Design",
     url: "/create",
   },
+  {
+    title: 'Create Own Design',
+    url: '/create'
+  }
 ];
 
 // branding data

@@ -21,8 +21,8 @@ import {
   OrderDetailsPage,
   TrackOrderPage,
   UserInboxPage,
-  CreatePage,
-} from "./routes/Routes.js";
+  CreatePage
+} from './routes/Routes.js';
 import {
   AdminHomePage,
   AdminDashboardPage,
@@ -79,7 +79,7 @@ const App = () => {
         <Route path="/events" element={<EventsPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/create" element={<CreatePage />} />
-
+        
         <Route
           path="/checkout"
           element={
