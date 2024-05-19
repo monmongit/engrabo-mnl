@@ -148,22 +148,20 @@ router.get(
   })
 );
 
-// Review for a product
 router.put(
   '/create-new-review',
   isAuthenticated,
   catchAsyncError(async (req, res, next) => {
     try {
-      const { user, rating, comment, productId, orderId } = req.body;
+      const { user, rating, comment, productId, orderId, isAnonymous } =
+        req.body;
 
       if (!user || !rating || !productId || !orderId) {
         return next(new ErrorHandler('Missing required fields', 400));
       }
 
-      // Attempt to find the item in Products
       let item = await Product.findById(productId);
 
-      // If not found in Products, attempt to find it in Events
       if (!item) {
         item = await Event.findById(productId);
         if (!item) {
@@ -175,10 +173,10 @@ router.put(
         user,
         rating,
         comment,
+        isAnonymous, // Add isAnonymous to the review object
         productId,
       };
 
-      // Check if the user has already reviewed this item
       const isReviewed = item.reviews.find(
         (rev) => rev.user._id === req.user._id
       );
@@ -188,6 +186,7 @@ router.put(
           if (rev.user._id === req.user._id) {
             rev.rating = rating;
             rev.comment = comment;
+            rev.isAnonymous = isAnonymous; // Update isAnonymous if review already exists
             rev.user = user;
           }
         });
@@ -195,7 +194,6 @@ router.put(
         item.reviews.push(review);
       }
 
-      // Calculate the new average rating
       let avg = 0;
       item.reviews.forEach((rev) => {
         avg += rev.rating;
@@ -204,7 +202,6 @@ router.put(
 
       await item.save({ validateBeforeSave: false });
 
-      // Update the order to mark the item as reviewed
       await Order.findByIdAndUpdate(
         orderId,
         { $set: { 'cart.$[elem].isReviewed': true } },
