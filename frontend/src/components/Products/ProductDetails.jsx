@@ -361,7 +361,7 @@ const ProductDetailsInfo = ({
       )}
 
       {active === 2 && (
-        <div className="w-full py-3 min-h-[40vh] flex flex-col items-center overflow-y-scroll hide-scrollbar">
+        <div className="w-full py-3 max-h-[70vh] flex flex-col items-center overflow-y-scroll hide-scrollbar">
           {data?.reviews.map((item, index) => (
             <div key={index} className="w-full flex my-2">
               <div className="pl-2">
@@ -388,7 +388,7 @@ const ProductDetailsInfo = ({
                         key={idx}
                         src={image.url}
                         alt="Review"
-                        className="w-[80px] h-[80px] m-1 cursor-pointer"
+                        className="w-[100px] h-[100px] m-1 cursor-pointer"
                         onClick={() => openModal(image)}
                       />
                     ))}
