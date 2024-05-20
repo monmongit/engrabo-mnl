@@ -17,6 +17,19 @@ const styles = {
   activeStatus:
     'w-[10px] h-[10px] rounded-full absolute top-0 right-1 bg-[#40d132]',
   normalFlex: 'flex items-center',
+
+  // Modal styles
+  modal:
+    'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-5 rounded-lg shadow-lg z-50 max-w-[500px] max-h-screen w-[80%] h-auto',
+  overlay: 'fixed top-0 left-0 right-0 bottom-0 bg-black bg-opacity-75 z-40',
+  closeButton: 'absolute top-2 right-2 text-gray-600 cursor-pointer ',
+  modalImage: 'max-w-full max-h-[70vh] pt-3',
+
+  // Additional responsive styles
+  '@media (min-width: 800px)': {
+    modal:
+      'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-5 rounded-lg shadow-lg z-50 max-w-[80%] max-h-screen w-[60%] h-[70%]',
+  },
 };
 
 export default styles;
