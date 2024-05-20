@@ -291,6 +291,15 @@ const ProductDetailsInfo = ({
   averageRating,
 }) => {
   const [active, setActive] = useState(1);
+  const maskName = (name) => {
+    const parts = name.split(' ');
+    return parts
+      .map((part, index) => {
+        if (index === 0) return part.slice(0, 2) + '*****';
+        return '*****';
+      })
+      .join(' ');
+  };
   return (
     <div className="bg-[#f7ebca] px-3 800px:px-10 py-2 rounded">
       <div className="w-full flex justify-between border-b pt-10 pb-2">
@@ -369,7 +378,9 @@ const ProductDetailsInfo = ({
                 <div className="pl-2">
                   <div className="w-full flex flex-col">
                     <h1 className="font-[500] text-[#171203]">
-                      {item.user.name}
+                      {item.isAnonymous
+                        ? maskName(item.user.name)
+                        : item.user.name}
                     </h1>
                     <Ratings rating={item?.rating} />
                   </div>
