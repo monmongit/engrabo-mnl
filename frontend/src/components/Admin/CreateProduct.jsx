@@ -20,7 +20,6 @@ const CreateProduct = ({ setOpen }) => {
   const { categories } = useSelector((state) => state.categories);
 
   const [images, setImages] = useState([]);
-<<<<<<< HEAD
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -32,19 +31,9 @@ const CreateProduct = ({ setOpen }) => {
 
   // for personalization purposes
   const [instructions, setIntructions] = useState("");
-=======
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [tags, setTags] = useState('');
-  const [grossPrice, setGrossPrice] = useState('');
-  const [originalPrice, setOriginalPrice] = useState('');
-  const [discountPrice, setDiscountPrice] = useState('');
-  const [stock, setStock] = useState('');
 
   // for personalization purposes
   const [personalization, setPersonalization] = useState('');
->>>>>>> 381fe4f31315ebd94e1be277eaf6cd527733f065
   const [dropdowns, setDropdowns] = useState([]);
   
   dropdowns.forEach((dropdown, index) => {
@@ -74,11 +63,9 @@ const CreateProduct = ({ setOpen }) => {
   const handleAddOption = (index) => {
     const newDropdowns = dropdowns.map((dropdown, i) => {
       if (i === index) {
-<<<<<<< HEAD
+
         return { ...dropdown, options: [...dropdown.options, ""] };
-=======
-        return { dropdown, options: [...dropdown.options, ''] };
->>>>>>> 381fe4f31315ebd94e1be277eaf6cd527733f065
+
       }
       return dropdown;
     });
@@ -151,7 +138,6 @@ const CreateProduct = ({ setOpen }) => {
       newForm.set('images', image);
     });
 
-<<<<<<< HEAD
     newForm.append("name", name);
     newForm.append("description", description);
     newForm.append("category", category);
@@ -163,19 +149,7 @@ const CreateProduct = ({ setOpen }) => {
     newForm.append("adminId", admin._id);
     newForm.append("intructions", instructions);
     newForm.append("dropdown", dropdowns);
-    
-=======
-    newForm.append('name', name);
-    newForm.append('description', description);
-    newForm.append('category', category);
-    newForm.append('tags', tags);
-    newForm.append('grossPrice', grossPrice);
-    newForm.append('originalPrice', originalPrice);
-    newForm.append('discountPrice', discountPrice);
-    newForm.append('stock', stock);
-    newForm.append('adminId', admin._id);
-
->>>>>>> 381fe4f31315ebd94e1be277eaf6cd527733f065
+   
     dispatch(
       createProduct({
         name,

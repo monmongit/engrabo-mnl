@@ -44,7 +44,6 @@ const productSchema = new mongoose.Schema({
       },
     },
   ],
-<<<<<<< HEAD
 
   // add an option for admin instructions to customer for personalization
   instructions : {
@@ -59,9 +58,6 @@ const productSchema = new mongoose.Schema({
     }
   ],
 
-
-=======
->>>>>>> 259617d748bf340a6567d21213a614f0954324fd
   reviews: [
     {
       user: {

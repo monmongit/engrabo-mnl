@@ -7,7 +7,6 @@ import {
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
-<<<<<<< HEAD
 } from "react-icons/ai";
 import { server } from "../../server";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,18 +16,8 @@ import { toast } from "react-toastify";
 import { addTocart } from "../../redux/action/cart";
 import Ratings from "./Ratings";
 import axios from "axios";
-=======
-} from 'react-icons/ai';
-import { server } from '../../server';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductsAdmin } from '../../redux/action/product';
-import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
-import { toast } from 'react-toastify';
-import { addTocart } from '../../redux/action/cart';
-import Ratings from './Ratings';
-import axios from 'axios';
-import Modal from 'react-modal';
->>>>>>> 259617d748bf340a6567d21213a614f0954324fd
+import Modal from "react-modal"
+
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -506,15 +495,12 @@ const ProductDetailsInfo = ({
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-<<<<<<< HEAD
+
                 Total Products:{" "}
                 <span className="font-[500]">
                   {products && products.length}
                 </span>
-=======
-                Total Products:{' '}
-                <span className="font-[500]">{products.length}</span>
->>>>>>> 259617d748bf340a6567d21213a614f0954324fd
+
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
                 Total Reviews:{" "}
@@ -554,3 +540,4 @@ const ProductDetailsInfo = ({
   );
 };
 export default ProductDetails;
+
