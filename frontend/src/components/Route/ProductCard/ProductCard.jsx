@@ -115,7 +115,11 @@ const ProductCard = ({ data, isEvent }) => {
                   : data.originalPrice}
               </h5>
               <h4 className={`${styles.price}`}>
-                {data.discountPrice ? "₱ " + data.discountPrice : null}
+                {data.discountPrice ? "₱ " + data.discountPrice : null}₱{" "}
+                {data.discountPrice ? data.discountPrice : data.originalPrice}
+              </h4>
+              <h4 className={`${styles.price}`}>
+                {data.discountPrice ? "₱ " + data.originalPrice : null}
               </h4>
             </div>
 

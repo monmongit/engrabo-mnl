@@ -148,13 +148,21 @@ router.get(
   })
 );
 
+// Review Product
 router.put(
   '/create-new-review',
   isAuthenticated,
   catchAsyncError(async (req, res, next) => {
     try {
-      const { user, rating, comment, productId, orderId, isAnonymous } =
-        req.body;
+      const {
+        user,
+        rating,
+        comment,
+        productId,
+        orderId,
+        isAnonymous,
+        reviewImages,
+      } = req.body;
 
       if (!user || !rating || !productId || !orderId) {
         return next(new ErrorHandler('Missing required fields', 400));
@@ -163,35 +171,79 @@ router.put(
       let item = await Product.findById(productId);
 
       if (!item) {
-        item = await Event.findById(productId);
-        if (!item) {
-          return next(new ErrorHandler('Item not found', 404));
-        }
+        return next(new ErrorHandler('Item not found', 404));
       }
 
-      const review = {
-        user,
-        rating,
-        comment,
-        isAnonymous, // Add isAnonymous to the review object
-        productId,
-      };
+      let images = [];
+      if (reviewImages) {
+        if (typeof reviewImages === 'string') {
+          images.push(reviewImages);
+        } else {
+          images = reviewImages;
+        }
 
-      const isReviewed = item.reviews.find(
-        (rev) => rev.user._id === req.user._id
-      );
+        const imagesLinks = [];
+        for (let i = 0; i < images.length; i++) {
+          const result = await cloudinary.uploader.upload(images[i], {
+            folder: 'reviewImages',
+          });
+          imagesLinks.push({
+            public_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
 
-      if (isReviewed) {
-        item.reviews.forEach((rev) => {
-          if (rev.user._id === req.user._id) {
-            rev.rating = rating;
-            rev.comment = comment;
-            rev.isAnonymous = isAnonymous; // Update isAnonymous if review already exists
-            rev.user = user;
-          }
-        });
+        const review = {
+          user,
+          rating,
+          comment,
+          isAnonymous,
+          productId,
+          reviewImages: imagesLinks,
+        };
+
+        const isReviewed = item.reviews.find(
+          (rev) => rev.user._id === req.user._id
+        );
+
+        if (isReviewed) {
+          item.reviews.forEach((rev) => {
+            if (rev.user._id === req.user._id) {
+              rev.rating = rating;
+              rev.comment = comment;
+              rev.isAnonymous = isAnonymous;
+              rev.reviewImages = imagesLinks;
+              rev.user = user;
+            }
+          });
+        } else {
+          item.reviews.push(review);
+        }
       } else {
-        item.reviews.push(review);
+        const review = {
+          user,
+          rating,
+          comment,
+          isAnonymous,
+          productId,
+        };
+
+        const isReviewed = item.reviews.find(
+          (rev) => rev.user._id === req.user._id
+        );
+
+        if (isReviewed) {
+          item.reviews.forEach((rev) => {
+            if (rev.user._id === req.user._id) {
+              rev.rating = rating;
+              rev.comment = comment;
+              rev.isAnonymous = isAnonymous;
+              rev.user = user;
+            }
+          });
+        } else {
+          item.reviews.push(review);
+        }
       }
 
       let avg = 0;
