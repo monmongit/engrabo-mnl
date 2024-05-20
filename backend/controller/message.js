@@ -4,7 +4,6 @@ const catchAsyncError = require('../middleware/catchAsyncError');
 const express = require('express');
 const router = express.Router();
 const cloudinary = require('cloudinary');
-const Admin = require('../model/admin'); // Import the Admin model
 
 // Create new message
 router.post(
@@ -28,29 +27,8 @@ router.post(
       messageData.text = req.body.text;
 
       const message = new Messages(messageData);
+
       await message.save();
-
-      // Fetch the admin ID from the database
-      const admin = await Admin.findOne({
-        /* your criteria here */
-      });
-
-      // Handle automatic response only if the sender is not the admin
-      if (req.body.sender !== admin._id.toString()) {
-        const autoResponse = handleAutomaticResponse(
-          req.body.text,
-          req.body.conversationId,
-          req.body.sender
-        );
-        if (autoResponse) {
-          const autoMessage = new Messages({
-            conversationId: req.body.conversationId,
-            sender: admin._id, // Use the fetched admin ID
-            text: autoResponse,
-          });
-          await autoMessage.save();
-        }
-      }
 
       res.status(201).json({
         success: true,
@@ -61,20 +39,6 @@ router.post(
     }
   })
 );
-
-// Function to handle automatic response
-const handleAutomaticResponse = (messageText, conversationId, senderId) => {
-  let responseText = '';
-  if (messageText.toLowerCase().includes('how to order')) {
-    responseText =
-      'To place an order, please browse our catalog, add items to your cart, and proceed to checkout.';
-  } else if (messageText.toLowerCase().includes('how to refund')) {
-    responseText =
-      'To request a refund, please visit your order history, select the order, and click on "Request Refund".';
-  } // Add more conditions as needed
-
-  return responseText;
-};
 
 // Get all messages with conversation id
 router.get(
@@ -94,5 +58,4 @@ router.get(
     }
   })
 );
-
 module.exports = router;

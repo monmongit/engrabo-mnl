@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from "react";
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   LoginPage,
   SignupPage,
@@ -21,7 +21,8 @@ import {
   OrderDetailsPage,
   TrackOrderPage,
   UserInboxPage,
-} from './routes/Routes.js';
+  CreatePage,
+} from "./routes/Routes.js";
 import {
   AdminHomePage,
   AdminDashboardPage,
@@ -38,17 +39,17 @@ import {
   AdminSettingsPage,
   AdminUpdatePasswordPage,
   AdminInboxPage,
-  AdminAllUsers
-} from './routes/AdminRoutes';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Store from './redux/store.js';
-import { loadAdmin, loadUser } from './redux/action/user';
-import ProtectedRoute from './routes/ProductedRoute';
+  AdminAllUsers,
+} from "./routes/AdminRoutes";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Store from "./redux/store.js";
+import { loadAdmin, loadUser } from "./redux/action/user";
+import ProtectedRoute from "./routes/ProductedRoute";
 // import { AdminHomePage } from './AdminRoutes';
-import AdminProtectedRoute from './routes/AdminProtectedRoute';
-import { getAllProducts } from './redux/action/product.js';
-import { getAllEvents } from './redux/action/event.js';
+import AdminProtectedRoute from "./routes/AdminProtectedRoute";
+import { getAllProducts } from "./redux/action/product.js";
+import { getAllEvents } from "./redux/action/event.js";
 
 const App = () => {
   useEffect(() => {
@@ -77,6 +78,8 @@ const App = () => {
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/faq" element={<FAQPage />} />
+        <Route path="/create" element={<CreatePage />} />
+
         <Route
           path="/checkout"
           element={
@@ -193,7 +196,6 @@ const App = () => {
           }
         />
 
-       
         <Route
           path="/dashboard-orders"
           element={
@@ -201,8 +203,7 @@ const App = () => {
               <AdminAllOrders />
             </AdminProtectedRoute>
           }
-        /> 
-
+        />
 
         <Route
           path="/order/:id"

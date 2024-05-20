@@ -34,29 +34,6 @@ const getUser = (userId) => {
   return users.find((user) => user.userId === userId);
 };
 
-const handleAutomaticResponse = (messageText, senderId, receiverId) => {
-  let responseText = '';
-  if (messageText.toLowerCase().includes('how to order')) {
-    responseText =
-      'To place an order, please browse our catalog, add items to your cart, and proceed to checkout.';
-  } else if (messageText.toLowerCase().includes('how to refund')) {
-    responseText =
-      'To request a refund, please visit your order history, select the order, and click on "Request Refund".';
-  } // Add more conditions as needed
-
-  if (responseText) {
-    const user = getUser(senderId);
-    if (user) {
-      io.to(user.socketId).emit('getMessage', {
-        senderId: receiverId, // Admin ID
-        text: responseText,
-        images: null,
-        createdAt: Date.now(),
-      });
-    }
-  }
-};
-
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
@@ -74,9 +51,6 @@ io.on('connection', (socket) => {
         images,
         createdAt: Date.now(),
       });
-
-      // Handle automatic response
-      handleAutomaticResponse(text, receiverId, senderId); // Check and send automatic response
     }
   });
 

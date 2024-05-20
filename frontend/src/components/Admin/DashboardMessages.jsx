@@ -14,7 +14,6 @@ const socket = socketIO(ENDPOINT, { transports: ['websocket'] });
 
 const DashboardMessages = () => {
   const { admin, isLoading } = useSelector((state) => state.admin);
-
   const [conversations, setConversations] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
@@ -266,23 +265,6 @@ const MessageList = ({
     setCurrentChat(data);
     setUserData(user); // Ensure the correct data is set
     setActiveStatus(online);
-
-    // // Emit updateSeenStatus event
-    // socket.emit('updateSeenStatus', {
-    //   messageId: data._id, // Ensure you are passing the right ID here
-    //   seen: true,
-    // });
-
-    // // Optionally, call API directly if socket is not preferred
-    // await axios.put(`${server}/message/update-seen-status/${data._id}`, {
-    //   seen: true,
-    // });
-
-    // // Update the local state to reflect the seen status
-    // setCurrentChat((prev) => ({
-    //   ...prev,
-    //   seen: true,
-    // }));
   };
 
   useEffect(() => {

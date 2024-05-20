@@ -1,8 +1,8 @@
-import React from 'react';
-import Header from '../components/Layout/Header';
-import CheckoutSteps from '../components/Checkout/CheckoutSteps.jsx';
-import Checkout from '../components/Checkout/Checkout.jsx';
-import Footer from '../components/Layout/Footer.jsx';
+import React from "react";
+import Header from "../components/Layout/Header";
+import CheckoutSteps from "../components/Checkout/CheckoutSteps.jsx";
+import Checkout from "../components/Checkout/Checkout.jsx";
+import Footer from "../components/Layout/Footer.jsx";
 const CheckoutPage = () => {
   return (
     <div>

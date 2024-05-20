@@ -148,54 +148,104 @@ router.get(
   })
 );
 
-// Review for a product
+// Review Product
 router.put(
   '/create-new-review',
   isAuthenticated,
   catchAsyncError(async (req, res, next) => {
     try {
-      const { user, rating, comment, productId, orderId } = req.body;
+      const {
+        user,
+        rating,
+        comment,
+        productId,
+        orderId,
+        isAnonymous,
+        reviewImages,
+      } = req.body;
 
       if (!user || !rating || !productId || !orderId) {
         return next(new ErrorHandler('Missing required fields', 400));
       }
 
-      // Attempt to find the item in Products
       let item = await Product.findById(productId);
 
-      // If not found in Products, attempt to find it in Events
       if (!item) {
-        item = await Event.findById(productId);
-        if (!item) {
-          return next(new ErrorHandler('Item not found', 404));
+        return next(new ErrorHandler('Item not found', 404));
+      }
+
+      let images = [];
+      if (reviewImages) {
+        if (typeof reviewImages === 'string') {
+          images.push(reviewImages);
+        } else {
+          images = reviewImages;
+        }
+
+        const imagesLinks = [];
+        for (let i = 0; i < images.length; i++) {
+          const result = await cloudinary.uploader.upload(images[i], {
+            folder: 'reviewImages',
+          });
+          imagesLinks.push({
+            public_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
+
+        const review = {
+          user,
+          rating,
+          comment,
+          isAnonymous,
+          productId,
+          reviewImages: imagesLinks,
+        };
+
+        const isReviewed = item.reviews.find(
+          (rev) => rev.user._id === req.user._id
+        );
+
+        if (isReviewed) {
+          item.reviews.forEach((rev) => {
+            if (rev.user._id === req.user._id) {
+              rev.rating = rating;
+              rev.comment = comment;
+              rev.isAnonymous = isAnonymous;
+              rev.reviewImages = imagesLinks;
+              rev.user = user;
+            }
+          });
+        } else {
+          item.reviews.push(review);
+        }
+      } else {
+        const review = {
+          user,
+          rating,
+          comment,
+          isAnonymous,
+          productId,
+        };
+
+        const isReviewed = item.reviews.find(
+          (rev) => rev.user._id === req.user._id
+        );
+
+        if (isReviewed) {
+          item.reviews.forEach((rev) => {
+            if (rev.user._id === req.user._id) {
+              rev.rating = rating;
+              rev.comment = comment;
+              rev.isAnonymous = isAnonymous;
+              rev.user = user;
+            }
+          });
+        } else {
+          item.reviews.push(review);
         }
       }
 
-      const review = {
-        user,
-        rating,
-        comment,
-        productId,
-      };
-
-      // Check if the user has already reviewed this item
-      const isReviewed = item.reviews.find(
-        (rev) => rev.user._id === req.user._id
-      );
-
-      if (isReviewed) {
-        item.reviews.forEach((rev) => {
-          if (rev.user._id === req.user._id) {
-            rev.rating = rating;
-            rev.comment = comment;
-            rev.user = user;
-          }
-        });
-      } else {
-        item.reviews.push(review);
-      }
-
-      // Calculate the new average rating
       let avg = 0;
       item.reviews.forEach((rev) => {
         avg += rev.rating;
@@ -204,7 +254,6 @@ router.put(
 
       await item.save({ validateBeforeSave: false });
 
-      // Update the order to mark the item as reviewed
       await Order.findByIdAndUpdate(
         orderId,
         { $set: { 'cart.$[elem].isReviewed': true } },

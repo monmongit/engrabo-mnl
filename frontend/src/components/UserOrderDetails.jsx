@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { server } from '../server';
 import { getAllOrdersOfUser } from '../redux/action/order';
 import { RxCross1 } from 'react-icons/rx';
-import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
+import { AiFillStar, AiOutlinePlusCircle, AiOutlineStar } from 'react-icons/ai';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
@@ -17,6 +17,8 @@ const UserOrderDetails = () => {
   const [comment, setComment] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [rating, setRating] = useState(1);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [reviewImages, setReviewImages] = useState([]);
   const dispatch = useDispatch();
 
   const { id } = useParams();
@@ -24,6 +26,24 @@ const UserOrderDetails = () => {
   useEffect(() => {
     dispatch(getAllOrdersOfUser(user._id));
   }, [dispatch, user._id]);
+
+  const handleImageChange = (e) => {
+    e.preventDefault();
+
+    const files = Array.from(e.target.files);
+
+    setReviewImages([]);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setReviewImages((old) => [...old, reader.result]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
   const data = orders && orders.find((item) => item._id === id);
   console.log(id);
@@ -37,6 +57,8 @@ const UserOrderDetails = () => {
           comment,
           productId: selectedItem?._id,
           orderId: id,
+          isAnonymous,
+          reviewImages,
         },
         {
           withCredentials: true,
@@ -48,6 +70,7 @@ const UserOrderDetails = () => {
 
         setComment('');
         setRating(null);
+        setIsAnonymous(false);
         setOpen(false);
       })
       .catch((error) => {
@@ -217,6 +240,50 @@ const UserOrderDetails = () => {
                 className="mt-2 appearance-none block w-[95%] pt-2 px-3 border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
               ></textarea>
             </div>
+            <div className="flex items-center mt-3">
+              <input
+                type="checkbox"
+                id="anonymous"
+                checked={isAnonymous}
+                onChange={(e) => setIsAnonymous(e.target.checked)}
+                className="mr-2"
+              />
+              <label htmlFor="anonymous" className="text-[#171203] text-[18px]">
+                Review Anonymously
+              </label>
+            </div>
+
+            {/* Upload Images for Review */}
+            <div>
+              <label className="block text-lg font-medium text-gray-800 mb-2">
+                Upload Images
+              </label>
+              <input
+                type="file"
+                id="upload"
+                className="hidden"
+                multiple
+                onChange={handleImageChange}
+              />
+              <div className="w-full flex items-center flex-wrap">
+                <label htmlFor="upload">
+                  <AiOutlinePlusCircle
+                    size={30}
+                    className="mt-3 text-gray-600 hover:text-gray-800 cursor-pointer"
+                  />
+                </label>
+                {reviewImages &&
+                  reviewImages.map((i, index) => (
+                    <img
+                      src={i}
+                      key={index}
+                      alt=""
+                      className="h-32 w-32 object-cover m-2 rounded-lg shadow"
+                    />
+                  ))}
+              </div>
+            </div>
+
             <div
               className={`${styles.button}!w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 font-[600] text-[18px] text-[#fff4d7]`}
               onClick={rating > 1 ? reviewHandler : null}
