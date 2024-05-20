@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import styles from '../../styles/style';
 import {
   AiFillHeart,
+  AiOutlineClose,
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
@@ -15,6 +16,7 @@ import { toast } from 'react-toastify';
 import { addTocart } from '../../redux/action/cart';
 import Ratings from './Ratings';
 import axios from 'axios';
+import Modal from 'react-modal';
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -291,6 +293,9 @@ const ProductDetailsInfo = ({
   averageRating,
 }) => {
   const [active, setActive] = useState(1);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+
   const maskName = (name) => {
     const parts = name.split(' ');
     return parts
@@ -300,10 +305,20 @@ const ProductDetailsInfo = ({
       })
       .join(' ');
   };
+
+  const openModal = (image) => {
+    setSelectedImage(image);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setSelectedImage(null);
+  };
+
   return (
     <div className="bg-[#f7ebca] px-3 800px:px-10 py-2 rounded">
       <div className="w-full flex justify-between border-b pt-10 pb-2">
-        {/* Header for Products Details */}
         <div className="relative">
           <h5
             className={
@@ -313,9 +328,7 @@ const ProductDetailsInfo = ({
           >
             Product Details
           </h5>
-          {active === 1 ? (
-            <div className={`${styles.active_indicator}`} />
-          ) : null}
+          {active === 1 ? <div className={styles.active_indicator} /> : null}
         </div>
         <div className="relative">
           <h5
@@ -326,9 +339,7 @@ const ProductDetailsInfo = ({
           >
             Product Reviews
           </h5>
-          {active === 2 ? (
-            <div className={`${styles.active_indicator}`} />
-          ) : null}
+          {active === 2 ? <div className={styles.active_indicator} /> : null}
         </div>
         <div className="relative">
           <h5
@@ -339,84 +350,75 @@ const ProductDetailsInfo = ({
           >
             Shop Information
           </h5>
-          {active === 3 ? (
-            <div className={`${styles.active_indicator}`} />
-          ) : null}
+          {active === 3 ? <div className={styles.active_indicator} /> : null}
         </div>
       </div>
 
-      {/* Active for Product Details */}
-      {active === 1 ? (
-        <>
-          <p className="text-[#534723] text-justify py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore
-            voluptatibus repudiandae veritatis doloremque. Enim iusto doloribus,
-            suscipit dignissimos voluptatum magni quidem? Recusandae nobis
-            incidunt nihil nam beatae, qui fugiat ad! Lorem ipsum dolor sit,
-            amet consectetur adipisicing elit. Dicta, reprehenderit dolorem!
-            Mollitia voluptates quas nemo, sed sit voluptate esse architecto
-            aperiam reiciendis corporis obcaecati natus veritatis. Distinctio a
-            repudiandae accusantium. Lorem ipsum dolor sit amet, consectetur
-            adipisicing elit.
-          </p>
-        </>
-      ) : null}
+      {active === 1 && (
+        <p className="text-[#534723] text-justify py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
+          {data.description}
+        </p>
+      )}
 
-      {/* Active for Product Reviews */}
-      {active === 2 ? (
+      {active === 2 && (
         <div className="w-full py-3 min-h-[40vh] flex flex-col items-center overflow-y-scroll hide-scrollbar">
-          {data &&
-            data?.reviews.map((item, index) => (
-              <div className="w-full flex my-2">
-                <div className="pl-2">
-                  <img
-                    src={`${item.user.avatar?.url}`}
-                    alt=""
-                    className="w-[50px] h-[50] rounded-full"
-                  />
-                </div>
-                <div className="pl-2">
-                  <div className="w-full flex flex-col">
-                    <h1 className="font-[500] text-[#171203]">
-                      {item.isAnonymous
-                        ? maskName(item.user.name)
-                        : item.user.name}
-                    </h1>
-                    <Ratings rating={item?.rating} />
-                  </div>
-                  <p>{item.comment}</p>
-                </div>
+          {data?.reviews.map((item, index) => (
+            <div key={index} className="w-full flex my-2">
+              <div className="pl-2">
+                <img
+                  src={`${item.user.avatar?.url}`}
+                  alt=""
+                  className="w-[50px] h-[50px] rounded-full"
+                />
               </div>
-            ))}
-          <div className="w-full flex justify-center">
-            {data && data.reviews.length === 0 && (
-              <h5>
-                As of the moment, we have still no review for this product!
-              </h5>
-            )}
-          </div>
+              <div className="pl-2">
+                <div className="w-full flex flex-col">
+                  <h1 className="font-[500] text-[#171203]">
+                    {item.isAnonymous
+                      ? maskName(item.user.name)
+                      : item.user.name}
+                  </h1>
+                  <Ratings rating={item?.rating} />
+                </div>
+                <p>{item.comment}</p>
+                {item.reviewImages && item.reviewImages.length > 0 && (
+                  <div className="flex flex-wrap">
+                    {item.reviewImages.map((image, idx) => (
+                      <img
+                        key={idx}
+                        src={image.url}
+                        alt="Review"
+                        className="w-[80px] h-[80px] m-1 cursor-pointer"
+                        onClick={() => openModal(image)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+          {data?.reviews.length === 0 && (
+            <h5>As of the moment, we have still no review for this product!</h5>
+          )}
         </div>
-      ) : null}
+      )}
 
-      {/* Active for Seller Information */}
-      {active === 3 ? (
+      {active === 3 && (
         <div className="w-full block 800px:flex p-5">
           <div className="w-full 800px:w-[50%]">
             <div className="flex items-center">
               <img
                 src={`${data?.admin?.avatar?.url}`}
                 alt=""
-                className="w-[50px] h=[50px] rounded-full"
+                className="w-[50px] h-[50px] rounded-full"
               />
-              {/* Other's Shop name of the Product View */}
               <div className="pl-3">
-                <h3 className={`${styles.shop_name}`}>{data.admin.name}</h3>
+                <h3 className={styles.shop_name}>{data.admin.name}</h3>
                 <h5 className="pb-2 text-[15px] text-[#534723]">
                   ({averageRating}/5) Ratings
                 </h5>
               </div>
             </div>
-            {/* Shop Description */}
             <p className="pt-2 text-justify text-[#534723]">
               {data.admin.description}
             </p>
@@ -432,9 +434,7 @@ const ProductDetailsInfo = ({
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
                 Total Products:{' '}
-                <span className="font-[500]">
-                  {products && products.length}
-                </span>
+                <span className="font-[500]">{products.length}</span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
                 Total Reviews:{' '}
@@ -450,9 +450,27 @@ const ProductDetailsInfo = ({
             </div>
           </div>
         </div>
-      ) : null}
+      )}
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Review Image"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <button onClick={closeModal} className={styles.closeButton}>
+          <AiOutlineClose size={24} />
+        </button>
+        {selectedImage && (
+          <img
+            src={selectedImage.url}
+            alt="Review"
+            className={styles.modalImage}
+          />
+        )}
+      </Modal>
     </div>
   );
 };
-
 export default ProductDetails;
