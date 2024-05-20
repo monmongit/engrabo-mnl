@@ -40,7 +40,7 @@ const ProductDetails = ({ data }) => {
   }, [dispatch, data, wishlist]);
 
   const incrementCount = () => {
-    if (data?.stock < count) {
+    if (data?.stock <= count) {
       toast.error(
         `${data?.name} stock is limited! Please contact us to reserve your order!`
       );
