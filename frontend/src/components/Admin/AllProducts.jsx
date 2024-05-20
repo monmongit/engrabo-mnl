@@ -21,6 +21,8 @@ const AllProducts = () => {
   const { products, isLoading: loadingProducts } = useSelector(
     (state) => state.products
   );
+
+  console.log("Products here in all products: ", products)
   const { categories, isLoading: loadingCategories } = useSelector(
     (state) => state.categories
   );
@@ -91,15 +93,15 @@ const AllProducts = () => {
           },
           {
             field: 'discount',
-            headerName: 'Discount',
-            minWidth: 80,
+            headerName: 'Discounted Price',
+            minWidth: 100,
             flex: 0.5,
             hide: viewMode !== 'Product',
           },
           {
             field: 'stock',
             headerName: 'Stock',
-            minWidth: 80,
+            minWidth: 50,
             flex: 0.5,
             hide: viewMode !== 'Product',
           },
@@ -140,7 +142,7 @@ const AllProducts = () => {
           name: item.name,
           grossprice: `₱ ${item.grossPrice}`, 
           price: `₱ ${item.originalPrice}`,
-          discount: item.discount !== undefined ? `₱ ${item.discountedPrice}`: "No Discount",
+          discount: item.discountPrice !== null ? `₱ ${item.discountPrice}`: "No Discount",
           stock: item.stock, 
           sold: item?.sold_out,
         }))

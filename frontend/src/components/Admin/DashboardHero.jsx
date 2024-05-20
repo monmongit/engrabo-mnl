@@ -11,16 +11,6 @@ import { getAllUsers } from '../../redux/action/user';
 import { Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { IoBagHandle, IoPieChart, IoPeople, IoCart } from 'react-icons/io5';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
 import ApexCharts from 'apexcharts';
 import Chart from 'react-apexcharts';
 

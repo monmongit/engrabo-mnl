@@ -44,6 +44,20 @@ const productSchema = new mongoose.Schema({
       },
     },
   ],
+
+  // add an option for admin instructions to customer for personalization
+  instructions : {
+    type: String,
+  }, 
+
+  // add fields for dropdown menus for product
+  dropdowns : [
+    {
+      name: String, 
+      options: [String]
+    }
+  ],
+
   reviews: [
     {
       user: {

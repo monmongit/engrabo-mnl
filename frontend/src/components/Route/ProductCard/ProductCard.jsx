@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   AiFillHeart,
   AiOutlineEye,
   AiOutlineHeart,
   AiOutlineShoppingCart,
-} from 'react-icons/ai';
-import { Link } from 'react-router-dom';
-import styles from '../../../styles/style';
-import ProductDetailsCard from '../ProductDetailsCard/ProductDetailsCard';
-import { FaRegEdit } from 'react-icons/fa';
-import { useDispatch, useSelector } from 'react-redux';
+} from "react-icons/ai";
+import { Link } from "react-router-dom";
+import styles from "../../../styles/style";
+import ProductDetailsCard from "../ProductDetailsCard/ProductDetailsCard";
+import { FaRegEdit } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addToWishlist,
   removeFromWishlist,
-} from '../../../redux/action/wishlist';
-import { toast } from 'react-toastify';
-import { addTocart } from '../../../redux/action/cart';
-import Ratings from '../../Products/Ratings';
+} from "../../../redux/action/wishlist";
+import { toast } from "react-toastify";
+import { addTocart } from "../../../redux/action/cart";
+import Ratings from "../../Products/Ratings";
 
 const ProductCard = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -89,13 +89,13 @@ const ProductCard = ({ data, isEvent }) => {
         >
           {/* Name of Product */}
           <h4 className="pb-1 pt-4 font-[500]">
-            {data.name.length > 40 ? data.name.slice(0, 40) + '...' : data.name}
+            {data.name.length > 40 ? data.name.slice(0, 40) + "..." : data.name}
           </h4>
 
           {/* Product Description */}
           <p className="text-justify pt-1 pb-2 text-[#534723]">
             {data.description.length > 40
-              ? data.description.slice(0, 40) + '...'
+              ? data.description.slice(0, 40) + "..."
               : data.description}
           </p>
 
@@ -109,10 +109,10 @@ const ProductCard = ({ data, isEvent }) => {
             {/* Price of Product */}
             <div className="flex">
               <h5 className={`${styles.productDiscountPrice}`}>
-                ₱ {data.discountPrice ? data.discountPrice : data.originalPrice}
+                ₱{data.discountPrice ? data.discountPrice : data.originalPrice}
               </h5>
               <h4 className={`${styles.price}`}>
-                {data.discountPrice ? '₱ ' + data.originalPrice : null}
+                {data.discountPrice ? "₱ " + data.originalPrice : null}
               </h4>
             </div>
 
@@ -130,7 +130,7 @@ const ProductCard = ({ data, isEvent }) => {
               size={22}
               className="cursor-pointer absolute right-2 top-5"
               onClick={() => removeFromWishlistHandler(data)}
-              color={click ? '#171203' : '#171203'}
+              color={click ? "#171203" : "#171203"}
               title="Removed from Wishlist"
             />
           ) : (
@@ -138,7 +138,7 @@ const ProductCard = ({ data, isEvent }) => {
               size={22}
               className="cursor-pointer absolute right-2 top-5"
               onClick={() => addToWishlistHandler(data)}
-              color={click ? '#171203' : '#171203'}
+              color={click ? "#171203" : "#171203"}
               title="Added to Wishlist"
             />
           )}

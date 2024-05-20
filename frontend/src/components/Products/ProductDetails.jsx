@@ -1,22 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styles from '../../styles/style';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import styles from "../../styles/style";
 import {
   AiFillHeart,
   AiOutlineClose,
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
-} from 'react-icons/ai';
-import { server } from '../../server';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductsAdmin } from '../../redux/action/product';
-import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
-import { toast } from 'react-toastify';
-import { addTocart } from '../../redux/action/cart';
-import Ratings from './Ratings';
-import axios from 'axios';
-import Modal from 'react-modal';
+} from "react-icons/ai";
+import { server } from "../../server";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsAdmin } from "../../redux/action/product";
+import { addToWishlist, removeFromWishlist } from "../../redux/action/wishlist";
+import { toast } from "react-toastify";
+import { addTocart } from "../../redux/action/cart";
+import Ratings from "./Ratings";
+import axios from "axios";
+import Modal from "react-modal"
+
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -24,6 +25,8 @@ const ProductDetails = ({ data }) => {
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
 
+  const [insResponse, setInsResponse] = useState("");
+  const [selectedOptions, setSelectedOptions] = useState({});
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
@@ -51,7 +54,7 @@ const ProductDetails = ({ data }) => {
 
   const decrementCount = () => {
     if (count <= 1) {
-      toast.error('You cannot order less than 1 item.');
+      toast.error("You cannot order less than 1 item.");
       return;
     }
     setCount(count - 1);
@@ -75,7 +78,7 @@ const ProductDetails = ({ data }) => {
           toast.error(error.response.data.message);
         });
     } else {
-      toast.error('Please login to make an conversation');
+      toast.error("Please login to make an conversation");
     }
   };
 
@@ -101,12 +104,20 @@ const ProductDetails = ({ data }) => {
           `${data.name} stock is limited! Please contact us to reserve your order!`
         );
       } else {
-        const cartData = { ...data, qty: count };
+        const cartData = { ...data, qty: count, response: insResponse, options: selectedOptions };
         dispatch(addTocart(cartData));
         toast.success(`${data.name} added to cart successfully!`);
       }
     }
   };
+
+  const handleOptionChange = (dropdownName, value) => {
+    setSelectedOptions({
+      ...selectedOptions,
+      [dropdownName]: value,
+    });
+  };
+  console.log('selected options information: ', selectedOptions)
 
   const totalReviewsLength =
     products &&
@@ -124,33 +135,34 @@ const ProductDetails = ({ data }) => {
   const averageRating = avg.toFixed(2);
 
   return (
-    <div className="bg-[#fff4d7] ">
+    <div className="bg-[#fff4d7] min-h-screen py-10">
       {data ? (
         <div className={`${styles.section} w-[90%] md:w-[80%] mx-auto`}>
-          <div className="py-5 flex flex-col md:flex-row">
+          <div className="py-5 flex flex-col md:flex-row gap-10">
             {/* Images of Product */}
             <div className="w-full md:w-1/2 flex flex-col items-center">
               {/* Image of Product Main */}
               <img
                 src={`${data && data.images[select]?.url}`}
                 alt=""
-                className="w-[60%]"
+                className="w-[60%] rounded-md shadow-lg"
               />
 
-              <div className="flex mt-4">
+              <div className="flex mt-4 space-x-2">
                 {/* Image of Product Choices */}
                 {data &&
                   data.images.map((i, index) => (
                     <div
-                      className={`${
-                        select === index ? 'border' : 'null'
-                      } cursor-pointer p-1`}
+                      key={index}
+                      className={`cursor-pointer p-1 rounded-md ${
+                        select === index ? "border-2 border-gray-500" : ""
+                      }`}
+                      onClick={() => setSelect(index)}
                     >
                       <img
                         src={`${i?.url}`}
                         alt=""
-                        className="h-[150px] w-[150px] overflow-hidden"
-                        onClick={() => setSelect(index)}
+                        className="h-[100px] w-[100px] object-cover rounded-md"
                       />
                     </div>
                   ))}
@@ -158,28 +170,32 @@ const ProductDetails = ({ data }) => {
             </div>
 
             {/* Description of Product */}
-            <div className="w-full md:w-1/2 pt-5">
+            <div className="w-full md:w-1/2 pt-5 space-y-5">
               {/* Image of Product Description */}
-              <h1 className={`${styles.productTitle}`}>{data.name}</h1>
+              <h1 className={`${styles.productTitle} text-3xl font-bold`}>
+                {data.name}
+              </h1>
               <p className="text-justify text-[#534723]">{data.description}</p>
 
               <div className="py-2 flex items-center justify-between">
                 {/* Price of Product */}
-                <div className="flex">
-                  <h5 className={`${styles.productDiscountPrice}`}>
-                    ₱{' '}
+                <div className="flex items-center space-x-2">
+                  <h5 className={`${styles.productDiscountPrice} text-2xl`}>
+                    ₱
                     {data.discountPrice > 0
                       ? data.discountPrice
                       : data.originalPrice}
                   </h5>
                   {data.discountPrice > 0 && (
-                    <h4 className={`${styles.price}`}>
-                      ₱ {data.originalPrice}
+                    <h4
+                      className={`${styles.price} text-xl line-through text-gray-500`}
+                    >
+                      ₱{data.originalPrice}
                     </h4>
                   )}
                 </div>
               </div>
-              <div className="flex pt-3 justify-between">
+              <div className="flex justify-between items-center">
                 {/* Products Stock */}
                 <h4 className="font-[400] text-[#534723] font-Roboto">
                   Stocks: {data.stock}
@@ -190,11 +206,11 @@ const ProductDetails = ({ data }) => {
                 </span>
               </div>
 
-              <div className="flex items-center mt-12 justify-between pr-3">
+              <div className="flex items-center mt-6 justify-between">
                 {/* Add and Dec number of a Product */}
-                <div>
+                <div className="flex items-center space-x-2">
                   <button
-                    className="bg-gradient-to-r from-[#534723] to-[#171203] text-white h-11 font-bold !rounded px-4 py-2 shadow-lg hover:opacity-80 transition duration-300 ease-in-out"
+                    className="bg-gradient-to-r from-[#534723] to-[#171203] text-white h-11 font-bold rounded px-4 py-2 shadow-lg hover:opacity-80 transition duration-300 ease-in-out"
                     onClick={decrementCount}
                   >
                     -
@@ -203,7 +219,7 @@ const ProductDetails = ({ data }) => {
                     {count}
                   </span>
                   <button
-                    className="bg-gradient-to-r from-[#534723] to-[#171203] text-white h-11 font-bold !rounded px-4 py-2 shadow-lg hover:opacity-80 transition duration-300 ease-in-out"
+                    className="bg-gradient-to-r from-[#534723] to-[#171203] text-white h-11 font-bold rounded px-4 py-2 shadow-lg hover:opacity-80 transition duration-300 ease-in-out"
                     onClick={incrementCount}
                   >
                     +
@@ -217,7 +233,7 @@ const ProductDetails = ({ data }) => {
                       size={30}
                       className="cursor-pointer"
                       onClick={() => removeFromWishlistHandler(data)}
-                      color={click ? '#171203' : '#171203'}
+                      color="#171203"
                       title="Removed from wishlist"
                     />
                   ) : (
@@ -225,7 +241,7 @@ const ProductDetails = ({ data }) => {
                       size={30}
                       className="cursor-pointer"
                       onClick={() => addToWishlistHandler(data)}
-                      color={click ? '#171203' : '#171203'}
+                      color="#171203"
                       title="Added to wishlist"
                     />
                   )}
@@ -234,38 +250,86 @@ const ProductDetails = ({ data }) => {
 
               {/* Cart Button */}
               <div
-                className={`${styles.button} mt-6 !rounded-[4px] !h-11 flex items-center hover:opacity-95 transition duration-300 ease-in-out`}
+                className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
                 onClick={() => addToCartHandler(data._id)}
               >
-                <span className="text-[#fff4d7] flex items-center">
+                <span className="flex items-center">
                   Add to cart <AiOutlineShoppingCart className="ml-1" />
                 </span>
               </div>
 
+              {/* Dropdown options */}
+              {data.dropdowns &&
+                data.dropdowns.map((dropdown, index) => (
+                  <div key={dropdown._id} className="mt-4">
+                    <label className="block font-medium text-[#534723]">
+                      {dropdown.name}:
+                    </label>
+                    <select
+                      className="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      onChange={(e) =>
+                        handleOptionChange(dropdown.name, e.target.value)
+                      }
+                      required
+                    >
+                      <option value="">Select an option</option>
+                      {dropdown.options.map((option, idx) => (
+                        <option key={idx} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+
+              {/* Instructions */}
+              <div className="mt-6">
+                <p className="text-lg font-semibold text-[#534723]">
+                  Instructions for Personalised Product
+                </p>
+                <span className="font-[200] text-[17px] text-[#b19b56]">
+                  {data?.instructions}
+                </span>
+              </div>
+
+              {/* Customer response to instructions */}
+              {data?.instructions && (
+                <div className="mt-4">
+                  <label className="block font-medium text-[#534723]">
+                    Response To Instructions
+                  </label>
+                  <textarea
+                    className="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    value={insResponse}
+                    onChange={(e) => setInsResponse(e.target.value)}
+                  />
+                </div>
+              )}
+
               {/* Admin Profile */}
               <div className="flex items-center pt-8">
-                <Link to="/">
+                <Link to="/" className="flex items-center">
                   <img
                     src={`${data?.admin?.avatar?.url}`}
                     alt=""
-                    className="w-[50px] h-[50px] rounded-full mr-2"
+                    className="w-[50px] h-[50px] rounded-full mr-3 shadow-lg"
                   />
-                  <div className="pr-8">
+                  <div>
                     <h3
-                      className={`${styles.shop_name} pb-1 pt-1 !text-[#171203]`}
+                      className={`${styles.shop_name} text-xl font-semibold text-[#171203]`}
                     >
                       {data.admin.name}
                     </h3>
-                    <h5 className="pb-3 text-[15px] text-[#534723]">
+                    <h5 className="text-[15px] text-[#534723]">
                       ({averageRating}/5) Ratings
                     </h5>
                   </div>
                 </Link>
                 <div
-                  className={`${styles.button} bg-[#171203] mt-4 !rounded-[4px] !h-11 hover:opacity-95 transition duration-300 ease-in-out`}
+                  className={`${styles.button} bg-[#171203] ml-auto rounded-[4px] h-11 flex items-center justify-center text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
                   onClick={handleMessageSubmit}
                 >
-                  <span className="text-[#fff4d7] flex items-center ">
+                  <span className="flex items-center">
                     Send Message <AiOutlineMessage className="ml-1" />
                   </span>
                 </div>
@@ -278,8 +342,6 @@ const ProductDetails = ({ data }) => {
             totalReviewsLength={totalReviewsLength}
             averageRating={averageRating}
           />
-          <br />
-          <br />
         </div>
       ) : null}
     </div>
@@ -322,7 +384,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(1)}
           >
@@ -333,7 +395,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(2)}
           >
@@ -344,7 +406,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(3)}
           >
@@ -428,16 +490,20 @@ const ProductDetailsInfo = ({
               <h5 className="font-[600] text-[#171203]">
                 Joined on:
                 <span className="font-[500] text-[#534723]">
-                  {' '}
+                  {" "}
                   14 March, 2023
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Products:{' '}
-                <span className="font-[500]">{products.length}</span>
+
+                Total Products:{" "}
+                <span className="font-[500]">
+                  {products && products.length}
+                </span>
+
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Reviews:{' '}
+                Total Reviews:{" "}
                 <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">
@@ -474,3 +540,4 @@ const ProductDetailsInfo = ({
   );
 };
 export default ProductDetails;
+

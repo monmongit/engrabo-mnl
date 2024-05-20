@@ -13,6 +13,16 @@ const orderSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
+
+  insResponse: {
+    type: String,
+  },
+
+  // selectedOptions: {
+  //   type: Map,
+  //   of: String
+  // },
+
   totalPrice: {
     type: Number,
     required: true,

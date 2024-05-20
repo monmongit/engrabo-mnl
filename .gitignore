@@ -14,3 +14,4 @@ node_modules/
 .idea/
 
 install-dep.sh
+install-dependencies.sh

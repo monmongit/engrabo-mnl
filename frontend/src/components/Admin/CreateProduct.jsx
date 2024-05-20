@@ -20,19 +20,27 @@ const CreateProduct = ({ setOpen }) => {
   const { categories } = useSelector((state) => state.categories);
 
   const [images, setImages] = useState([]);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [tags, setTags] = useState('');
-  const [grossPrice, setGrossPrice] = useState('');
-  const [originalPrice, setOriginalPrice] = useState('');
-  const [discountPrice, setDiscountPrice] = useState('');
-  const [stock, setStock] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [tags, setTags] = useState("");
+  const [grossPrice, setGrossPrice] = useState("");
+  const [originalPrice, setOriginalPrice] = useState("");
+  const [discountPrice, setDiscountPrice] = useState("");
+  const [stock, setStock] = useState("")
+
+  // for personalization purposes
+  const [instructions, setIntructions] = useState("");
 
   // for personalization purposes
   const [personalization, setPersonalization] = useState('');
   const [dropdowns, setDropdowns] = useState([]);
-
+  
+  dropdowns.forEach((dropdown, index) => {
+    console.log(`Dropdown ${index + 1}:`);
+    console.log(`Name: ${dropdown.name}`);
+    console.log(`Options: ${dropdown.options.join(', ')}`);
+});
   useEffect(() => {
     dispatch(getAllCategories());
   }, [dispatch]);
@@ -55,7 +63,9 @@ const CreateProduct = ({ setOpen }) => {
   const handleAddOption = (index) => {
     const newDropdowns = dropdowns.map((dropdown, i) => {
       if (i === index) {
-        return { dropdown, options: [...dropdown.options, ''] };
+
+        return { ...dropdown, options: [...dropdown.options, ""] };
+
       }
       return dropdown;
     });
@@ -128,16 +138,18 @@ const CreateProduct = ({ setOpen }) => {
       newForm.set('images', image);
     });
 
-    newForm.append('name', name);
-    newForm.append('description', description);
-    newForm.append('category', category);
-    newForm.append('tags', tags);
-    newForm.append('grossPrice', grossPrice);
-    newForm.append('originalPrice', originalPrice);
-    newForm.append('discountPrice', discountPrice);
-    newForm.append('stock', stock);
-    newForm.append('adminId', admin._id);
-
+    newForm.append("name", name);
+    newForm.append("description", description);
+    newForm.append("category", category);
+    newForm.append("tags", tags);
+    newForm.append("grossPrice", grossPrice);
+    newForm.append("originalPrice", originalPrice);
+    newForm.append("discountPrice", discountPrice);
+    newForm.append("stock", stock);
+    newForm.append("adminId", admin._id);
+    newForm.append("intructions", instructions);
+    newForm.append("dropdown", dropdowns);
+   
     dispatch(
       createProduct({
         name,
@@ -150,6 +162,8 @@ const CreateProduct = ({ setOpen }) => {
         stock,
         adminId: admin._id,
         images,
+        instructions,
+        dropdowns
       })
     );
   };
@@ -330,6 +344,22 @@ const CreateProduct = ({ setOpen }) => {
                   />
                 ))}
             </div>
+          </div>
+
+          {/* Instructions */}
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Instruction For Personalization <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              cols="30"
+              rows="8"
+              name="description"
+              value={instructions}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={(e) => setIntructions(e.target.value)}
+              placeholder="Enter your personalizationinstructions..."
+            ></textarea>
           </div>
 
           {/* Dynamic Dropdowns */}

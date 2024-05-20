@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { RxCross1 } from 'react-icons/rx';
-import styles from '../../styles/style';
-import { HiOutlineMinus, HiPlus } from 'react-icons/hi';
-import { IoBagHandleOutline } from 'react-icons/io5';
-import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { addTocart, removeFromCart } from '../../redux/action/cart';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import { RxCross1 } from "react-icons/rx";
+import styles from "../../styles/style";
+import { HiOutlineMinus, HiPlus } from "react-icons/hi";
+import { IoBagHandleOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addTocart, removeFromCart } from "../../redux/action/cart";
+import { toast } from "react-toastify";
 const Cart = ({ setOpenCart }) => {
   const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
+  console.log("cart details: ", cart);
 
   const removeFromCartHandler = (data) => {
     dispatch(removeFromCart(data));
@@ -147,7 +148,7 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
         {/* Price and Details of Product */}
         <div className="pl-[10px] w-[50%]">
           <h1 className="text-[15px] flex-grow">
-            {data.name.length > 15 ? data.name.slice(0, 15) + '...' : data.name}
+            {data.name.length > 15 ? data.name.slice(0, 15) + "..." : data.name}
           </h1>
           <h4 className="font-[600] text-[17px] text-[#171203]">
             {data.discountPrice > 0
@@ -160,6 +161,13 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
           <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
             Total: ₱ {totalPrice.toFixed(2)}
           </h4>
+          <br />
+          <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
+            Note: {data.response}
+          </h4>
+            
+          <br />
+          {optionsArrays(data.options)}
         </div>
         <RxCross1
           className="cursor-pointer "
@@ -169,5 +177,22 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
     </div>
   );
 };
+
+
+const optionsArrays = (data) => {
+  const optionsArray = Object.entries(data);
+
+  return (
+    <div>
+      {optionsArray.map(([key, value], index) => (
+        <h4 key={index} className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
+         {key} - {value}
+        </h4>
+      ))}
+      <br />
+    </div>
+  );
+};
+
 
 export default Cart;
