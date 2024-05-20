@@ -1,29 +1,29 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import styles from '../../styles/style';
-import EngraboLogo from '../../assets/Logo/engrabo-logo.png';
-import { categoriesData } from '../../static/data';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import styles from "../../styles/style";
+import EngraboLogo from "../../assets/Logo/engrabo-logo.png";
+import { categoriesData } from "../../static/data";
 import {
   AiOutlineHeart,
   AiOutlineSearch,
   AiOutlineShoppingCart,
-} from 'react-icons/ai';
-import { IoIosArrowForward, IoIosMore } from 'react-icons/io';
-import { BiMenuAltLeft } from 'react-icons/bi';
-import { IoIosArrowDown } from 'react-icons/io';
-import DropDown from './DropDown';
-import Navbar from './Navbar';
-import { GoHeart } from 'react-icons/go';
-import { LuUserCircle2 } from 'react-icons/lu';
-import { useSelector } from 'react-redux';
-import Cart from '../Cart/Cart';
-import Wishlist from '../Wishlist/Wishlist.jsx';
-import { RxCross1 } from 'react-icons/rx';
-import { IoHome } from 'react-icons/io5';
-import { FaQuestionCircle } from 'react-icons/fa';
-import { FaBasketShopping } from 'react-icons/fa6';
-import { BiSolidLike } from 'react-icons/bi';
-import { useLocation } from 'react-router-dom';
+} from "react-icons/ai";
+import { IoIosArrowForward, IoIosMore } from "react-icons/io";
+import { BiMenuAltLeft } from "react-icons/bi";
+import { IoIosArrowDown } from "react-icons/io";
+import DropDown from "./DropDown";
+import Navbar from "./Navbar";
+import { GoHeart } from "react-icons/go";
+import { LuUserCircle2 } from "react-icons/lu";
+import { useSelector } from "react-redux";
+import Cart from "../Cart/Cart";
+import Wishlist from "../Wishlist/Wishlist.jsx";
+import { RxCross1 } from "react-icons/rx";
+import { IoHome } from "react-icons/io5";
+import { FaQuestionCircle } from "react-icons/fa";
+import { FaBasketShopping } from "react-icons/fa6";
+import { BiSolidLike } from "react-icons/bi";
+import { useLocation } from "react-router-dom";
 
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user);
@@ -32,7 +32,7 @@ const Header = ({ activeHeading }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
 
   const { allProducts } = useSelector((state) => state.products);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
   const [dropDown, setDropDown] = useState(false);
@@ -61,7 +61,7 @@ const Header = ({ activeHeading }) => {
   };
 
   // Sticky Header
-  window.addEventListener('scroll', () => {
+  window.addEventListener("scroll", () => {
     if (window.scrollY > 70) {
       setActive(true);
     } else {
@@ -119,7 +119,7 @@ const Header = ({ activeHeading }) => {
             {isAdmin ? (
               <Link to="/admin-login">
                 <h1 className="text-[#fff4d7] flex items-center">
-                  {isAdmin ? 'Go Dashboard' : null}
+                  {isAdmin ? "Go Dashboard" : null}
                   <IoIosArrowForward className="ml-1" />
                 </h1>
               </Link>
@@ -131,7 +131,7 @@ const Header = ({ activeHeading }) => {
       {/* Second Header */}
       <div
         className={`${
-          active === true ? 'shadow-sm fixed top-0 left-0 z-10' : null
+          active === true ? "shadow-sm fixed top-0 left-0 z-10" : null
         } transition hidden 800px:flex items-center justify-between w-full bg-[#171203] h-[70px]`}
       >
         <div
@@ -229,7 +229,7 @@ const Header = ({ activeHeading }) => {
       {/* Mobile Header */}
       <div
         className={`${
-          active === true ? 'shadow-sm fixed top-0 left-0 z-10' : null
+          active === true ? "shadow-sm fixed top-0 left-0 z-10" : null
         } w-full h-[60px] fixed bg-[#171203] z-20 top-0 left-0 shadow-sm 800px:hidden`}
       >
         <div className="w-full flex items-center justify-between">
@@ -269,12 +269,12 @@ const Header = ({ activeHeading }) => {
             <Link to="/">
               <IoHome
                 size={30}
-                color={location.pathname === '/' ? '#9c6f18' : '#fff4d7'}
+                color={location.pathname === "/" ? "#9c6f18" : "#fff4d7"}
               />
               <h5
                 className="text-[10px] text-center"
                 style={{
-                  color: location.pathname === '/' ? '#9c6f18' : '#fff4d7',
+                  color: location.pathname === "/" ? "#9c6f18" : "#fff4d7",
                 }}
               >
                 Home
@@ -286,14 +286,14 @@ const Header = ({ activeHeading }) => {
               <FaBasketShopping
                 size={30}
                 color={
-                  location.pathname === '/products' ? '#9c6f18' : '#fff4d7'
+                  location.pathname === "/products" ? "#9c6f18" : "#fff4d7"
                 }
               />
               <h5
                 className="text-[10px] text-center "
                 style={{
                   color:
-                    location.pathname === '/products' ? '#9c6f18' : '#fff4d7',
+                    location.pathname === "/products" ? "#9c6f18" : "#fff4d7",
                 }}
               >
                 Shop
@@ -305,17 +305,17 @@ const Header = ({ activeHeading }) => {
               <BiSolidLike
                 size={30}
                 color={
-                  location.pathname === '/best-selling' ? '#9c6f18' : '#fff4d7'
+                  location.pathname === "/best-selling" ? "#9c6f18" : "#fff4d7"
                 }
-                style={{ display: 'block', margin: '0 auto' }}
+                style={{ display: "block", margin: "0 auto" }}
               />
               <h5
                 className="text-[10px] text-center"
                 style={{
                   color:
-                    location.pathname === '/best-selling'
-                      ? '#9c6f18'
-                      : '#fff4d7',
+                    location.pathname === "/best-selling"
+                      ? "#9c6f18"
+                      : "#fff4d7",
                 }}
               >
                 Best Sales
@@ -326,28 +326,30 @@ const Header = ({ activeHeading }) => {
             <Link to="/faq">
               <FaQuestionCircle
                 size={30}
-                color={location.pathname === '/faq' ? '#9c6f18' : '#fff4d7'}
+                color={location.pathname === "/faq" ? "#9c6f18" : "#fff4d7"}
               />
               <h5
                 className="text-[10px] text-center"
                 style={{
-                  color: location.pathname === '/faq' ? '#9c6f18' : '#fff4d7',
+                  color: location.pathname === "/faq" ? "#9c6f18" : "#fff4d7",
                 }}
               >
                 FAQ
               </h5>
             </Link>
           </div>
+
+          {/* Create another here for createPage */}
           <div className="flex flex-col items-center justify-center">
             <IoIosMore
               size={30}
               onClick={() => setOpen(true)}
-              color={open ? '#9c6f18' : '#fff4d7'}
+              color={open ? "#9c6f18" : "#fff4d7"}
             />
             <h5
               className="text-[10px] text-center "
               style={{
-                color: open ? '#9c6f18' : '#fff4d7',
+                color: open ? "#9c6f18" : "#fff4d7",
               }}
             >
               More
@@ -399,7 +401,7 @@ const Header = ({ activeHeading }) => {
                   {searchData.map((i) => {
                     const d = i.name;
 
-                    const Product_name = d.replace(/\s+/g, '-');
+                    const Product_name = d.replace(/\s+/g, "-");
                     return (
                       <Link to={`/product/${Product_name}`}>
                         <div className="w-full flex items-start-py-3 pt-1 pb-1">
