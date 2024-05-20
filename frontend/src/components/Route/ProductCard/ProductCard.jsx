@@ -109,13 +109,10 @@ const ProductCard = ({ data, isEvent }) => {
             {/* Price of Product */}
             <div className="flex">
               <h5 className={`${styles.productDiscountPrice}`}>
-                ₱{' '}
-                {data.discountPrice === 0
-                  ? data.discountPrice
-                  : data.originalPrice}
+                ₱ {data.discountPrice ? data.discountPrice : data.originalPrice}
               </h5>
               <h4 className={`${styles.price}`}>
-                {data.discountPrice ? '₱ ' + data.discountPrice : null}
+                {data.discountPrice ? '₱ ' + data.originalPrice : null}
               </h4>
             </div>
 
