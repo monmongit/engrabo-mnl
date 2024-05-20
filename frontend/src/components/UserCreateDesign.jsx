@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
+ /* 
+ Things to do 
+ - get all the product here (done)
+ - allow user to select from the product (done )
+ - allow user to  create canvas 
+   - Type 
+   - draw
+   - Use selected product image in the canvas 
+   - upload photo
+ */
+
 const UserCreateDesign = () => {
   const { allProducts, isLoading } = useSelector((state) => state.products);
   const [products, setProducts] = useState([]);
@@ -60,6 +71,7 @@ const UserCreateDesign = () => {
           </div>
         )}
       </div>
+      {/* Display the image on the */}
       <div className="display-image flex justify-center ml-3">
         {selectedProduct && (
           <div className="mt-4">
