@@ -12,11 +12,11 @@ app.use(
     credentials: true,
   })
 );
+app.use("/", (req,res) => {
+  res.send("Please Work")
+})
 
 app.use(cookieParser());
-app.use('/', (req, res) => {
-  res.send('Hello world!');
-});
 
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
 

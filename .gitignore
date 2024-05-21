@@ -5,3 +5,15 @@ node_modules/
 frontend/node_modules
 backend/node_modules
 socket/node_modules
+
+# Ignore build directories
+/build
+/dist
+
+# Ignore editor-specific files
+.DS_Store
+.vscode/
+.idea/
+
+install-dep.sh
+install-dependencies.sh
