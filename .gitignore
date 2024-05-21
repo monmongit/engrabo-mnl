@@ -1,6 +1,11 @@
 # Ignore node_modules directory
 node_modules/
 
+# dependencies 
+frontend/node_modules
+backend/node_modules
+socket/node_modules
+
 # Ignore .env file
 .env
 
