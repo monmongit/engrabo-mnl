@@ -7,7 +7,6 @@ import { getAllOrdersOfAdmin } from "../../redux/action/order";
 import { server } from "../../server";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { ConnectionStates } from "mongoose";
 
 const OrderDetails = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
