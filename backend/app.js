@@ -14,7 +14,7 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use('/test', (req, res) => {
+app.use('/', (req, res) => {
   res.send('Hello world!');
 });
 
@@ -23,7 +23,7 @@ app.use(express.urlencoded({ limit: '5mb', extended: true }));
 // config
 if (process.env.NODE_ENV !== 'PRODUCTION') {
   require('dotenv').config({
-    path: 'backend/config/.env',
+    path: 'config/.env',
   });
 }
 
