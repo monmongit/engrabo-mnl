@@ -403,7 +403,10 @@ const CartData = ({
   discountPercentenge,
 }) => {
   return (
-    <div className="w-full bg-[#fff] rounded-md p-5 pb-8" style={{marginLeft: "15px"}}>
+    <div
+      className="w-full bg-[#fff] rounded-md p-5 pb-8"
+      style={{ marginLeft: "15px" }}
+    >
       <div className="flex justify-between">
         <h3 className="text-[16px] font-[400] text-[#b19b56]">subtotal:</h3>
         <h5 className="text-[18px] font-[600]">₱ {subTotalPrice}</h5>
@@ -442,12 +445,21 @@ const CartData = ({
   );
 };
 
-const cartInfo = (data) => {
-  console.log("checkout: ",data)
-  const optionsArray = Object.entries(data);
-  
-  console.log("response: ", data.response)
-  console.log("optionsArray: ", optionsArray );
+const cartInfo = (data = []) => {
+  if (!Array.isArray(data)) {
+    console.error("Invalid data provided:", data);
+    return (
+      <div className="w-full bg-[#fff] rounded-md p-5 pb-8 mr-5">
+        <h3 className="text-[16px] font-[400] text-[#b19b56]">
+          Checkout Options and Notes:
+        </h3>
+        <p className="text-red-500">Invalid data provided.</p>
+      </div>
+    );
+  }
+
+  console.log("checkout: ", data);
+
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8 mr-5">
       <br />
@@ -457,18 +469,21 @@ const cartInfo = (data) => {
         </h3>
       </div>
       <div className="mt-3">
-        {/* Repeat this block for each option */}
         {data.map((item, index) => (
-        <div key={index} className="bg-gray-100 rounded p-4 mb-4"> {/* Tailwind CSS classes for styling */}
-          <h3 className="text-lg font-bold mb-2">{item.name}</h3> {/* Display product name */}
-          <p className="text-gray-700 mb-2">Response: {item.response}</p>
-          <ul>
-            {Object.entries(item.options).map(([key, value]) => (
-              <li key={key} className="text-gray-700">{key}: {value}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
+          <div key={index} className="bg-gray-100 rounded p-4 mb-4">
+            <h3 className="text-lg font-bold mb-2">{item.name}</h3>
+            <p className="text-gray-700 mb-2">Response: {item.response}</p>
+            {item.options && (
+              <ul>
+                {Object.entries(item.options).map(([key, value]) => (
+                  <li key={key} className="text-gray-700">
+                    {key}: {value}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

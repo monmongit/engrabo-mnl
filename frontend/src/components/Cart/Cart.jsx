@@ -162,12 +162,6 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
             Total: ₱ {totalPrice.toFixed(2)}
           </h4>
           <br />
-          <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
-            Note: {data.response}
-          </h4>
-            
-          <br />
-          {optionsArrays(data.options)}
         </div>
         <RxCross1
           className="cursor-pointer "
@@ -178,21 +172,22 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
   );
 };
 
+// const optionsArrays = (data) => {
+//   const optionsArray = Object.entries(data);
 
-const optionsArrays = (data) => {
-  const optionsArray = Object.entries(data);
-
-  return (
-    <div>
-      {optionsArray.map(([key, value], index) => (
-        <h4 key={index} className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
-         {key} - {value}
-        </h4>
-      ))}
-      <br />
-    </div>
-  );
-};
-
+//   return (
+//     <div>
+//       {optionsArray.map(([key, value], index) => (
+//         <h4
+//           key={index}
+//           className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto"
+//         >
+//           {key} - {value}
+//         </h4>
+//       ))}
+//       <br />
+//     </div>
+//   );
+// };
 
 export default Cart;

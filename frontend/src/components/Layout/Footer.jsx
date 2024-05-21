@@ -1,19 +1,20 @@
-import React from 'react';
-import Logo from '../../assets/Logo/engrabo-logo.png';
-import { IoLogoTiktok } from 'react-icons/io5';
-import gcLogo from '../../assets/Logo/gcash-logo.png';
+import React from "react";
+import Logo from "../../assets/Logo/engrabo-logo.png";
+import { IoLogoTiktok } from "react-icons/io5";
+import gcLogo from "../../assets/Logo/gcash-logo.png";
 
 import {
   AiFillFacebook,
   AiOutlineInstagram,
   AiOutlineTwitter,
-} from 'react-icons/ai';
+} from "react-icons/ai";
 import {
   footerProductLinks,
   footerSupportLinks,
   footercompanyLinks,
-} from '../../static/data';
-import { Link } from 'react-router-dom';
+} from "../../static/data";
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
     <div className="bg-[#171203] text-[#fff4d7]">
@@ -40,7 +41,7 @@ const Footer = () => {
           <img
             src={Logo}
             alt=""
-            style={{ filter: 'brightness(0) invert(1)' }}
+            style={{ filter: "brightness(0) invert(1)" }}
           />
           <br />
           <p className="text-justify text-[14px]">
@@ -50,15 +51,15 @@ const Footer = () => {
             <AiFillFacebook size={25} className="cursor-pointer" />
             <AiOutlineTwitter
               size={25}
-              style={{ marginLeft: '15px', cursor: 'pointer' }}
+              style={{ marginLeft: "15px", cursor: "pointer" }}
             />
             <AiOutlineInstagram
               size={25}
-              style={{ marginLeft: '15px', cursor: 'pointer' }}
+              style={{ marginLeft: "15px", cursor: "pointer" }}
             />
             <IoLogoTiktok
               size={25}
-              style={{ marginLeft: '15px', cursor: 'pointer' }}
+              style={{ marginLeft: "15px", cursor: "pointer" }}
             />
           </div>
         </ul>

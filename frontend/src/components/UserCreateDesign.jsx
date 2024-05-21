@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import CanvasArea from "./CanvasArea";
 
- /* 
+/* 
  Things to do 
  - get all the product here (done)
  - allow user to select from the product (done )
@@ -71,19 +72,10 @@ const UserCreateDesign = () => {
           </div>
         )}
       </div>
-      {/* Display the image on the */}
-      <div className="display-image flex justify-center ml-3">
-        {selectedProduct && (
-          <div className="mt-4">
-            {selectedProduct.images && selectedProduct.images.length > 0 && (
-              <img
-                src={selectedProduct.images[0].url}
-                alt={selectedProduct.name}
-                className="w-full h-full object-contain"
-              />
-            )}
-          </div>
-        )}
+
+      {/* Display the Canvas */}
+      <div className="border-solid">
+        <CanvasArea />
       </div>
     </div>
   );

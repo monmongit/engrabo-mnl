@@ -139,21 +139,25 @@ const Header = ({ activeHeading }) => {
         >
           {/* Categories */}
           <div onClick={() => setDropDown(!dropDown)}>
-            <div className="relative h-[60px] mt-[10px] w-[270px] hidden 1000px:block">
-              <BiMenuAltLeft
-                size={30}
-                className="absolute top-3 left-2 text-[#171203]"
-              />
-              <button
-                className={`h-[100%] w-full flex justify-between items-center pl-10 bg-[#fff4d7] font-sans text-lg font-[500] select-none rounded-t-md text-[#171203]`}
-              >
-                All Categories
-              </button>
-              <IoIosArrowDown
-                size={20}
-                className="absolute right-2 top-4 cursor-pointer text-[#171203]"
-                onClick={() => setDropDown(!dropDown)}
-              />
+            <div className="relative h-[60px] w-[270px] hidden 1000px:block flex items-center justify-between">
+              <div>
+                <BiMenuAltLeft
+                  size={30}
+                  className="absolute top-3 left-2 text-[#171203]"
+                />
+                <button
+                  className={`h-[100%] w-full flex items-center pl-10 py-2.5 my-2.5  bg-[#fff4d7] font-sans text-lg font-[500] select-none rounded-md text-[#171203]`}
+                >
+                  All Categories
+                </button>
+              </div>
+              <div>
+                <IoIosArrowDown
+                  size={20}
+                  className="absolute right-2 top-4 cursor-pointer text-[#171203]"
+                  onClick={() => setDropDown(!dropDown)}
+                />
+              </div>
               {/* Dropdown */}
               {dropDown ? (
                 <DropDown
