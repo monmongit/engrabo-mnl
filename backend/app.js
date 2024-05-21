@@ -3,6 +3,7 @@ const ErrorHandler = require('./middleware/error');
 const app = express();
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const path = require('path')
 
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
@@ -12,7 +13,8 @@ app.use(
     credentials: true,
   })
 );
-app.use("/", (req,res) => {
+app.use("/", express.static(path.join(__dirname, "uploads")))
+app.use("/test", (req,res) => {
   res.send("Please Work")
 })
 
