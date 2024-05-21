@@ -258,7 +258,7 @@ function CanvasArea() {
         </div>
 
         {/* Canvas */}
-        <div>
+        <div className="bg-white">
           <Stage
             ref={stageRef}
             width={600}

@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { RxCross1 } from 'react-icons/rx';
-import styles from '../../../styles/style';
+import React, { useEffect, useState } from "react";
+import { RxCross1 } from "react-icons/rx";
+import styles from "../../../styles/style";
 import {
   AiFillHeart,
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
-} from 'react-icons/ai';
-import { useDispatch, useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
-import { addTocart } from '../../../redux/action/cart';
+} from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import { addTocart } from "../../../redux/action/cart";
 import {
   addToWishlist,
   removeFromWishlist,
-} from '../../../redux/action/wishlist';
+} from "../../../redux/action/wishlist";
 
 const ProductDetailsCard = ({ setOpen, data }) => {
   const { cart } = useSelector((state) => state.cart);
@@ -27,7 +27,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
 
   const decrementCount = () => {
     if (count <= 1) {
-      toast.error('You cannot order less than 1 item.');
+      toast.error("You cannot order less than 1 item.");
       return;
     }
     setCount(count - 1);
@@ -148,7 +148,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                     ₱ {data.originalPrice}
                   </h4>
                   <h3 className={`${styles.price}`}>
-                    {data.discountPrice ? '₱' + data.discountPrice : null}
+                    {data.discountPrice ? "₱" + data.discountPrice : null}
                   </h3>
                 </div>
 
@@ -191,7 +191,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                         size={30}
                         className="cursor-pointer"
                         onClick={() => removeFromWishlistHandler(data)}
-                        color={click ? '#171203' : '#171203'}
+                        color={click ? "#171203" : "#171203"}
                         title="Removed from Wishlist"
                       />
                     ) : (
@@ -199,7 +199,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                         size={30}
                         className="cursor-pointer"
                         onClick={() => addToWishlistHandler(data)}
-                        color={click ? '#171203' : '#171203'}
+                        color={click ? "#171203" : "#171203"}
                         title="Added to Wishlist"
                       />
                     )}

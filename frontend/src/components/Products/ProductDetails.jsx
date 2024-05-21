@@ -16,8 +16,7 @@ import { toast } from "react-toastify";
 import { addTocart } from "../../redux/action/cart";
 import Ratings from "./Ratings";
 import axios from "axios";
-import Modal from "react-modal"
-
+import Modal from "react-modal";
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -104,7 +103,12 @@ const ProductDetails = ({ data }) => {
           `${data.name} stock is limited! Please contact us to reserve your order!`
         );
       } else {
-        const cartData = { ...data, qty: count, response: insResponse, options: selectedOptions };
+        const cartData = {
+          ...data,
+          qty: count,
+          response: insResponse,
+          options: selectedOptions,
+        };
         dispatch(addTocart(cartData));
         toast.success(`${data.name} added to cart successfully!`);
       }
@@ -117,7 +121,7 @@ const ProductDetails = ({ data }) => {
       [dropdownName]: value,
     });
   };
-  console.log('selected options information: ', selectedOptions)
+  console.log("selected options information: ", selectedOptions);
 
   const totalReviewsLength =
     products &&
@@ -145,7 +149,7 @@ const ProductDetails = ({ data }) => {
               <img
                 src={`${data && data.images[select]?.url}`}
                 alt=""
-                className="w-[60%] rounded-md shadow-lg"
+                className=" h-[90%] w-[100%] rounded-md shadow-lg"
               />
 
               <div className="flex mt-4 space-x-2">
@@ -359,13 +363,13 @@ const ProductDetailsInfo = ({
   const [selectedImage, setSelectedImage] = useState(null);
 
   const maskName = (name) => {
-    const parts = name.split(' ');
+    const parts = name.split(" ");
     return parts
       .map((part, index) => {
-        if (index === 0) return part.slice(0, 2) + '*****';
-        return '*****';
+        if (index === 0) return part.slice(0, 2) + "*****";
+        return "*****";
       })
-      .join(' ');
+      .join(" ");
   };
 
   const openModal = (image) => {
@@ -495,12 +499,10 @@ const ProductDetailsInfo = ({
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-
                 Total Products:{" "}
                 <span className="font-[500]">
                   {products && products.length}
                 </span>
-
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
                 Total Reviews:{" "}
@@ -540,4 +542,3 @@ const ProductDetailsInfo = ({
   );
 };
 export default ProductDetails;
-

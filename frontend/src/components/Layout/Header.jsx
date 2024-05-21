@@ -139,7 +139,7 @@ const Header = ({ activeHeading }) => {
         >
           {/* Categories */}
           <div onClick={() => setDropDown(!dropDown)}>
-            <div className="relative h-[60px] w-[270px] hidden 1000px:block flex items-center justify-between">
+            <div className="relative h-[60px] w-[270px] hidden 1000px:block items-center justify-between">
               <div>
                 <BiMenuAltLeft
                   size={30}
