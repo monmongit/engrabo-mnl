@@ -7,6 +7,24 @@ const Order = require('../model/order');
 const Product = require('../model/product');
 const Event = require('../model/event');
 const Admin = require('../model/admin');
+const sendMail = require('../utils/sendMail');
+
+// Email Template Function
+const getEmailTemplate = (content) => {
+  return `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+      <div style="background-color: #f4f4f4; padding: 20px; text-align: center;">
+        <h1 style="color: #333;">Your Company Name</h1>
+      </div>
+      <div style="padding: 20px;">
+        ${content}
+      </div>
+      <div style="background-color: #f4f4f4; padding: 20px; text-align: center;">
+        <img src="https://your-image-url.com/footer-image.png" alt="Footer Image" style="width: 100%; max-width: 600px;">
+      </div>
+    </div>
+  `;
+};
 
 // create new order
 router.post(
@@ -96,27 +114,38 @@ router.put(
   isAdmin,
   catchAsyncError(async (req, res, next) => {
     try {
-      const order = await Order.findById(req.params.id);
+      const order = await Order.findById(req.params.id).populate('user');
 
       if (!order) {
         return next(new ErrorHandler('Order not found', 400));
       }
 
+      const newStatus = req.body.status;
+
       // Update the stock when transferring to delivery partner
-      if (req.body.status === 'Transferred to delivery partner') {
+      if (newStatus === 'Transferred to delivery partner') {
         for (let item of order.cart) {
           await updateItemStock(item._id, item.qty);
         }
       }
 
       // Update order details
-      order.status = req.body.status;
-      if (req.body.status === 'Delivered') {
+      order.status = newStatus;
+      if (newStatus === 'Delivered') {
         order.deliveredAt = Date.now();
         order.paymentInfo.status = 'Paid';
       }
 
       await order.save({ validateBeforeSave: false });
+
+      const message = `Dear ${order.user.name}, your order status has been updated to ${newStatus}. Thank you for shopping with us!`;
+      const html = getEmailTemplate(message);
+      await sendMail({
+        email: order.user.email,
+        subject: 'Order Status Update',
+        message,
+        html,
+      });
 
       res.status(200).json({
         success: true,
@@ -147,9 +176,23 @@ async function updateItemStock(id, qty) {
   item.sold_out += qty;
 
   await item.save({ validateBeforeSave: false });
-}
 
-// Refund a order of user
+  // Check if stock is low and send an email to the admin
+  if (item.stock <= 5) {
+    const admin = await Admin.findOne(); // Assuming there's a single admin, modify if multiple admins
+    if (admin) {
+      const lowStockMessage = `The stock for product "${item.name}" is low. Current stock: ${item.stock}`;
+      const lowStockHtml = getEmailTemplate(lowStockMessage);
+      await sendMail({
+        email: admin.email,
+        subject: 'Low Stock Alert',
+        message: lowStockMessage,
+        html: lowStockHtml,
+      });
+    }
+  }
+}
+// Refund an order of user
 router.put(
   '/order-refund/:id',
   catchAsyncError(async (req, res, next) => {
@@ -175,6 +218,112 @@ router.put(
   })
 );
 
+// Refund an order of user
+router.put(
+  '/order-refund/:id',
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const order = await Order.findById(req.params.id);
+
+      if (!order) {
+        return next(new ErrorHandler('Order not found', 400));
+      }
+
+      order.status = req.body.status;
+
+      await order.save({ validateBeforeSave: false });
+
+      res.status(200).json({
+        success: true,
+        order,
+        message: 'Order Refund Request Successfully!',
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+// Refund a order of user
+router.put(
+  '/update-order-status/:id',
+  isAdmin,
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const order = await Order.findById(req.params.id).populate('user');
+
+      if (!order) {
+        return next(new ErrorHandler('Order not found', 400));
+      }
+
+      const newStatus = req.body.status;
+
+      // Update the stock when transferring to delivery partner
+      if (newStatus === 'Transferred to delivery partner') {
+        for (let item of order.cart) {
+          await updateItemStock(item._id, item.qty);
+        }
+      }
+
+      // Update order details
+      order.status = newStatus;
+      if (newStatus === 'Delivered') {
+        order.deliveredAt = Date.now();
+        order.paymentInfo.status = 'Paid';
+      }
+
+      await order.save({ validateBeforeSave: false });
+
+      const message = `Dear ${order.user.name}, your order status has been updated to ${newStatus}. Thank you for shopping with us!`;
+      await sendMail({
+        email: order.user.email,
+        subject: 'Order Status Update',
+        message,
+      });
+
+      res.status(200).json({
+        success: true,
+        order,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+async function updateItemStock(id, qty) {
+  // Try to update a product
+  let item = await Product.findById(id);
+
+  // If not a product, it might be an event
+  if (!item) {
+    item = await Event.findById(id);
+  }
+
+  if (!item) {
+    console.log('Item not found with ID:', id);
+    return; // If neither, skip the update
+  }
+
+  // Update stock and sold_out values
+  item.stock -= qty;
+  item.sold_out += qty;
+
+  await item.save({ validateBeforeSave: false });
+
+  // Check if stock is low and send an email to the admin
+  if (item.stock <= 5) {
+    const admin = await Admin.findOne(); // Assuming there's a single admin, modify if multiple admins
+    if (admin) {
+      const message = `The stock for product "${item.name}" is low. Current stock: ${item.stock}`;
+      await sendMail({
+        email: admin.email,
+        subject: 'Low Stock Alert',
+        message,
+      });
+    }
+  }
+}
 // Refund for admin side
 router.put(
   '/order-refund-success/:id',
