@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
- /* 
+/* 
  Things to do 
  - get all the product here (done)
  - allow user to select from the product (done )
@@ -26,7 +26,9 @@ const UserCreateDesign = () => {
   };
 
   useEffect(() => {
-    setProducts(allProducts);
+    if (allProducts) {
+      setProducts(allProducts);
+    }
   }, [allProducts]);
 
   return (
@@ -45,11 +47,12 @@ const UserCreateDesign = () => {
               <option value="" disabled>
                 Select a product
               </option>
-              {products.map((product) => (
-                <option key={product._id} value={product._id}>
-                  {product.name}
-                </option>
-              ))}
+              {products &&
+                products.map((product) => (
+                  <option key={product._id} value={product._id}>
+                    {product.name}
+                  </option>
+                ))}
             </select>
 
             {selectedProduct && (
