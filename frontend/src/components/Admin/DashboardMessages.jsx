@@ -393,7 +393,7 @@ const AdminInbox = ({
               >
                 <div
                   className={`p-2 rounded ${
-                    item.sender === adminId ? 'bg-[#000]' : 'bg-[#b19a5696]'
+                    item.sender === adminId ? 'bg-[#171203]' : 'bg-[#78683a96]'
                   } text-[#fff]`}
                 >
                   <p>{item.text}</p>
