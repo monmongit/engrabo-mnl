@@ -29,7 +29,32 @@ const styles = {
   '@media (min-width: 800px)': {
     modal:
       'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-5 rounded-lg shadow-lg z-50 max-w-[80%] max-h-screen w-[60%] h-[70%]',
+    chatboxClosed:
+      'fixed bottom-20 right-10 w-16 h-16 bg-[#171203] text-white rounded-full flex items-center justify-center cursor-pointer',
   },
+
+  // Chatbox styles
+  chatboxClosed:
+    'fixed bottom-20 right-5 w-20 h-20 bg-[#171203] text-white rounded-full flex items-center justify-center cursor-pointer',
+  chatboxOpen:
+    'fixed bottom-20 right-5 w-80 h-96 bg-white border border-gray-300 rounded-lg shadow-lg flex flex-col',
+  chatboxHeader: 'bg-[#171203] text-white p-3 text-center cursor-pointer',
+  chatboxContent: 'flex flex-col flex-1',
+  chatboxMessages: 'flex-1 p-3 overflow-y-auto flex flex-col',
+
+  userMessage:
+    'text-right p-2 m-2 bg-[#171203] text-white rounded-lg self-end max-w-[80%]',
+  botMessage:
+    'text-left p-2 m-2 bg-[#78683a96] text-white rounded-lg self-start max-w-[80%]',
+  chatboxInput: 'flex p-2',
+  chatboxInputField: 'flex-1 p-2 border border-gray-300 rounded-lg',
+  chatboxInputButton:
+    'p-2 bg-[#171203] text-white rounded-lg ml-2 cursor-pointer',
+  chatboxSelection: 'flex flex-wrap p-3 gap-2 overflow-y-auto',
+  chatboxSelectionButton:
+    'bg-gray-200 p-2 rounded-lg cursor-pointer hover:bg-gray-300',
+  cloudMessage:
+    'fixed bottom-30 right-20 text-[#171203]  bg-white border border-[#171203] rounded-lg shadow-lg p-3 z-50',
 };
 
 export default styles;
