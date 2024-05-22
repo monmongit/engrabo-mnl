@@ -18,10 +18,19 @@ const orderSchema = new mongoose.Schema({
     type: String,
   },
 
-  // selectedOptions: {
-  //   type: Map,
-  //   of: String
-  // },
+  // model to make upload image
+  images: [
+    {
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 
   totalPrice: {
     type: Number,
