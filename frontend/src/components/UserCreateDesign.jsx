@@ -20,142 +20,156 @@ import {
    - upload photo
  */
 
+// const UserCreateDesign2 = () => {
+//   const { allProducts, isLoading } = useSelector((state) => state.products);
+//   const [products, setProducts] = useState([]);
+//   const [selectedProduct, setSelectedProduct] = useState(null);
+//   const [isProductListVisible, setIsProductListVisible] = useState(true);
+
+//   const handleSelectProduct = (event) => {
+//     const productId = event.target.value;
+//     const product = products.find((product) => product._id === productId);
+//     setSelectedProduct(product);
+//     setIsProductListVisible(true); // Hide the product list panel after selection
+//   };
+
+//   useEffect(() => {
+//     if (allProducts) {
+//       setProducts(allProducts);
+//       if (allProducts.length > 0) {
+//         setSelectedProduct(allProducts[0]);
+//       }
+//     }
+//   }, [allProducts]);
+
+//   console.log(products);
+
+//   return (
+//     <div className="flex h-full">
+//       <div className="flex flex-col h-full">
+//         {isProductListVisible && (
+//           <div className="w-64 bg-white border-l border-gray-300 p-4">
+//             <h1 className="text-xl font-bold mb-4">Product List</h1>
+//             <select
+//               onChange={handleSelectProduct}
+//               defaultValue=""
+//               className="w-full p-2 border border-gray-300 rounded"
+//             >
+//               <option value="" disabled>
+//                 Select a product
+//               </option>
+//               {products &&
+//                 products.map((product) => (
+//                   <option key={product._id} value={product._id}>
+//                     {product.name}
+//                   </option>
+//                 ))}
+//             </select>
+
+//             {selectedProduct && (
+//               <div className="mt-4">
+//                 <h2 className="text-lg font-bold">Selected Product</h2>
+//                 <p>Name: {selectedProduct.name}</p>
+//                 <p>Description: {selectedProduct.description}</p>
+//                 <p>Price: ${selectedProduct.originalPrice}</p>
+//                 {selectedProduct.images &&
+//                   selectedProduct.images.length > 0 && (
+//                     <img
+//                       src={selectedProduct.images[0].url}
+//                       alt={selectedProduct.name}
+//                       className="w-full h-[170px] object-contain"
+//                     />
+//                   )}
+//               </div>
+//             )}
+//           </div>
+//         )}
+//       </div>
+//       <div className="border-solid">
+//         <DrawingCanvas />
+//       </div>
+//       {/* <div className="flex flex-col h-full">
+//         <SidePanel className="h-full" />
+
+//         {isProductListVisible && (
+//           <div className="w-64 bg-white border-l border-gray-300 p-4">
+//             <h1 className="text-xl font-bold mb-4">Product List</h1>
+//             <select
+//               onChange={handleSelectProduct}
+//               defaultValue=""
+//               className="w-full p-2 border border-gray-300 rounded"
+//             >
+//               <option value="" disabled>
+//                 Select a product
+//               </option>
+//               {products &&
+//                 products.map((product) => (
+//                   <option key={product._id} value={product._id}>
+//                     {product.name}
+//                   </option>
+//                 ))}
+//             </select>
+
+//             {selectedProduct && (
+//               <div className="mt-4">
+//                 <h2 className="text-lg font-bold">Selected Product</h2>
+//                 <p>Name: {selectedProduct.name}</p>
+//                 <p>Description: {selectedProduct.description}</p>
+//                 <p>Price: ${selectedProduct.originalPrice}</p>
+//                 {selectedProduct.images &&
+//                   selectedProduct.images.length > 0 && (
+//                     <img
+//                       src={selectedProduct.images[0].url}
+//                       alt={selectedProduct.name}
+//                       className="w-full h-[170px] object-contain"
+//                     />
+//                   )}
+//               </div>
+//             )}
+//           </div>
+//         )}
+//       </div> */}
+
+//      </div>
+//   );
+// };
+
+// const SidePanel = () => {
+//   return (
+//     <div className="w-64 bg-gray-200 h-full p-4">
+//       <button className="w-full bg-blue-500 text-white py-2 rounded">
+//         Products
+//       </button>
+//     </div>
+//   );
+// };
+
+// const OrderPanel = () => {
+//   return (
+//     <div className="w-64 bg-gray-200 h-full p-4">
+//       <button className="w-full bg-blue-500 text-white py-2 rounded">
+//         Products
+//       </button>
+//     </div>
+//   );
+// };
+
+// const AddToCart = () => {
+
+//   return (
+//     <div
+//     className={`${styles.button} mt-6 rounded-[1px] h-15 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
+//     // onClick={() => addToCartHandler(data._id)}
+//     onClick = {()=> (console.log("added to cart"))}
+//   >
+//     <span className="flex items-center">
+//       Add to cart <AiOutlineShoppingCart className="ml-1" />
+//     </span>
+//   </div>
+//   )
+// }
+
 const UserCreateDesign = () => {
-  const { allProducts, isLoading } = useSelector((state) => state.products);
-  const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [isProductListVisible, setIsProductListVisible] = useState(true);
-
-  const handleSelectProduct = (event) => {
-    const productId = event.target.value;
-    const product = products.find((product) => product._id === productId);
-    setSelectedProduct(product);
-    setIsProductListVisible(true); // Hide the product list panel after selection
-  };
-
-  useEffect(() => {
-    if (allProducts) {
-      setProducts(allProducts);
-      if (allProducts.length > 0) {
-        setSelectedProduct(allProducts[0]);
-      }
-    }
-  }, [allProducts]);
-
-  console.log(products);
-
-  return (
-    <div className="flex h-full">
-      <div className="flex flex-col h-full">
-        <SidePanel className="h-full" />
-
-        {isProductListVisible && (
-          <div className="w-64 bg-white border-l border-gray-300 p-4">
-            <h1 className="text-xl font-bold mb-4">Product List</h1>
-            <select
-              onChange={handleSelectProduct}
-              defaultValue=""
-              className="w-full p-2 border border-gray-300 rounded"
-            >
-              <option value="" disabled>
-                Select a product
-              </option>
-              {products &&
-                products.map((product) => (
-                  <option key={product._id} value={product._id}>
-                    {product.name}
-                  </option>
-                ))}
-            </select>
-
-            {selectedProduct && (
-              <div className="mt-4">
-                <h2 className="text-lg font-bold">Selected Product</h2>
-                <p>Name: {selectedProduct.name}</p>
-                <p>Description: {selectedProduct.description}</p>
-                <p>Price: ${selectedProduct.originalPrice}</p>
-                {selectedProduct.images &&
-                  selectedProduct.images.length > 0 && (
-                    <img
-                      src={selectedProduct.images[0].url}
-                      alt={selectedProduct.name}
-                      className="w-full h-[170px] object-contain"
-                    />
-                  )}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      <div className="border-solid">
-        <DrawingCanvas />
-      </div>
-      <div className="flex flex-col h-full">
-        <SidePanel className="h-full" />
-
-        {isProductListVisible && (
-          <div className="w-64 bg-white border-l border-gray-300 p-4">
-            <h1 className="text-xl font-bold mb-4">Product List</h1>
-            <select
-              onChange={handleSelectProduct}
-              defaultValue=""
-              className="w-full p-2 border border-gray-300 rounded"
-            >
-              <option value="" disabled>
-                Select a product
-              </option>
-              {products &&
-                products.map((product) => (
-                  <option key={product._id} value={product._id}>
-                    {product.name}
-                  </option>
-                ))}
-            </select>
-
-            {selectedProduct && (
-              <div className="mt-4">
-                <h2 className="text-lg font-bold">Selected Product</h2>
-                <p>Name: {selectedProduct.name}</p>
-                <p>Description: {selectedProduct.description}</p>
-                <p>Price: ${selectedProduct.originalPrice}</p>
-                {selectedProduct.images &&
-                  selectedProduct.images.length > 0 && (
-                    <img
-                      src={selectedProduct.images[0].url}
-                      alt={selectedProduct.name}
-                      className="w-full h-[170px] object-contain"
-                    />
-                  )}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const SidePanel = () => {
-  return (
-    <div className="w-64 bg-gray-200 h-full p-4">
-      <button className="w-full bg-blue-500 text-white py-2 rounded">
-        Products
-      </button>
-    </div>
-  );
-};
-
-const OrderPanel = () => {
-  return (
-    <div className="w-64 bg-gray-200 h-full p-4">
-      <button className="w-full bg-blue-500 text-white py-2 rounded">
-        Products
-      </button>
-    </div>
-  );
-};
-
-const DrawingCanvas = () => {
   const [tool, setTool] = useState("pen");
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -250,17 +264,9 @@ const DrawingCanvas = () => {
     setImageURL("");
   };
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageURL(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
+
+  
   const handleSelect = (e) => {
     setSelectedId(e.target.id());
   };
@@ -275,6 +281,31 @@ const DrawingCanvas = () => {
     link.click();
     document.body.removeChild(link);
   };
+
+  // customer upload
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageURL(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // customer upload as well - pero ito yung gagamitin para sa cart den
+  const handleFileInputChange = (e) => {
+    // const reader = new FileReader();
+
+    // reader.onload = () => {
+    //   if (reader.readyState === 2) {
+    //     setAvatar(reader.result);
+    //   }
+    // };
+    // reader.readAsDataURL(e.target.files[0]);
+  };
+
 
   return (
     <div className="flex flex-col items-start p-4 space-y-4">
@@ -330,6 +361,20 @@ const DrawingCanvas = () => {
         >
           Export
         </button>
+        <label
+          htmlFor="file-input"
+          className="ml-5 flex items-center justify-center px-4 py-2 border border-brown-lightdark rounded-md shadow-sm text-sm font-medium  text-brown-semidark bg-white hover:border-brown-semidark"
+        >
+          <span>Add the design</span>
+          <input
+            type="file"
+            name="avatar"
+            id="file-input"
+            accept=".jpg,.jpeg,.png"
+            onChange={handleFileInputChange}
+            className="sr-only"
+          />
+        </label>
       </div>
       <Stage
         // width={window.innerWidth}
