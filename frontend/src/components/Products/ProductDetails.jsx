@@ -7,6 +7,7 @@ import {
   AiOutlineHeart,
   AiOutlineMessage,
   AiOutlineShoppingCart,
+  AiOutlineFontSize,
 } from "react-icons/ai";
 import { server } from "../../server";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,6 +33,7 @@ const ProductDetails = ({ data }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+
   useEffect(() => {
     dispatch(getAllProductsAdmin(data && data?.admin._id));
     if (wishlist && wishlist.find((i) => i._id === data?._id)) {
@@ -40,6 +42,15 @@ const ProductDetails = ({ data }) => {
       setClick(false);
     }
   }, [dispatch, data, wishlist]);
+
+
+  const createDesignHandler = () => {
+    return(
+      <>
+      </>
+    )
+  }
+
 
   const incrementCount = () => {
     if (data?.stock <= count) {
@@ -262,6 +273,18 @@ const ProductDetails = ({ data }) => {
                 </span>
               </div>
 
+               {/* Create Design Button */}
+               <div
+                className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
+                onClick={() => createDesignHandler(data._id)}
+              >
+                <span className="flex items-center">
+                  Create Design  <AiOutlineFontSize className="ml-1" />
+                </span>
+              </div>
+
+
+        
               {/* Dropdown options */}
               {data.dropdowns &&
                 data.dropdowns.map((dropdown, index) => (

@@ -32,85 +32,94 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Please enter your product stock'],
   },
-  images: [
-    {
-      public_id: {
-        type: String,
-        required: true,
-      },
-      url: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
 
-  // add an option for admin instructions to customer for personalization
-  instructions : {
-    type: String,
-  }, 
-
-  // add fields for dropdown menus for product
-  dropdowns : [
+  costAdjustment : [
     {
-      name: String, 
-      options: [String]
+      name: String,
+      options: [String],
+      values: [Number]
     }
   ],
 
-  reviews: [
-    {
-      user: {
-        type: Object,
-      },
-      rating: {
-        type: Number,
-      },
-      comment: {
-        type: String,
-      },
-      isAnonymous: {
-        type: Boolean,
-        default: false,
-      },
-      reviewImages: [
-        {
-          public_id: {
-            type: String,
-          },
-          url: {
-            type: String,
-          },
-        },
-      ],
-      productId: {
-        type: String,
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now(),
-      },
+  images: [
+  {
+    public_id: {
+      type: String,
+      required: true,
     },
-  ],
+    url: {
+      type: String,
+      required: true,
+    },
+  },
+],
+
+  // add an option for admin instructions to customer for personalization
+  instructions : {
+  type: String,
+},
+
+  // add fields for dropdown menus for product
+  dropdowns : [
+  {
+    name: String,
+    options: [String]
+  }
+],
+
+  reviews: [
+  {
+    user: {
+      type: Object,
+    },
+    rating: {
+      type: Number,
+    },
+    comment: {
+      type: String,
+    },
+    isAnonymous: {
+      type: Boolean,
+      default: false,
+    },
+    reviewImages: [
+      {
+        public_id: {
+          type: String,
+        },
+        url: {
+          type: String,
+        },
+      },
+    ],
+    productId: {
+      type: String,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+    },
+  },
+],
   ratings: {
-    type: Number,
-  },
+  type: Number,
+},
   adminId: {
-    type: String,
-    required: true,
-  },
+  type: String,
+  required: true,
+},
   admin: {
-    type: Object,
-    required: true,
-  },
+  type: Object,
+  required: true,
+},
   sold_out: {
-    type: Number,
-    default: 0,
-  },
+  type: Number,
+  default: 0,
+},
   createAt: {
-    type: Date,
-    default: Date.now(),
-  },
+  type: Date,
+  default: Date.now(),
+},
 });
 
 module.exports = mongoose.model('Product', productSchema);
