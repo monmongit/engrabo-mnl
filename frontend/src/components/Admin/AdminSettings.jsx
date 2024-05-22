@@ -52,7 +52,7 @@ const AdminSettings = () => {
 
     await axios
       .put(
-        `${server}/admin/update-seller-info`,
+        `${server}/admin/update-admin-info`,
         {
           name,
           address,
