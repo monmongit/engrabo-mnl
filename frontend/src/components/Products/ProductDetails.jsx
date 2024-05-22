@@ -18,6 +18,7 @@ import { addTocart } from "../../redux/action/cart";
 import Ratings from "./Ratings";
 import axios from "axios";
 import Modal from "react-modal";
+import UserCreateDesign from "../UserCreateDesign"
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -363,6 +364,7 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
+          <UserCreateDesign />
           <ProductDetailsInfo
             data={data}
             products={products}
