@@ -8,6 +8,7 @@ const Product = require('../model/product');
 const Event = require('../model/event');
 const Admin = require('../model/admin');
 const sendMail = require('../utils/sendMail');
+const cloudinary = require('cloudinary');
 
 // Email Template Function
 const getEmailTemplate = (content) => {
@@ -361,6 +362,16 @@ router.put(
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
+  })
+);
+
+router.post(
+  '/custom',
+  catchAsyncError(async (req, res, next) => {
+    // get the url
+    console.log(req.body);
+    // get upload the url to the cloudinary
+    // send back the url as a string? or json
   })
 );
 

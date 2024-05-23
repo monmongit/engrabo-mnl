@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Stage,
   Layer,
@@ -7,7 +7,9 @@ import {
   Text,
   Image as KonvaImage,
   Transformer,
-} from "react-konva";
+} from 'react-konva';
+import axios from 'axios';
+import { server } from '../server';
 
 /* 
  Things to do 
@@ -169,17 +171,27 @@ import {
 //   )
 // }
 
-const UserCreateDesign = () => {
-  const [tool, setTool] = useState("pen");
+const UserCreateDesign = ({ data }) => {
+  const [tool, setTool] = useState('pen');
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [image, setImage] = useState(null);
-  const [imageURL, setImageURL] = useState("");
+  const [imageURL, setImageURL] = useState('');
   const stageRef = useRef(null);
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
   const [texts, setTexts] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const transformerRef = useRef(null);
+
+  console.log('Data design: ', data);
+
+  // cart and design
+  const { cart } = useSelector((state) => state.cart);
+  const [design, SetDesign] = useState(null);
+
+  console.log('Design cart: ', cart);
+
+  const [finalDesign, setFinalDesign] = useState(null);
 
   useEffect(() => {
     if (imageURL) {
@@ -188,7 +200,7 @@ const UserCreateDesign = () => {
         setImage(img);
       };
       img.onerror = () => {
-        console.error("Failed to load image");
+        console.error('Failed to load image');
         // Handle error here, such as showing a message to the user
       };
       img.src = imageURL;
@@ -211,7 +223,7 @@ const UserCreateDesign = () => {
   }, [selectedId]);
 
   const handleMouseDown = (e) => {
-    if (tool === "pen" || tool === "eraser") {
+    if (tool === 'pen' || tool === 'eraser') {
       setIsDrawing(true);
       const pos = e.target.getStage().getPointerPosition();
       setLines([...lines, { tool, points: [pos.x, pos.y] }]);
@@ -239,7 +251,7 @@ const UserCreateDesign = () => {
       ...texts,
       { id: `text${texts.length}`, text, x: pointer.x, y: pointer.y },
     ]);
-    setText("");
+    setText('');
   };
 
   const handleTextDblClick = (e) => {
@@ -261,21 +273,19 @@ const UserCreateDesign = () => {
     setLines([]);
     setTexts([]);
     setImage(null);
-    setImageURL("");
+    setImageURL('');
   };
 
-
-
-  
   const handleSelect = (e) => {
     setSelectedId(e.target.id());
   };
 
   const handleExport = () => {
     const stage = stageRef.current.getStage();
-    const dataURL = stage.toDataURL();
-    const link = document.createElement("a");
-    link.download = "canvas.png";
+    // Specify the MIME type for JPEG
+    const dataURL = stage.toDataURL({ mimeType: 'image/jpeg', quality: 1 });
+    const link = document.createElement('a');
+    link.download = 'canvas.png';
     link.href = dataURL;
     document.body.appendChild(link);
     link.click();
@@ -285,6 +295,7 @@ const UserCreateDesign = () => {
   // customer upload
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
+    console.log('uploaded file: ', file);
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -294,42 +305,63 @@ const UserCreateDesign = () => {
     }
   };
 
-  // customer upload as well - pero ito yung gagamitin para sa cart den
-  const handleFileInputChange = (e) => {
-    // const reader = new FileReader();
-
-    // reader.onload = () => {
-    //   if (reader.readyState === 2) {
-    //     setAvatar(reader.result);
-    //   }
-    // };
-    // reader.readAsDataURL(e.target.files[0]);
+  const dataURLToBlob = (dataURL) => {
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
   };
 
+  // customer upload as well - pero ito yung gagamitin para sa cart den
+  const saveExportedImage = () => {
+    const stage = stageRef.current.getStage();
+    const dataURL = stage.toDataURL({ mimeType: 'image/jpeg', quality: 1 });
+    const blob = dataURLToBlob(dataURL);
+
+    const formData = new FormData();
+    formData.append('image', blob);
+
+    // send the image to cloudinary and saves its url
+    try {
+      axios.post(`${server}/order/custom`, {
+        body: formData,
+      });
+    } catch (error) {}
+
+    // call the server and pass the data
+    // add the json url response to card object
+
+    console.log('blob data', blob);
+    console.log('form data: ', formData);
+  };
 
   return (
     <div className="flex flex-col items-start p-4 space-y-4">
       <div className="flex space-x-2">
         <button
-          onClick={() => setTool("select")}
+          onClick={() => setTool('select')}
           className="bg-yellow-500 text-white px-4 py-2 rounded"
         >
           Select
         </button>
         <button
-          onClick={() => setTool("pen")}
+          onClick={() => setTool('pen')}
           className="bg-blue-500 text-white px-4 py-2 rounded"
         >
           Draw
         </button>
         <button
-          onClick={() => setTool("eraser")}
+          onClick={() => setTool('eraser')}
           className="bg-red-500 text-white px-4 py-2 rounded"
         >
           Erase
         </button>
         <button
-          onClick={() => setTool("text")}
+          onClick={() => setTool('text')}
           className="bg-green-500 text-white px-4 py-2 rounded"
         >
           Text
@@ -340,7 +372,7 @@ const UserCreateDesign = () => {
         >
           Clear
         </button>
-        {tool === "text" && (
+        {tool === 'text' && (
           <input
             type="text"
             value={text}
@@ -354,34 +386,41 @@ const UserCreateDesign = () => {
           accept="image/*"
           onChange={handleImageUpload}
           className="bg-white border border-gray-300 px-4 py-2 rounded"
-        />{" "}
+        />{' '}
         <button
           onClick={handleExport}
           className="bg-purple-500 text-white px-4 py-2 rounded"
         >
           Export
         </button>
-        <label
+        {/* <label
           htmlFor="file-input"
           className="ml-5 flex items-center justify-center px-4 py-2 border border-brown-lightdark rounded-md shadow-sm text-sm font-medium  text-brown-semidark bg-white hover:border-brown-semidark"
-        >
-          <span>Add the design</span>
+        > */}
+        {/* <span>Add the design</span>
           <input
             type="file"
             name="avatar"
             id="file-input"
             accept=".jpg,.jpeg,.png"
-            onChange={handleFileInputChange}
+            onChange={saveExportedImage}
             className="sr-only"
-          />
-        </label>
+          /> */}
+        {/* </label> */}
       </div>
+      <button
+        onClick={saveExportedImage}
+        className="bg-green-500 text-white px-4 py-2 rounded"
+      >
+        Add the design
+      </button>
+
       <Stage
         // width={window.innerWidth}
         // height={window.innerHeight}
         width={900}
         height={400}
-        onMouseDown={tool === "text" ? handleTextAdd : handleMouseDown}
+        onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
         onMousemove={handleMouseMove}
         onMouseup={handleMouseUp}
         ref={stageRef}
@@ -394,12 +433,12 @@ const UserCreateDesign = () => {
               key={i}
               id={`line${i}`}
               points={line.points}
-              stroke={line.tool === "pen" ? "black" : "white"}
+              stroke={line.tool === 'pen' ? 'black' : 'white'}
               strokeWidth={5}
               tension={0.5}
               lineCap="round"
               globalCompositeOperation={
-                line.tool === "eraser" ? "destination-out" : "source-over"
+                line.tool === 'eraser' ? 'destination-out' : 'source-over'
               }
             />
           ))}

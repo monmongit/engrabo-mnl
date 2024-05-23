@@ -20,27 +20,27 @@ const CreateProduct = ({ setOpen }) => {
   const { categories } = useSelector((state) => state.categories);
 
   const [images, setImages] = useState([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [tags, setTags] = useState("");
-  const [grossPrice, setGrossPrice] = useState("");
-  const [originalPrice, setOriginalPrice] = useState("");
-  const [discountPrice, setDiscountPrice] = useState("");
-  const [stock, setStock] = useState("")
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [tags, setTags] = useState('');
+  const [grossPrice, setGrossPrice] = useState('');
+  const [originalPrice, setOriginalPrice] = useState('');
+  const [discountPrice, setDiscountPrice] = useState('');
+  const [stock, setStock] = useState('');
 
   // for personalization purposes
-  const [instructions, setIntructions] = useState("");
+  const [instructions, setIntructions] = useState('');
 
   // for personalization purposes
   const [personalization, setPersonalization] = useState('');
   const [dropdowns, setDropdowns] = useState([]);
-  
+
   dropdowns.forEach((dropdown, index) => {
     console.log(`Dropdown ${index + 1}:`);
     console.log(`Name: ${dropdown.name}`);
     console.log(`Options: ${dropdown.options.join(', ')}`);
-});
+  });
   useEffect(() => {
     dispatch(getAllCategories());
   }, [dispatch]);
@@ -63,9 +63,7 @@ const CreateProduct = ({ setOpen }) => {
   const handleAddOption = (index) => {
     const newDropdowns = dropdowns.map((dropdown, i) => {
       if (i === index) {
-
-        return { ...dropdown, options: [...dropdown.options, ""] };
-
+        return { ...dropdown, options: [...dropdown.options, ''] };
       }
       return dropdown;
     });
@@ -114,6 +112,7 @@ const CreateProduct = ({ setOpen }) => {
     e.preventDefault();
 
     const files = Array.from(e.target.files);
+    console.log('create product files: ', files);
 
     setImages([]);
 
@@ -138,18 +137,18 @@ const CreateProduct = ({ setOpen }) => {
       newForm.set('images', image);
     });
 
-    newForm.append("name", name);
-    newForm.append("description", description);
-    newForm.append("category", category);
-    newForm.append("tags", tags);
-    newForm.append("grossPrice", grossPrice);
-    newForm.append("originalPrice", originalPrice);
-    newForm.append("discountPrice", discountPrice);
-    newForm.append("stock", stock);
-    newForm.append("adminId", admin._id);
-    newForm.append("intructions", instructions);
-    newForm.append("dropdown", dropdowns);
-   
+    newForm.append('name', name);
+    newForm.append('description', description);
+    newForm.append('category', category);
+    newForm.append('tags', tags);
+    newForm.append('grossPrice', grossPrice);
+    newForm.append('originalPrice', originalPrice);
+    newForm.append('discountPrice', discountPrice);
+    newForm.append('stock', stock);
+    newForm.append('adminId', admin._id);
+    newForm.append('intructions', instructions);
+    newForm.append('dropdown', dropdowns);
+
     dispatch(
       createProduct({
         name,
@@ -163,7 +162,7 @@ const CreateProduct = ({ setOpen }) => {
         adminId: admin._id,
         images,
         instructions,
-        dropdowns
+        dropdowns,
       })
     );
   };
@@ -349,7 +348,8 @@ const CreateProduct = ({ setOpen }) => {
           {/* Instructions */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Instruction For Personalization <span className="text-red-500">*</span>
+              Instruction For Personalization{' '}
+              <span className="text-red-500">*</span>
             </label>
             <textarea
               cols="30"

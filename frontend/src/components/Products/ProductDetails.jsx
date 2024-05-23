@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import styles from "../../styles/style";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styles from '../../styles/style';
 import {
   AiFillHeart,
   AiOutlineClose,
@@ -8,17 +8,17 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineFontSize,
-} from "react-icons/ai";
-import { server } from "../../server";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllProductsAdmin } from "../../redux/action/product";
-import { addToWishlist, removeFromWishlist } from "../../redux/action/wishlist";
-import { toast } from "react-toastify";
-import { addTocart } from "../../redux/action/cart";
-import Ratings from "./Ratings";
-import axios from "axios";
-import Modal from "react-modal";
-import UserCreateDesign from "../UserCreateDesign"
+} from 'react-icons/ai';
+import { server } from '../../server';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllProductsAdmin } from '../../redux/action/product';
+import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
+import { toast } from 'react-toastify';
+import { addTocart } from '../../redux/action/cart';
+import Ratings from './Ratings';
+import axios from 'axios';
+import Modal from 'react-modal';
+import UserCreateDesign from '../UserCreateDesign';
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -26,14 +26,13 @@ const ProductDetails = ({ data }) => {
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
 
-  const [insResponse, setInsResponse] = useState("");
+  const [insResponse, setInsResponse] = useState('');
   const [selectedOptions, setSelectedOptions] = useState({});
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
 
   useEffect(() => {
     dispatch(getAllProductsAdmin(data && data?.admin._id));
@@ -44,14 +43,9 @@ const ProductDetails = ({ data }) => {
     }
   }, [dispatch, data, wishlist]);
 
-
   const createDesignHandler = () => {
-    return(
-      <>
-      </>
-    )
-  }
-
+    return <></>;
+  };
 
   const incrementCount = () => {
     if (data?.stock <= count) {
@@ -65,7 +59,7 @@ const ProductDetails = ({ data }) => {
 
   const decrementCount = () => {
     if (count <= 1) {
-      toast.error("You cannot order less than 1 item.");
+      toast.error('You cannot order less than 1 item.');
       return;
     }
     setCount(count - 1);
@@ -89,7 +83,7 @@ const ProductDetails = ({ data }) => {
           toast.error(error.response.data.message);
         });
     } else {
-      toast.error("Please login to make an conversation");
+      toast.error('Please login to make an conversation');
     }
   };
 
@@ -133,7 +127,8 @@ const ProductDetails = ({ data }) => {
       [dropdownName]: value,
     });
   };
-  console.log("selected options information: ", selectedOptions);
+
+  console.log('selected options information: ', selectedOptions);
 
   const totalReviewsLength =
     products &&
@@ -171,7 +166,7 @@ const ProductDetails = ({ data }) => {
                     <div
                       key={index}
                       className={`cursor-pointer p-1 rounded-md ${
-                        select === index ? "border-2 border-gray-500" : ""
+                        select === index ? 'border-2 border-gray-500' : ''
                       }`}
                       onClick={() => setSelect(index)}
                     >
@@ -274,18 +269,16 @@ const ProductDetails = ({ data }) => {
                 </span>
               </div>
 
-               {/* Create Design Button */}
-               <div
+              {/* Create Design Button */}
+              <div
                 className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
                 onClick={() => createDesignHandler(data._id)}
               >
                 <span className="flex items-center">
-                  Create Design  <AiOutlineFontSize className="ml-1" />
+                  Create Design <AiOutlineFontSize className="ml-1" />
                 </span>
               </div>
 
-
-        
               {/* Dropdown options */}
               {data.dropdowns &&
                 data.dropdowns.map((dropdown, index) => (
@@ -364,7 +357,7 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
-          <UserCreateDesign />
+          <UserCreateDesign data={data} />
           <ProductDetailsInfo
             data={data}
             products={products}
@@ -388,13 +381,13 @@ const ProductDetailsInfo = ({
   const [selectedImage, setSelectedImage] = useState(null);
 
   const maskName = (name) => {
-    const parts = name.split(" ");
+    const parts = name.split(' ');
     return parts
       .map((part, index) => {
-        if (index === 0) return part.slice(0, 2) + "*****";
-        return "*****";
+        if (index === 0) return part.slice(0, 2) + '*****';
+        return '*****';
       })
-      .join(" ");
+      .join(' ');
   };
 
   const openModal = (image) => {
@@ -413,7 +406,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
             }
             onClick={() => setActive(1)}
           >
@@ -424,7 +417,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
             }
             onClick={() => setActive(2)}
           >
@@ -435,7 +428,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
             }
             onClick={() => setActive(3)}
           >
@@ -519,18 +512,18 @@ const ProductDetailsInfo = ({
               <h5 className="font-[600] text-[#171203]">
                 Joined on:
                 <span className="font-[500] text-[#534723]">
-                  {" "}
+                  {' '}
                   14 March, 2023
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Products:{" "}
+                Total Products:{' '}
                 <span className="font-[500]">
                   {products && products.length}
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Reviews:{" "}
+                Total Reviews:{' '}
                 <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">
