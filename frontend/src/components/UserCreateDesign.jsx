@@ -281,15 +281,38 @@ const UserCreateDesign = ({ data }) => {
   };
 
   const handleExport = () => {
+    // Get the stage
     const stage = stageRef.current.getStage();
-    // Specify the MIME type for JPEG
-    const dataURL = stage.toDataURL({ mimeType: 'image/jpeg', quality: 1 });
-    const link = document.createElement('a');
-    link.download = 'canvas.png';
-    link.href = dataURL;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+    // Ensure stage exists
+    if (!stage) {
+      console.error('Stage not found');
+      return;
+    }
+
+    // Set stage background to transparent
+    // Set the background color of the container element to transparent
+    const container = stage.container();
+    container.style.backgroundColor = 'transparent';
+
+    // Convert stage to data URL
+    try {
+      const dataURL = stage.toDataURL({ mimeType: 'image/png' });
+
+      // Create a link element
+      const link = document.createElement('a');
+      link.download = 'canvas.png';
+      link.href = dataURL;
+
+      // Append link to document and trigger click
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error exporting canvas:', error);
+    }
   };
 
   // customer upload
@@ -305,38 +328,26 @@ const UserCreateDesign = ({ data }) => {
     }
   };
 
-  const dataURLToBlob = (dataURL) => {
-    const byteString = atob(dataURL.split(',')[1]);
-    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    return new Blob([ab], { type: mimeString });
-  };
-
-  // customer upload as well - pero ito yung gagamitin para sa cart den
-  const saveExportedImage = () => {
+  const saveExportedImage = async () => {
     const stage = stageRef.current.getStage();
     const dataURL = stage.toDataURL({ mimeType: 'image/jpeg', quality: 1 });
-    const blob = dataURLToBlob(dataURL);
 
-    const formData = new FormData();
-    formData.append('image', blob);
+    console.log('data url: ', dataURL);
 
-    // send the image to cloudinary and saves its url
-    try {
-      axios.post(`${server}/order/custom`, {
-        body: formData,
+    fetch(`${server}/custom/create-custom`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ canvasDataURL: dataURL }), // Changed 'dataURL' to 'canvasDataURL' to match server expectation
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('secure url: ', data.secureURL);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
       });
-    } catch (error) {}
-
-    // call the server and pass the data
-    // add the json url response to card object
-
-    console.log('blob data', blob);
-    console.log('form data: ', formData);
   };
 
   return (

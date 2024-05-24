@@ -37,6 +37,7 @@ const coupon = require('./controller/couponCode');
 const category = require('./controller/category');
 const conversation = require('./controller/conversation');
 const message = require('./controller/message');
+const custom = require('./controller/custom');
 
 app.use('/api/v2/user', user);
 app.use('/api/v2/conversation', conversation);
@@ -47,6 +48,7 @@ app.use('/api/v2/product', product);
 app.use('/api/v2/event', event);
 app.use('/api/v2/coupon', coupon);
 app.use('/api/v2/category', category);
+app.use('/api/v2/custom', custom);
 
 // ErrorHandling
 app.use(ErrorHandler);
