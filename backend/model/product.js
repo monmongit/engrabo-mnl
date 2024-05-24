@@ -41,6 +41,20 @@ const productSchema = new mongoose.Schema({
     },
   ],
 
+  sizes: [
+    {
+      name: String,
+      price: Number,
+    },
+  ],
+
+  packaging: [
+    {
+      name: String,
+      price: Number,
+    },
+  ],
+
   images: [
     {
       public_id: {
