@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
 import { useSelector } from "react-redux";
 import Loader from "../components/Layout/Loader";
+import Footer from "../components/Layout/Footer";
 
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
@@ -44,6 +45,7 @@ const ProductsPage = () => {
               </h1>
             ) : null}
           </div>
+          <Footer />
         </div>
       )}
     </>
