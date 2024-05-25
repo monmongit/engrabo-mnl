@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { AiOutlinePlusCircle } from 'react-icons/ai';
-import { createProduct } from '../../redux/action/product';
-import { toast } from 'react-toastify';
-import { RxCross1 } from 'react-icons/rx';
-import { getAllCategories } from '../../redux/action/category';
-import { Button } from '@mui/material/Button';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { AiOutlinePlusCircle } from "react-icons/ai";
+import { createProduct } from "../../redux/action/product";
+import { toast } from "react-toastify";
+import { RxCross1 } from "react-icons/rx";
+import { getAllCategories } from "../../redux/action/category";
+import { Button } from "@mui/material/Button";
+import { FaPlus, FaTrash } from "react-icons/fa";
 
 const CreateProduct = ({ setOpen }) => {
   const { admin } = useSelector((state) => state.admin);
@@ -20,26 +20,28 @@ const CreateProduct = ({ setOpen }) => {
   const { categories } = useSelector((state) => state.categories);
 
   const [images, setImages] = useState([]);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [tags, setTags] = useState('');
-  const [grossPrice, setGrossPrice] = useState('');
-  const [originalPrice, setOriginalPrice] = useState('');
-  const [discountPrice, setDiscountPrice] = useState('');
-  const [stock, setStock] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [tags, setTags] = useState("");
+  const [grossPrice, setGrossPrice] = useState("");
+  const [originalPrice, setOriginalPrice] = useState("");
+  const [discountPrice, setDiscountPrice] = useState("");
+  const [stock, setStock] = useState("");
+  const [sizes, setSizes] = useState([]);
+  const [packaging, setPackaging] = useState([]);
 
   // for personalization purposes
-  const [instructions, setIntructions] = useState('');
+  const [instructions, setIntructions] = useState("");
 
   // for personalization purposes
-  const [personalization, setPersonalization] = useState('');
+  const [personalization, setPersonalization] = useState("");
   const [dropdowns, setDropdowns] = useState([]);
 
   dropdowns.forEach((dropdown, index) => {
     console.log(`Dropdown ${index + 1}:`);
     console.log(`Name: ${dropdown.name}`);
-    console.log(`Options: ${dropdown.options.join(', ')}`);
+    console.log(`Options: ${dropdown.options.join(", ")}`);
   });
   useEffect(() => {
     dispatch(getAllCategories());
@@ -50,20 +52,56 @@ const CreateProduct = ({ setOpen }) => {
       toast.error(error);
     }
     if (success) {
-      toast.success('Product created successfully');
-      navigate('/dashboard-products');
+      toast.success("Product created successfully");
+      navigate("/dashboard-products");
       window.location.reload();
     }
   }, [dispatch, error, success, navigate]);
 
+  // handlers to add sizes
+  const handleAddSize = () => {
+    setSizes([...sizes, { name: "", price: "" }]);
+  };
+  const handleSizeChange = (index, field, value) => {
+    const newSizes = sizes.map((size, i) => {
+      if (i === index) {
+        return { ...size, [field]: value };
+      }
+      return size;
+    });
+    setSizes(newSizes);
+  };
+  const handleDeleteSize = (index) => {
+    const newSizes = sizes.filter((_, i) => i !== index);
+    setSizes(newSizes);
+  };
+
+  // handlers for adding packaging
+  const handleAddPackaging = () => {
+    setPackaging([...packaging, { name: "", price: "" }]);
+  };
+  const handlePackagingChange = (index, field, value) => {
+    const newPackaging = packaging.map((pack, i) => {
+      if (i === index) {
+        return { ...pack, [field]: value };
+      }
+      return pack;
+    });
+    setPackaging(newPackaging);
+  };
+  const handleDeletePackaging = (index) => {
+    const newPackaging = packaging.filter((_, i) => i !== index);
+    setPackaging(newPackaging);
+  };
+
   // Handlers for Dropdowns
   const handleAddDropdown = () => {
-    setDropdowns([...dropdowns, { name: '', options: [] }]);
+    setDropdowns([...dropdowns, { name: "", options: [] }]);
   };
   const handleAddOption = (index) => {
     const newDropdowns = dropdowns.map((dropdown, i) => {
       if (i === index) {
-        return { ...dropdown, options: [...dropdown.options, ''] };
+        return { ...dropdown, options: [...dropdown.options, ""] };
       }
       return dropdown;
     });
@@ -112,7 +150,7 @@ const CreateProduct = ({ setOpen }) => {
     e.preventDefault();
 
     const files = Array.from(e.target.files);
-    console.log('create product files: ', files);
+    console.log("create product files: ", files);
 
     setImages([]);
 
@@ -126,7 +164,6 @@ const CreateProduct = ({ setOpen }) => {
       reader.readAsDataURL(file);
     });
   };
-
   console.log(admin._id);
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -134,20 +171,22 @@ const CreateProduct = ({ setOpen }) => {
     const newForm = new FormData();
 
     images.forEach((image) => {
-      newForm.set('images', image);
+      newForm.set("images", image);
     });
 
-    newForm.append('name', name);
-    newForm.append('description', description);
-    newForm.append('category', category);
-    newForm.append('tags', tags);
-    newForm.append('grossPrice', grossPrice);
-    newForm.append('originalPrice', originalPrice);
-    newForm.append('discountPrice', discountPrice);
-    newForm.append('stock', stock);
-    newForm.append('adminId', admin._id);
-    newForm.append('intructions', instructions);
-    newForm.append('dropdown', dropdowns);
+    newForm.append("name", name);
+    newForm.append("description", description);
+    newForm.append("category", category);
+    newForm.append("tags", tags);
+    newForm.append("grossPrice", grossPrice);
+    newForm.append("originalPrice", originalPrice);
+    newForm.append("discountPrice", discountPrice);
+    newForm.append("stock", stock);
+    newForm.append("adminId", admin._id);
+    newForm.append("intructions", instructions);
+    newForm.append("dropdown", dropdowns);
+    newForm.append("size", JSON.stringify(sizes));
+    newForm.append("packaging", JSON.stringify(packaging));
 
     dispatch(
       createProduct({
@@ -163,6 +202,8 @@ const CreateProduct = ({ setOpen }) => {
         images,
         instructions,
         dropdowns,
+        sizes,
+        packaging,
       })
     );
   };
@@ -297,6 +338,90 @@ const CreateProduct = ({ setOpen }) => {
             />
           </div>
 
+          {/* Sizes */}
+          <div className="space-y-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+              type="button"
+              onClick={handleAddSize}
+            >
+              <FaPlus className="mr-2" /> Add Size
+            </button>
+            {sizes.map((size, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={size.name}
+                  placeholder={`Size Name ${index + 1}`}
+                  onChange={(e) =>
+                    handleSizeChange(index, "name", e.target.value)
+                  }
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  value={size.price}
+                  placeholder={`Price ${index + 1}`}
+                  onChange={(e) =>
+                    handleSizeChange(index, "price", e.target.value)
+                  }
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg"
+                  type="button"
+                  onClick={() => handleDeleteSize(index)}
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Packaging */}
+          <div className="space-y-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+              type="button"
+              onClick={handleAddPackaging}
+            >
+              <FaPlus className="mr-2" /> Add Packaging
+            </button>
+            {packaging.map((pack, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={pack.name}
+                  placeholder={`Packaging Name ${index + 1}`}
+                  onChange={(e) =>
+                    handlePackagingChange(index, "name", e.target.value)
+                  }
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  value={pack.price}
+                  placeholder={`Price ${index + 1}`}
+                  onChange={(e) =>
+                    handlePackagingChange(index, "price", e.target.value)
+                  }
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg"
+                  type="button"
+                  onClick={() => handleDeletePackaging(index)}
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+
           {/* Product Stock */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
@@ -331,7 +456,7 @@ const CreateProduct = ({ setOpen }) => {
                 <AiOutlinePlusCircle
                   size={30}
                   className="mt-3 text-gray-600 hover:text-gray-800 cursor-pointer"
-                />{' '}
+                />{" "}
               </label>
               {images &&
                 images.map((i) => (
@@ -348,7 +473,7 @@ const CreateProduct = ({ setOpen }) => {
           {/* Instructions */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Instruction For Personalization{' '}
+              Instruction For Personalization{" "}
               <span className="text-red-500">*</span>
             </label>
             <textarea

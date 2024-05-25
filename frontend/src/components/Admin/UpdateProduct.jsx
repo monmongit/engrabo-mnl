@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { updateProduct, getProductDetails } from '../../redux/action/product';
-import { toast } from 'react-toastify';
-import { RxCross1 } from 'react-icons/rx';
-import { getAllCategories } from '../../redux/action/category';
-import { AiOutlinePlusCircle } from 'react-icons/ai';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { updateProduct, getProductDetails } from "../../redux/action/product";
+import { toast } from "react-toastify";
+import { RxCross1 } from "react-icons/rx";
+import { getAllCategories } from "../../redux/action/category";
+import { AiOutlinePlusCircle } from "react-icons/ai";
+import { FaPlus, FaTrash } from "react-icons/fa";
 
 const UpdateProduct = ({ setOpen, productId }) => {
   const { admin } = useSelector((state) => state.admin);
@@ -17,16 +17,18 @@ const UpdateProduct = ({ setOpen, productId }) => {
   const dispatch = useDispatch();
 
   const [images, setImages] = useState([]);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [tags, setTags] = useState('');
-  const [grossPrice, setGrossPrice] = useState('');
-  const [originalPrice, setOriginalPrice] = useState('');
-  const [discountPrice, setDiscountPrice] = useState('');
-  const [stock, setStock] = useState('');
-  const [instructions, setInstructions] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [tags, setTags] = useState("");
+  const [grossPrice, setGrossPrice] = useState("");
+  const [originalPrice, setOriginalPrice] = useState("");
+  const [discountPrice, setDiscountPrice] = useState("");
+  const [stock, setStock] = useState("");
+  const [instructions, setInstructions] = useState("");
   const [dropdowns, setDropdowns] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [packaging, setPackaging] = useState([]);
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -36,16 +38,18 @@ const UpdateProduct = ({ setOpen, productId }) => {
   useEffect(() => {
     if (product) {
       setImages(product.images || []);
-      setName(product.name || '');
-      setDescription(product.description || '');
-      setCategory(product.category || '');
-      setTags(product.tags || '');
-      setGrossPrice(product.grossPrice || '');
-      setOriginalPrice(product.originalPrice || '');
-      setDiscountPrice(product.discountPrice || '');
-      setStock(product.stock || '');
-      setInstructions(product.instructions || '');
+      setName(product.name || "");
+      setDescription(product.description || "");
+      setCategory(product.category || "");
+      setTags(product.tags || "");
+      setGrossPrice(product.grossPrice || "");
+      setOriginalPrice(product.originalPrice || "");
+      setDiscountPrice(product.discountPrice || "");
+      setStock(product.stock || "");
+      setInstructions(product.instructions || "");
       setDropdowns(product.dropdowns || []);
+      setSizes(product.sizes || []);
+      setPackaging(product.packaging || []);
     }
   }, [product]);
 
@@ -54,8 +58,8 @@ const UpdateProduct = ({ setOpen, productId }) => {
       toast.error(error);
     }
     if (success) {
-      toast.success('Product updated successfully');
-      navigate('/dashboard-products');
+      toast.success("Product updated successfully");
+      navigate("/dashboard-products");
       setOpen(false);
       window.location.reload();
     }
@@ -76,37 +80,50 @@ const UpdateProduct = ({ setOpen, productId }) => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const updatedProduct = {
-      id: productId,
-      name,
-      description,
-      category,
-      tags,
-      grossPrice,
-      originalPrice,
-      discountPrice,
-      stock,
-      adminId: admin._id,
-      images: images.map((img) => img.url), // Map to extract base64 strings
-      instructions,
-      dropdowns,
-    };
+  // handlers to add sizes
+  const handleAddSize = () => {
+    setSizes([...sizes, { name: "", price: "" }]);
+  };
+  const handleSizeChange = (index, field, value) => {
+    const newSizes = sizes.map((size, i) => {
+      if (i === index) {
+        return { ...size, [field]: value };
+      }
+      return size;
+    });
+    setSizes(newSizes);
+  };
+  const handleDeleteSize = (index) => {
+    const newSizes = sizes.filter((_, i) => i !== index);
+    setSizes(newSizes);
+  };
 
-    console.log('Updated Product Data:', updatedProduct); // Add this line to debug
-
-    dispatch(updateProduct(updatedProduct));
+  // handlers for adding packaging
+  const handleAddPackaging = () => {
+    setPackaging([...packaging, { name: "", price: "" }]);
+  };
+  const handlePackagingChange = (index, field, value) => {
+    const newPackaging = packaging.map((pack, i) => {
+      if (i === index) {
+        return { ...pack, [field]: value };
+      }
+      return pack;
+    });
+    setPackaging(newPackaging);
+  };
+  const handleDeletePackaging = (index) => {
+    const newPackaging = packaging.filter((_, i) => i !== index);
+    setPackaging(newPackaging);
   };
 
   // Handlers for Dropdowns
   const handleAddDropdown = () => {
-    setDropdowns([...dropdowns, { name: '', options: [] }]);
+    setDropdowns([...dropdowns, { name: "", options: [] }]);
   };
   const handleAddOption = (index) => {
     const newDropdowns = dropdowns.map((dropdown, i) => {
       if (i === index) {
-        return { ...dropdown, options: [...dropdown.options, ''] };
+        return { ...dropdown, options: [...dropdown.options, ""] };
       }
       return dropdown;
     });
@@ -149,6 +166,31 @@ const UpdateProduct = ({ setOpen, productId }) => {
       return dropdown;
     });
     setDropdowns(newDropdowns);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const updatedProduct = {
+      id: productId,
+      name,
+      description,
+      category,
+      tags,
+      grossPrice,
+      originalPrice,
+      discountPrice,
+      stock,
+      adminId: admin._id,
+      images: images.map((img) => img.url), // Map to extract base64 strings
+      instructions,
+      dropdowns,
+      sizes,
+      packaging,
+    };
+
+    console.log("Updated Product Data:", updatedProduct); // Add this line to debug
+
+    dispatch(updateProduct(updatedProduct));
   };
 
   return (
@@ -272,6 +314,90 @@ const UpdateProduct = ({ setOpen, productId }) => {
             />
           </div>
 
+          {/* Sizes */}
+          <div className="space-y-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+              type="button"
+              onClick={handleAddSize}
+            >
+              <FaPlus className="mr-2" /> Add Size
+            </button>
+            {sizes.map((size, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={size.name}
+                  placeholder={`Size Name ${index + 1}`}
+                  onChange={(e) =>
+                    handleSizeChange(index, "name", e.target.value)
+                  }
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  value={size.price}
+                  placeholder={`Price ${index + 1}`}
+                  onChange={(e) =>
+                    handleSizeChange(index, "price", e.target.value)
+                  }
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg"
+                  type="button"
+                  onClick={() => handleDeleteSize(index)}
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Packaging */}
+          <div className="space-y-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+              type="button"
+              onClick={handleAddPackaging}
+            >
+              <FaPlus className="mr-2" /> Add Packaging
+            </button>
+            {packaging.map((pack, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  value={pack.name}
+                  placeholder={`Packaging Name ${index + 1}`}
+                  onChange={(e) =>
+                    handlePackagingChange(index, "name", e.target.value)
+                  }
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  value={pack.price}
+                  placeholder={`Price ${index + 1}`}
+                  onChange={(e) =>
+                    handlePackagingChange(index, "price", e.target.value)
+                  }
+                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg"
+                  type="button"
+                  onClick={() => handleDeletePackaging(index)}
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Product Stock <span className="text-red-500">*</span>
@@ -319,7 +445,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
 
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Instruction For Personalization{' '}
+              Instruction For Personalization{" "}
               <span className="text-red-500">*</span>
             </label>
             <textarea

@@ -314,6 +314,8 @@ router.put(
         images,
         instructions: req.body.instructions,
         dropdowns: req.body.dropdowns,
+        sizes: req.body.sizes,
+        packaging: req.body.packaging
       };
 
       const updatedProduct = await Product.findByIdAndUpdate(
