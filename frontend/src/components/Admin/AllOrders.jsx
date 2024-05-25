@@ -17,6 +17,16 @@ const AllOrders = () => {
     dispatch(getAllOrdersOfAdmin(admin._id));
   }, [dispatch, admin._id]);
 
+  // Filter out refund-related orders
+  const nonRefundOrders =
+    orders &&
+    orders.filter(
+      (item) =>
+        item.status !== 'Processing Refund' &&
+        item.status !== 'Refund Approved' &&
+        item.status !== 'Refund Successful'
+    );
+
   const columns = [
     { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
     {
@@ -35,7 +45,6 @@ const AllOrders = () => {
       minWidth: 130,
       flex: 0.7,
     },
-
     {
       field: 'total',
       headerName: 'Total',
@@ -43,7 +52,6 @@ const AllOrders = () => {
       minWidth: 130,
       flex: 0.8,
     },
-
     {
       field: ' ',
       flex: 1,
@@ -67,8 +75,8 @@ const AllOrders = () => {
 
   const row = [];
 
-  orders &&
-    orders.forEach((item) => {
+  nonRefundOrders &&
+    nonRefundOrders.forEach((item) => {
       row.push({
         id: item._id,
         itemsQty: item.cart.length,
