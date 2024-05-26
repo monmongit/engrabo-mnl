@@ -18,8 +18,12 @@ import OrderDetailsPage from "../pages/OrderDetailsPage";
 import TrackOrderPage from "../pages/TrackOrderPage";
 import UserInboxPage from "../pages/UserInboxPage.jsx";
 import CreatePage from "../pages/CreatePage.jsx";
+import AboutPage from "../pages/AboutPage.jsx";
+import ContactPage from "../pages/ContactPage.jsx";
 
 export {
+  ContactPage,
+  AboutPage,
   LoginPage,
   SignupPage,
   ActivationPage,

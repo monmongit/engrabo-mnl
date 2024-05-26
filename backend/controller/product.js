@@ -315,10 +315,14 @@ router.put(
         instructions: req.body.instructions,
         dropdowns: req.body.dropdowns,
         sizes: req.body.sizes,
+<<<<<<< HEAD
         colors: req.body.colors,
         mediaType: req.body.mediaType,
         imageOptions: req.body.imageOptions,
         textOptions: req.body.textOptions,
+=======
+        packaging: req.body.packaging
+>>>>>>> d39bfceac9eaca282b8a641b4e1ede1fe3f05a3d
       };
 
       const updatedProduct = await Product.findByIdAndUpdate(
