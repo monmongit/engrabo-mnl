@@ -282,48 +282,6 @@ const CreateProduct = ({ setOpen }) => {
             />
           </div>
 
-          {/* Sizes */}
-          <div className="space-y-4">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
-              type="button"
-              onClick={handleAddSize}
-            >
-              <FaPlus className="mr-2" /> Add Size
-            </button>
-            {sizes.map((size, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={size.name}
-                  placeholder={`Size Name ${index + 1}`}
-                  onChange={(e) =>
-                    handleSizeChange(index, 'name', e.target.value)
-                  }
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  value={size.price}
-                  placeholder={`Price ${index + 1}`}
-                  onChange={(e) =>
-                    handleSizeChange(index, 'price', e.target.value)
-                  }
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg"
-                  type="button"
-                  onClick={() => handleDeleteSize(index)}
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            ))}
-          </div>
-
           {/* Product Stock */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
