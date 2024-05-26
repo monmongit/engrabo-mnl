@@ -11,7 +11,9 @@ import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
-  const { allProducts, isLoading } = useSelector((state) => state.products);
+  const { allProducts = [], isLoading } = useSelector(
+    (state) => state.products
+  ); // Default value for allProducts
   const [data, setData] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [selectedRating, setSelectedRating] = useState(0);
@@ -20,9 +22,10 @@ const ProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
 
-  const categories = Array.from(
-    new Set(allProducts.map((product) => product.category))
-  );
+  const categories =
+    Array.isArray(allProducts) && allProducts.length > 0
+      ? Array.from(new Set(allProducts.map((product) => product.category)))
+      : [];
 
   useEffect(() => {
     if (allProducts && !isLoading) {
@@ -100,6 +103,16 @@ const ProductsPage = () => {
 
   const handleCategoryChange = (event) => {
     setSelectedCategory(event.target.value);
+  };
+
+  const handleResetFilters = () => {
+    setPriceRange([0, 1000]);
+    setSelectedRating(0);
+    setSortOption('default');
+    setStockFilter('all');
+    setSearchTerm('');
+    setSelectedCategory('');
+    setData(allProducts);
   };
 
   const renderStars = () => {
@@ -219,6 +232,14 @@ const ProductsPage = () => {
                 <option value="inStock">In Stock</option>
                 <option value="noStock">No Stock</option>
               </select>
+            </div>
+            <div className="mb-4">
+              <button
+                onClick={handleResetFilters}
+                className="px-4 py-2 bg-red-500 text-white rounded"
+              >
+                Reset Filters
+              </button>
             </div>
             <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mx-auto mb-12">
               {data &&
