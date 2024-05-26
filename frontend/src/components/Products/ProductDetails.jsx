@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import styles from "../../styles/style";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styles from '../../styles/style';
 import {
   AiFillHeart,
   AiOutlineClose,
@@ -8,17 +8,17 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineFontSize,
-} from "react-icons/ai";
-import { server } from "../../server";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllProductsAdmin } from "../../redux/action/product";
-import { addToWishlist, removeFromWishlist } from "../../redux/action/wishlist";
-import { toast } from "react-toastify";
-import { addTocart } from "../../redux/action/cart";
-import Ratings from "./Ratings";
-import axios from "axios";
-import Modal from "react-modal";
-import UserCreateDesign from "../UserCreateDesign";
+} from 'react-icons/ai';
+import { server } from '../../server';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllProductsAdmin } from '../../redux/action/product';
+import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
+import { toast } from 'react-toastify';
+import { addTocart } from '../../redux/action/cart';
+import Ratings from './Ratings';
+import axios from 'axios';
+import Modal from 'react-modal';
+import UserCreateDesign from '../UserCreateDesign';
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -26,11 +26,7 @@ const ProductDetails = ({ data }) => {
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
 
-  const [sizes, setSizes] = useState(data?.sizes || []);
-  const [selectedSize, setSelectedSize] = useState(data?.sizes[0]);
-  const [selectedPackaging, setSelectedPackaging] = useState({});
-
-  const [insResponse, setInsResponse] = useState("");
+  const [insResponse, setInsResponse] = useState('');
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedImageOption, setSelectedImageOption] = useState(null);
@@ -52,11 +48,6 @@ const ProductDetails = ({ data }) => {
     }
   }, [dispatch, data, wishlist]);
 
-  const handleSizeChange = (size) => {
-    setSelectedSize(size);
-  };
-
-
   const createDesignHandler = () => {
     return <></>;
   };
@@ -73,7 +64,7 @@ const ProductDetails = ({ data }) => {
 
   const decrementCount = () => {
     if (count <= 1) {
-      toast.error("You cannot order less than 1 item.");
+      toast.error('You cannot order less than 1 item.');
       return;
     }
     setCount(count - 1);
@@ -97,11 +88,7 @@ const ProductDetails = ({ data }) => {
           toast.error(error.response.data.message);
         });
     } else {
-<<<<<<< HEAD
       toast.error('Please login to make a conversation');
-=======
-      toast.error("Please login to make an conversation");
->>>>>>> d39bfceac9eaca282b8a641b4e1ede1fe3f05a3d
     }
   };
 
@@ -181,7 +168,6 @@ const ProductDetails = ({ data }) => {
     });
   };
 
-<<<<<<< HEAD
   const handleSizeChange = (size) => {
     setSelectedSize(size);
     setSelectedImageOption(null);
@@ -199,12 +185,6 @@ const ProductDetails = ({ data }) => {
     setSelectedSize(null);
     setSelectedImageOption(null);
   };
-=======
-  console.log("selected options information: ", selectedOptions);
-  console.log("selected size: ", selectedSize);
-  console.log("selected size: ", selectedPackaging);
-
->>>>>>> d39bfceac9eaca282b8a641b4e1ede1fe3f05a3d
 
   const totalReviewsLength =
     products &&
@@ -242,7 +222,7 @@ const ProductDetails = ({ data }) => {
                     <div
                       key={index}
                       className={`cursor-pointer p-1 rounded-md ${
-                        select === index ? "border-2 border-gray-500" : ""
+                        select === index ? 'border-2 border-gray-500' : ''
                       }`}
                       onClick={() => setSelect(index)}
                     >
@@ -262,7 +242,6 @@ const ProductDetails = ({ data }) => {
               <h1 className={`${styles.productTitle} text-3xl font-bold`}>
                 {data.name}
               </h1>
-<<<<<<< HEAD
               <p className="text-justify text-[#534723]">
                 {selectedSize
                   ? selectedSize.description
@@ -273,9 +252,6 @@ const ProductDetails = ({ data }) => {
                   : data.description}
               </p>
 
-=======
-              <p className="text-justify text-[#534723]">{data.description}</p>
->>>>>>> d39bfceac9eaca282b8a641b4e1ede1fe3f05a3d
               <div className="py-2 flex items-center justify-between">
                 {/* Price of Product */}
                 <div className="flex items-center space-x-2">
@@ -313,6 +289,7 @@ const ProductDetails = ({ data }) => {
                   {data?.sold_out} sold
                 </span>
               </div>
+
               <div className="flex items-center mt-6 justify-between">
                 {/* Add and Dec number of a Product */}
                 <div className="flex items-center space-x-2">
@@ -355,80 +332,6 @@ const ProductDetails = ({ data }) => {
                 </div>
               </div>
 
-              {/* // JSX to display sizes and allow selection */}
-              {data?.sizes && data.sizes.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Sizes:
-                  </label>
-                  <div className="flex items-center space-x-4">
-                    {data.sizes.map((size, index) => (
-                      <div
-                        key={index}
-                        className={`flex items-center space-x-2 cursor-pointer ${
-                          size === selectedSize ? "text-blue-500" : ""
-                        }`}
-                        onClick={() => handleSizeChange(size)}
-                      >
-                        <input
-                          type="radio"
-                          id={`size_${index}`}
-                          name="size"
-                          value={size.name}
-                          checked={size === selectedSize}
-                          onChange={() => handleSizeChange(size)}
-                          className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                        />
-                        <label htmlFor={`size_${index}`} className="text-sm">
-                          {size.name} - ₱{size.price.toFixed(2)}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* // JSX to display packaging options and allow selection */}
-              {data?.packaging && data.packaging.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Packaging:
-                  </label>
-                  <div className="flex items-center space-x-4">
-                    {data.packaging.map((pack, index) => (
-                      <div
-                        key={index}
-                        className={`flex items-center space-x-2 cursor-pointer ${
-                          selectedPackaging[pack.name] ? "text-blue-500" : ""
-                        }`}
-                        onClick={() =>
-                          setSelectedPackaging({
-                            ...selectedPackaging,
-                            [pack.name]: !selectedPackaging[pack.name],
-                          })
-                        }
-                      >
-                        <input
-                          type="checkbox"
-                          id={`pack_${index}`}
-                          checked={selectedPackaging[pack.name]}
-                          onChange={() =>
-                            setSelectedPackaging({
-                              ...selectedPackaging,
-                              [pack.name]: !selectedPackaging[pack.name],
-                            })
-                          }
-                          className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                        />
-                        <label htmlFor={`pack_${index}`} className="text-sm">
-                          {pack.name} - ₱{pack.price.toFixed(2)}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Cart Button */}
               <div
                 className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
@@ -438,6 +341,7 @@ const ProductDetails = ({ data }) => {
                   Add to cart <AiOutlineShoppingCart className="ml-1" />
                 </span>
               </div>
+
               {/* Create Design Button */}
               <div
                 className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
@@ -447,7 +351,6 @@ const ProductDetails = ({ data }) => {
                   Create Design <AiOutlineFontSize className="ml-1" />
                 </span>
               </div>
-<<<<<<< HEAD
 
               {/* Sizes */}
               {data.sizes && data.sizes.length > 0 && (
@@ -543,8 +446,6 @@ const ProductDetails = ({ data }) => {
                 </div>
               )}
 
-=======
->>>>>>> d39bfceac9eaca282b8a641b4e1ede1fe3f05a3d
               {/* Dropdown options */}
               {data.dropdowns &&
                 data.dropdowns.map((dropdown, index) => (
@@ -568,6 +469,7 @@ const ProductDetails = ({ data }) => {
                     </select>
                   </div>
                 ))}
+
               {/* Instructions */}
               <div className="mt-6">
                 <p className="text-lg font-semibold text-[#534723]">
@@ -577,6 +479,7 @@ const ProductDetails = ({ data }) => {
                   {data?.instructions}
                 </span>
               </div>
+
               {/* Customer response to instructions */}
               {data?.instructions && (
                 <div className="mt-4">
@@ -590,6 +493,7 @@ const ProductDetails = ({ data }) => {
                   />
                 </div>
               )}
+
               {/* Admin Profile */}
               <div className="flex items-center pt-8">
                 <Link to="/" className="flex items-center">
@@ -644,13 +548,13 @@ const ProductDetailsInfo = ({
   const [selectedImage, setSelectedImage] = useState(null);
 
   const maskName = (name) => {
-    const parts = name.split(" ");
+    const parts = name.split(' ');
     return parts
       .map((part, index) => {
-        if (index === 0) return part.slice(0, 2) + "*****";
-        return "*****";
+        if (index === 0) return part.slice(0, 2) + '*****';
+        return '*****';
       })
-      .join(" ");
+      .join(' ');
   };
 
   const openModal = (image) => {
@@ -669,7 +573,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
             }
             onClick={() => setActive(1)}
           >
@@ -680,7 +584,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
             }
             onClick={() => setActive(2)}
           >
@@ -691,7 +595,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
             }
             onClick={() => setActive(3)}
           >
@@ -775,18 +679,18 @@ const ProductDetailsInfo = ({
               <h5 className="font-[600] text-[#171203]">
                 Joined on:
                 <span className="font-[500] text-[#534723]">
-                  {" "}
+                  {' '}
                   14 March, 2023
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Products:{" "}
+                Total Products:{' '}
                 <span className="font-[500]">
                   {products && products.length}
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Reviews:{" "}
+                Total Reviews:{' '}
                 <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">

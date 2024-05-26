@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Layout/Header';
 import styles from '../styles/style';
@@ -9,16 +8,6 @@ import Loader from '../components/Layout/Loader';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
-=======
-import React, { useEffect, useState } from "react";
-import Header from "../components/Layout/Header";
-import styles from "../styles/style";
-import { useSearchParams } from "react-router-dom";
-import ProductCard from "../components/Route/ProductCard/ProductCard";
-import { useSelector } from "react-redux";
-import Loader from "../components/Layout/Loader";
-import Footer from "../components/Layout/Footer";
->>>>>>> d39bfceac9eaca282b8a641b4e1ede1fe3f05a3d
 
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
@@ -262,7 +251,6 @@ const ProductsPage = () => {
               </h1>
             ) : null}
           </div>
-          <Footer />
         </div>
       )}
     </>
