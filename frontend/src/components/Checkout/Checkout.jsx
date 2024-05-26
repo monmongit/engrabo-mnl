@@ -1,29 +1,29 @@
-import React, { useState } from "react";
-import styles from "../../styles/style";
-import { Country, State, City } from "country-state-city";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { useEffect } from "react";
-import axios from "axios";
-import { server } from "../../server";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import styles from '../../styles/style';
+import { Country, State, City } from 'country-state-city';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { server } from '../../server';
+import { toast } from 'react-toastify';
 
 const Checkout = () => {
   const { user } = useSelector((state) => state.user);
   const { cart } = useSelector((state) => state.cart);
-  const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
+  const [country, setCountry] = useState('');
+  const [state, setState] = useState('');
+  const [city, setCity] = useState('');
   const [userInfo, setUserInfo] = useState(false);
-  const [address1, setAddress1] = useState("");
-  const [address2, setAddress2] = useState("");
+  const [address1, setAddress1] = useState('');
+  const [address2, setAddress2] = useState('');
   const [zipCode, setZipCode] = useState(null);
-  const [couponCode, setCouponCode] = useState("");
+  const [couponCode, setCouponCode] = useState('');
   const [couponCodeData, setCouponCodeData] = useState(null);
   const [originalPrice, setOriginalPrice] = useState(null);
   const navigate = useNavigate();
 
-  console.log("checkout data for cart: ", cart);
+  console.log('checkout data for cart: ', cart);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -31,13 +31,13 @@ const Checkout = () => {
 
   const paymentSubmit = () => {
     if (
-      address1 === "" ||
+      address1 === '' ||
       zipCode === null ||
-      country === "" ||
-      state === "" ||
-      city === ""
+      country === '' ||
+      state === '' ||
+      city === ''
     ) {
-      toast.error("Please choose your delivery address!");
+      toast.error('Please choose your delivery address!');
     } else {
       const shippingAddress = {
         address1,
@@ -64,16 +64,13 @@ const Checkout = () => {
         user,
       };
       // update local storage with the updated orders array
-      localStorage.setItem("latestOrder", JSON.stringify(orderData));
-      navigate("/payment");
+      localStorage.setItem('latestOrder', JSON.stringify(orderData));
+      navigate('/payment');
     }
   };
 
   const subTotalPrice = cart.reduce(
-    (acc, item) =>
-      acc +
-      item.qty *
-        (item.discountPrice > 0 ? item.discountPrice : item.originalPrice),
+    (acc, item) => acc + item.qty * item.price,
     0
   );
 
@@ -83,7 +80,7 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!couponCode) {
-      toast.error("Please enter a coupon code.");
+      toast.error('Please enter a coupon code.');
       return;
     }
 
@@ -91,8 +88,8 @@ const Checkout = () => {
       .get(`${server}/coupon/get-coupon-value/${couponCode}`)
       .then((res) => {
         if (!res.data.couponCode) {
-          toast.error("Coupon code does not exist!");
-          setCouponCode("");
+          toast.error('Coupon code does not exist!');
+          setCouponCode('');
           return;
         }
 
@@ -102,8 +99,8 @@ const Checkout = () => {
 
         // Check coupon validity
         if (expiryDate < today) {
-          toast.error("This coupon has expired.");
-          setCouponCode("");
+          toast.error('This coupon has expired.');
+          setCouponCode('');
           return;
         }
 
@@ -111,7 +108,7 @@ const Checkout = () => {
           toast.error(
             `This coupon requires a minimum amount of ${couponCode.minAmount} to be valid.`
           );
-          setCouponCode("");
+          setCouponCode('');
           return;
         }
 
@@ -119,11 +116,11 @@ const Checkout = () => {
         const discountValue = (couponCode.value / 100) * subTotalPrice;
         setOriginalPrice(subTotalPrice - discountValue); // Assuming originalPrice is the final price after discount
         setCouponCodeData(couponCode);
-        toast.success("Coupon applied successfully!");
+        toast.success('Coupon applied successfully!');
       })
       .catch((error) => {
-        console.error("Error fetching coupon:", error);
-        toast.error("Failed to apply coupon.");
+        console.error('Error fetching coupon:', error);
+        toast.error('Failed to apply coupon.');
       });
   };
 
@@ -405,7 +402,7 @@ const CartData = ({
   return (
     <div
       className="w-full bg-[#fff] rounded-md p-5 pb-8"
-      style={{ marginLeft: "15px" }}
+      style={{ marginLeft: '15px' }}
     >
       <div className="flex justify-between">
         <h3 className="text-[16px] font-[400] text-[#b19b56]">subtotal:</h3>
@@ -420,7 +417,7 @@ const CartData = ({
       <div className="flex justify-between border-b pb-3">
         <h3 className="text-[16px] font-[400] text-[#b19b56]">Discount:</h3>
         <h5 className="text-[18px] font-[600]">
-          - {discountPercentenge ? "₱" + discountPercentenge.toString() : null}
+          - {discountPercentenge ? '₱' + discountPercentenge.toString() : null}
         </h5>
       </div>
       <h5 className="text-[18px] font-[600] text-end pt-3">₱ {totalPrice}</h5>
@@ -447,7 +444,7 @@ const CartData = ({
 
 const cartInfo = (data = []) => {
   if (!Array.isArray(data)) {
-    console.error("Invalid data provided:", data);
+    console.error('Invalid data provided:', data);
     return (
       <div className="w-full bg-[#fff] rounded-md p-5 pb-8 mr-5">
         <h3 className="text-[16px] font-[400] text-[#b19b56]">
@@ -458,7 +455,7 @@ const cartInfo = (data = []) => {
     );
   }
 
-  console.log("checkout: ", data);
+  console.log('checkout: ', data);
 
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8 mr-5">

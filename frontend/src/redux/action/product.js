@@ -15,7 +15,12 @@ export const createProduct =
     adminId,
     images,
     instructions,
-    dropdowns
+    dropdowns,
+    sizes,
+    colors,
+    mediaType,
+    imageOptions,
+    textOptions
   ) =>
   async (dispatch) => {
     try {
@@ -36,7 +41,12 @@ export const createProduct =
         adminId,
         images,
         instructions,
-        dropdowns
+        dropdowns,
+        sizes,
+        colors,
+        mediaType,
+        imageOptions,
+        textOptions
       );
 
       console.log('action-create new product data: ', data);

@@ -1,29 +1,24 @@
-import React, { useState } from "react";
-import { RxCross1 } from "react-icons/rx";
-import styles from "../../styles/style";
-import { HiOutlineMinus, HiPlus } from "react-icons/hi";
-import { IoBagHandleOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { addTocart, removeFromCart } from "../../redux/action/cart";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import { RxCross1 } from 'react-icons/rx';
+import styles from '../../styles/style';
+import { HiOutlineMinus, HiPlus } from 'react-icons/hi';
+import { IoBagHandleOutline } from 'react-icons/io5';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTocart, removeFromCart } from '../../redux/action/cart';
+import { toast } from 'react-toastify';
+
 const Cart = ({ setOpenCart }) => {
   const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  console.log("cart details: ", cart);
+  console.log('cart details: ', cart);
 
   const removeFromCartHandler = (data) => {
     dispatch(removeFromCart(data));
     toast.error(`${data.name} removed to cart successfully!`);
   };
 
-  const totalPrice = cart.reduce(
-    (acc, item) =>
-      acc +
-      item.qty *
-        (item.discountPrice > 0 ? item.discountPrice : item.originalPrice),
-    0
-  );
+  const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.price, 0);
 
   const quantityChangeHandler = (data) => {
     dispatch(addTocart(data));
@@ -31,7 +26,7 @@ const Cart = ({ setOpenCart }) => {
 
   return (
     <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10 ">
-      <div className="fixed top-0 right-0 h-[100vh] w-[70%] 800px:w-[25%]   bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm !overflow-y-scroll hide-scrollbar">
+      <div className="fixed top-0 right-0 h-[100vh] w-[70%] 800px:w-[25%] bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm overflow-y-scroll hide-scrollbar">
         {cart && cart.length === 0 ? (
           <div className="w-full h-screen flex items-center justify-center">
             <div className="flex w-full justify-end pt-5 pr-5 fixed top-3 right-3">
@@ -41,7 +36,7 @@ const Cart = ({ setOpenCart }) => {
                 onClick={() => setOpenCart(false)}
               />
             </div>
-            <h5> Cart Items is empty!</h5>
+            <h5>Cart Items is empty!</h5>
           </div>
         ) : (
           <>
@@ -80,7 +75,7 @@ const Cart = ({ setOpenCart }) => {
               {/* Checkout Button */}
               <Link to="/checkout">
                 <div
-                  className={`h-[45px] flex items-center justify-center w-[100%] bg-[#171203] rounded-[5px]`}
+                  className={`h-[45px] flex items-center justify-center w-[100%] bg-[#171203] rounded-[5px] cursor-pointer`}
                 >
                   <h1 className="text-[#fff4d7] text-[18px] font-[600]">
                     Checkout Now (₱ {totalPrice})
@@ -96,28 +91,31 @@ const Cart = ({ setOpenCart }) => {
 };
 
 const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
-  const [value, setValue] = useState(data.qty);
-  const itemPrice =
-    data.discountPrice > 0 ? data.discountPrice : data.originalPrice;
+  const [value, setValue] = useState(data?.qty || 1);
+
+  const itemPrice = data?.price || 0;
   const totalPrice = itemPrice * value;
 
-  const increment = (data) => {
+  const increment = () => {
     if (data.stock <= value) {
       toast.error(
         `${data.name} stock is limited! Please contact us to reserve your order!`
       );
     } else {
-      setValue(value + 1);
+      setValue((prevValue) => prevValue + 1);
       const updateCartData = { ...data, qty: value + 1 };
       quantityChangeHandler(updateCartData);
     }
   };
 
-  const decrement = (data) => {
-    setValue(value === 1 ? 1 : value - 1);
-    const updateCartData = { ...data, qty: value === 1 ? 1 : value - 1 };
-    quantityChangeHandler(updateCartData);
+  const decrement = () => {
+    if (value > 1) {
+      setValue((prevValue) => prevValue - 1);
+      const updateCartData = { ...data, qty: value - 1 };
+      quantityChangeHandler(updateCartData);
+    }
   };
+
   return (
     <div className="border-b p-4 border-[#d8c68f]">
       <div className="w-full flex items-center">
@@ -125,36 +123,53 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
           {/* Button Add and Minus Product */}
           <div
             className={`bg-gradient-to-r from-[#534723] to-[#171203] hover:opacity-80 transition duration-300 ease-in-out rounded-full w-[25px] h-[25px] ${styles.normalFlex} justify-center cursor-pointer`}
-            onClick={() => increment(data)}
+            onClick={increment}
           >
             <HiPlus size={18} color="#fff" />
           </div>
-          <span className="pl-[10px]">{data.qty}</span>
+          <span className="pl-[10px]">{value}</span>
           <div
             className="bg-gradient-to-r from-[#dbcca1] to-[#b5a060] hover:opacity-80 transition duration-300 ease-in-out rounded-full w-[25px] h-[25px] flex items-center justify-center cursor-pointer"
-            onClick={() => decrement(data)}
+            onClick={decrement}
           >
             <HiOutlineMinus size={16} color="#171203" />
           </div>
         </div>
 
         {/* Image Product */}
-        <img
-          src={`${data?.images[0].url}`}
-          alt=""
-          className="w-[130px] h-min ml-2 rounded-[5px] "
-        />
+        {data?.images && data.images[0] && (
+          <img
+            src={data.images[0].url}
+            alt={data.name || 'Product Image'}
+            className="w-[130px] h-min ml-2 rounded-[5px]"
+          />
+        )}
 
         {/* Price and Details of Product */}
         <div className="pl-[10px] w-[50%]">
           <h1 className="text-[15px] flex-grow">
-            {data.name.length > 15 ? data.name.slice(0, 15) + "..." : data.name}
+            {data.name && data.name.length > 15
+              ? `${data.name.slice(0, 15)}...`
+              : data.name}
           </h1>
           <h4 className="font-[600] text-[17px] text-[#171203]">
-            {data.discountPrice > 0
-              ? `₱ ${data.discountPrice}`
-              : `₱ ${data.originalPrice}`}
+            ₱ {itemPrice}
           </h4>
+          {data.size && data.size.name && (
+            <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
+              Size: {data.size.name}
+            </h4>
+          )}
+          {data.imageOption && data.imageOption.name && (
+            <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
+              Image Option: {data.imageOption.name}
+            </h4>
+          )}
+          {data.textOption && data.textOption.name && (
+            <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
+              Text Option: {data.textOption.name}
+            </h4>
+          )}
           <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
             Stocks: {data.stock}
           </h4>
@@ -164,30 +179,12 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
           <br />
         </div>
         <RxCross1
-          className="cursor-pointer "
+          className="cursor-pointer"
           onClick={() => removeFromCartHandler(data)}
         />
       </div>
     </div>
   );
 };
-
-// const optionsArrays = (data) => {
-//   const optionsArray = Object.entries(data);
-
-//   return (
-//     <div>
-//       {optionsArray.map(([key, value], index) => (
-//         <h4
-//           key={index}
-//           className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto"
-//         >
-//           {key} - {value}
-//         </h4>
-//       ))}
-//       <br />
-//     </div>
-//   );
-// };
 
 export default Cart;
