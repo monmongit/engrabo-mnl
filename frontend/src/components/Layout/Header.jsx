@@ -268,7 +268,7 @@ const Header = ({ activeHeading }) => {
       </div>
 
       {/* Sticky Mobile Footer */}
-      <div className="fixed bottom-0 left-0 w-full bg-[#171203] z-20 flex justify-between items-center h-[60px] shadow-2xl 800px:hidden">
+      <div className="fixed bottom-0 left-0 w-full bg-[#171203] z-10 flex justify-between items-center h-[60px] shadow-2xl 800px:hidden">
         <div className="flex justify-around w-full">
           <div className="flex flex-col items-center justify-center pd-[10px]">
             <Link to="/">
