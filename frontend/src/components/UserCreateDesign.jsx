@@ -8,8 +8,99 @@ import {
   Image as KonvaImage,
   Transformer,
 } from 'react-konva';
-import { AiOutlineShoppingCart } from 'react-icons/ai';
+import WebFont from 'webfontloader';
+import axios from 'axios';
 import { server } from '../server';
+
+// Add the font families you want to use
+const fontFamilies = [
+  'Arial',
+  'Times New Roman',
+  'Courier New',
+  'Georgia',
+  'Verdana',
+  'Tahoma',
+  'Trebuchet MS',
+  'Impact',
+  'Comic Sans MS',
+  'Lucida Console',
+  'Lucida Sans Unicode',
+  'Palatino Linotype',
+  'Garamond',
+  'Bookman',
+  'Arial Black',
+  'Narrow',
+  'Roboto',
+  'Open Sans',
+  'Lato',
+  'Montserrat',
+  'Oswald',
+  'Raleway',
+  'Pacifico',
+  'Playfair Display',
+  'Merriweather',
+  'Fjalla One',
+  'Ubuntu',
+  'PT Sans',
+  'Droid Sans',
+  'Lobster',
+  'Bitter',
+  'Anton',
+  'Dancing Script',
+  'Maven Pro',
+  'Indie Flower',
+  'Bangers',
+  'Cabin',
+  'Cinzel',
+  'Comfortaa',
+  'Cormorant Garamond',
+  'Courgette',
+  'Dosis',
+  'Exo',
+  'Fira Sans',
+  'Frank Ruhl Libre',
+  'Gloria Hallelujah',
+  'Great Vibes',
+  'Josefin Sans',
+  'Kalam',
+  'Karla',
+  'Lobster Two',
+  'Merriweather Sans',
+  'Muli',
+  'Nunito',
+  'Oxygen',
+  'Patua One',
+  'Quicksand',
+  'Righteous',
+  'Russo One',
+  'Satisfy',
+  'Shadows Into Light',
+  'Signika',
+  'Source Code Pro',
+  'Spectral',
+  'Titillium Web',
+  'Yanone Kaffeesatz',
+  'Zilla Slab',
+  'Mountains of Christmas',
+  'Mr De Haviland',
+  'Over the Rainbow',
+  'Licorice',
+  'Bilbo Swash Caps',
+  'Comforter Brush',
+  'Hachi Maru Pop',
+  'Smooch',
+  'Edu TAS Beginner',
+  'Sevillana',
+  'Dancing Script',
+  'Jersey',
+  'Jacquard',
+  'Bodoni Moda',
+  'Sacramento',
+  'Rubik Bubbles',
+  'Bad Script',
+
+  // Add more fonts here if needed
+];
 
 const UserCreateDesign = ({ data }) => {
   const [tool, setTool] = useState('pen');
@@ -21,12 +112,12 @@ const UserCreateDesign = ({ data }) => {
   const [text, setText] = useState('');
   const [texts, setTexts] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [fontFamily, setFontFamily] = useState('Arial');
+  const [fontStyle, setFontStyle] = useState('normal');
+  const [textDecoration, setTextDecoration] = useState('');
   const transformerRef = useRef(null);
 
-  // cart and design
   const { cart } = useSelector((state) => state.cart);
-  const [design, SetDesign] = useState(null);
-  const [finalDesign, setFinalDesign] = useState(null);
 
   useEffect(() => {
     if (imageURL) {
@@ -56,6 +147,14 @@ const UserCreateDesign = ({ data }) => {
     }
   }, [selectedId]);
 
+  useEffect(() => {
+    WebFont.load({
+      google: {
+        families: fontFamilies,
+      },
+    });
+  }, []);
+
   const handleMouseDown = (e) => {
     if (tool === 'pen' || tool === 'eraser') {
       setIsDrawing(true);
@@ -83,7 +182,15 @@ const UserCreateDesign = ({ data }) => {
     const pointer = stage.getPointerPosition();
     setTexts([
       ...texts,
-      { id: `text${texts.length}`, text, x: pointer.x, y: pointer.y },
+      {
+        id: `text${texts.length}`,
+        text,
+        x: pointer.x,
+        y: pointer.y,
+        fontFamily,
+        fontStyle,
+        textDecoration,
+      },
     ]);
     setText('');
   };
@@ -112,20 +219,35 @@ const UserCreateDesign = ({ data }) => {
 
   const handleSelect = (e) => {
     setSelectedId(e.target.id());
+    const selectedText = texts.find((text) => text.id === e.target.id());
+    if (selectedText) {
+      setFontFamily(selectedText.fontFamily);
+      setFontStyle(selectedText.fontStyle);
+      setTextDecoration(selectedText.textDecoration);
+    }
   };
 
   const handleExport = () => {
     const stage = stageRef.current.getStage();
+
+    if (!stage) {
+      console.error('Stage not found');
+      return;
+    }
+
     const container = stage.container();
     container.style.backgroundColor = 'transparent';
 
     try {
       const dataURL = stage.toDataURL({ mimeType: 'image/png' });
+
       const link = document.createElement('a');
       link.download = 'canvas.png';
       link.href = dataURL;
+
       document.body.appendChild(link);
       link.click();
+
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error exporting canvas:', error);
@@ -134,6 +256,7 @@ const UserCreateDesign = ({ data }) => {
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
+    console.log('uploaded file: ', file);
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -146,6 +269,8 @@ const UserCreateDesign = ({ data }) => {
   const saveExportedImage = async () => {
     const stage = stageRef.current.getStage();
     const dataURL = stage.toDataURL({ mimeType: 'image/jpeg', quality: 1 });
+
+    console.log('data url: ', dataURL);
 
     fetch(`${server}/custom/create-custom`, {
       method: 'POST',
@@ -163,6 +288,42 @@ const UserCreateDesign = ({ data }) => {
       });
   };
 
+  const handleFontFamilyChange = (e) => {
+    const newFamily = e.target.value;
+    setFontFamily(newFamily);
+    setTexts(
+      texts.map((textItem) =>
+        textItem.id === selectedId
+          ? { ...textItem, fontFamily: newFamily }
+          : textItem
+      )
+    );
+  };
+
+  const toggleItalic = () => {
+    const newFontStyle = fontStyle === 'italic' ? 'normal' : 'italic';
+    setFontStyle(newFontStyle);
+    setTexts(
+      texts.map((textItem) =>
+        textItem.id === selectedId
+          ? { ...textItem, fontStyle: newFontStyle }
+          : textItem
+      )
+    );
+  };
+
+  const toggleUnderline = () => {
+    const newTextDecoration = textDecoration === 'underline' ? '' : 'underline';
+    setTextDecoration(newTextDecoration);
+    setTexts(
+      texts.map((textItem) =>
+        textItem.id === selectedId
+          ? { ...textItem, textDecoration: newTextDecoration }
+          : textItem
+      )
+    );
+  };
+
   return (
     <div className="flex flex-col items-start p-4 space-y-4">
       <div className="flex space-x-2">
@@ -172,47 +333,45 @@ const UserCreateDesign = ({ data }) => {
         >
           Select
         </button>
-        {(data.mediaType === 'both' || data.mediaType === 'text') && (
-          <button
-            onClick={() => setTool('pen')}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            Draw
-          </button>
-        )}
-        {data.mediaType !== 'image' && (
-          <>
-            <button
-              onClick={() => setTool('text')}
-              className="bg-green-500 text-white px-4 py-2 rounded"
-            >
-              Text
-            </button>
-            {tool === 'text' && (
-              <input
-                type="text"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Type text and click on canvas"
-                className="border border-gray-300 px-4 py-2 rounded"
-              />
-            )}
-          </>
-        )}
-        {data.mediaType !== 'text' && (
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="bg-white border border-gray-300 px-4 py-2 rounded"
-          />
-        )}
+        <button
+          onClick={() => setTool('pen')}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Draw
+        </button>
+        <button
+          onClick={() => setTool('eraser')}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+        >
+          Erase
+        </button>
+        <button
+          onClick={() => setTool('text')}
+          className="bg-green-500 text-white px-4 py-2 rounded"
+        >
+          Text
+        </button>
         <button
           onClick={handleClear}
           className="bg-gray-500 text-white px-4 py-2 rounded"
         >
           Clear
         </button>
+        {tool === 'text' && (
+          <input
+            type="text"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Type text and click on canvas"
+            className="border border-gray-300 px-4 py-2 rounded"
+          />
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="bg-white border border-gray-300 px-4 py-2 rounded"
+        />
         <button
           onClick={handleExport}
           className="bg-purple-500 text-white px-4 py-2 rounded"
@@ -220,6 +379,41 @@ const UserCreateDesign = ({ data }) => {
           Export
         </button>
       </div>
+      {selectedId && (
+        <div className="flex space-x-2">
+          <label>
+            Font Family:
+            <select
+              value={fontFamily}
+              onChange={handleFontFamilyChange}
+              className="border border-gray-300 px-2 py-1 rounded"
+              style={{ fontFamily }}
+            >
+              {fontFamilies.map((family) => (
+                <option
+                  key={family}
+                  value={family}
+                  style={{ fontFamily: family }}
+                >
+                  {family}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            onClick={toggleItalic}
+            className="bg-gray-300 text-black px-2 py-1 rounded"
+          >
+            <em>I</em>
+          </button>
+          <button
+            onClick={toggleUnderline}
+            className="bg-gray-300 text-black px-2 py-1 rounded"
+          >
+            <u>U</u>
+          </button>
+        </div>
+      )}
       <button
         onClick={saveExportedImage}
         className="bg-green-500 text-white px-4 py-2 rounded"
@@ -234,7 +428,7 @@ const UserCreateDesign = ({ data }) => {
         onMousemove={handleMouseMove}
         onMouseup={handleMouseUp}
         ref={stageRef}
-        className=" bg-white border rounded border-black"
+        className="bg-white border rounded border-black"
         onClick={handleSelect}
       >
         <Layer>
@@ -260,6 +454,9 @@ const UserCreateDesign = ({ data }) => {
               x={textItem.x}
               y={textItem.y}
               fontSize={20}
+              fontFamily={textItem.fontFamily}
+              fontStyle={textItem.fontStyle}
+              textDecoration={textItem.textDecoration}
               draggable
               onClick={handleSelect}
               onDblClick={handleTextDblClick}
