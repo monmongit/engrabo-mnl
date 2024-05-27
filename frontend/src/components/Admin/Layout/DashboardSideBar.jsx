@@ -189,11 +189,11 @@ const DashboardSideBar = ({ active }) => {
         <Link to="/settings" className="w-full flex items-center">
           <CiSettings
             size={30}
-            color={`${active === 11 ? 'crimson' : '#555'}`}
+            color={`${active === 13 ? '#171203' : '#6b540f'}`}
           />
           <h5
             className={`hidden 800px:block pl-2 text-[18px] font-[400] ${
-              active === 11 ? 'text-[crimson]' : 'text-[#555]'
+              active === 13 ? 'text-[#171203]' : 'text-[#6b540f]'
             }`}
           >
             Settings
