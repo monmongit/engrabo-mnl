@@ -314,6 +314,11 @@ router.put(
         images,
         instructions: req.body.instructions,
         dropdowns: req.body.dropdowns,
+        sizes: req.body.sizes,
+        colors: req.body.colors,
+        mediaType: req.body.mediaType,
+        imageOptions: req.body.imageOptions,
+        textOptions: req.body.textOptions,
       };
 
       const updatedProduct = await Product.findByIdAndUpdate(
@@ -331,6 +336,7 @@ router.put(
     }
   })
 );
+
 // Get Product Details
 router.get(
   '/get-product-details/:id',
@@ -349,4 +355,5 @@ router.get(
     }
   })
 );
+
 module.exports = router;

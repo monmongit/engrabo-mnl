@@ -107,32 +107,36 @@ const AllProducts = () => {
           { field: 'stock', headerName: 'Stock', minWidth: 50, flex: 0.5 },
         ]
       : []),
-    {
-      field: 'Preview',
-      headerName: 'Preview',
-      minWidth: 100,
-      flex: 0.3,
-      renderCell: (params) => (
-        <Button
-          onClick={() =>
-            navigate(`/${viewMode.toLowerCase()}/${params.row.id}`)
-          }
-        >
-          <AiOutlineEye size={20} />
-        </Button>
-      ),
-    },
-    {
-      field: 'Edit',
-      headerName: 'Edit',
-      minWidth: 100,
-      flex: 0.3,
-      renderCell: (params) => (
-        <Button onClick={() => handleEdit(params.row.id)}>
-          <AiOutlineEdit size={20} />
-        </Button>
-      ),
-    },
+    ...(viewMode === 'Product'
+      ? [
+          {
+            field: 'Preview',
+            headerName: 'Preview',
+            minWidth: 100,
+            flex: 0.3,
+            renderCell: (params) => (
+              <Button
+                onClick={() =>
+                  navigate(`/${viewMode.toLowerCase()}/${params.row.id}`)
+                }
+              >
+                <AiOutlineEye size={20} />
+              </Button>
+            ),
+          },
+          {
+            field: 'Edit',
+            headerName: 'Edit',
+            minWidth: 100,
+            flex: 0.3,
+            renderCell: (params) => (
+              <Button onClick={() => handleEdit(params.row.id)}>
+                <AiOutlineEdit size={20} />
+              </Button>
+            ),
+          },
+        ]
+      : []),
     {
       field: 'Delete',
       headerName: 'Delete',
@@ -223,7 +227,7 @@ const AllProducts = () => {
             )}
           </div>
         )}
-        {editOpen && (
+        {editOpen && viewMode === 'Product' && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <UpdateProduct setOpen={setEditOpen} productId={editProductId} />
           </div>

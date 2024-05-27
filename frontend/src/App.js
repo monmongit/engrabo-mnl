@@ -26,7 +26,8 @@ import {
   CreatePage,
   AboutPage,
   ContactPage,
-} from "./routes/Routes.js";
+
+} from './routes/Routes.js';
 import {
   AdminHomePage,
   AdminDashboardPage,

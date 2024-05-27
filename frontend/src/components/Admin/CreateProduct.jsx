@@ -11,12 +11,9 @@ import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const CreateProduct = ({ setOpen }) => {
   const { admin } = useSelector((state) => state.admin);
-
   const { success, error } = useSelector((state) => state.products);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const { categories } = useSelector((state) => state.categories);
 
   const [images, setImages] = useState([]);
@@ -28,19 +25,15 @@ const CreateProduct = ({ setOpen }) => {
   const [originalPrice, setOriginalPrice] = useState('');
   const [discountPrice, setDiscountPrice] = useState('');
   const [stock, setStock] = useState('');
-
-  // for personalization purposes
-  const [instructions, setIntructions] = useState('');
-
-  // for personalization purposes
+  const [sizes, setSizes] = useState([]); // Add state for sizes
+  const [colors, setColors] = useState(''); // Add state for colors
+  const [mediaType, setMediaType] = useState('none'); // Add state for media type
+  const [instructions, setInstructions] = useState('');
   const [personalization, setPersonalization] = useState('');
   const [dropdowns, setDropdowns] = useState([]);
+  const [imageOptions, setImageOptions] = useState([]); // Add state for image options
+  const [textOptions, setTextOptions] = useState([]); // Add state for text options
 
-  dropdowns.forEach((dropdown, index) => {
-    console.log(`Dropdown ${index + 1}:`);
-    console.log(`Name: ${dropdown.name}`);
-    console.log(`Options: ${dropdown.options.join(', ')}`);
-  });
   useEffect(() => {
     dispatch(getAllCategories());
   }, [dispatch]);
@@ -56,66 +49,69 @@ const CreateProduct = ({ setOpen }) => {
     }
   }, [dispatch, error, success, navigate]);
 
-  // Handlers for Dropdowns
-  const handleAddDropdown = () => {
-    setDropdowns([...dropdowns, { name: '', options: [] }]);
+  // handlers to add sizes
+  const handleAddSize = () => {
+    setSizes([...sizes, { name: '', price: '' }]);
   };
-  const handleAddOption = (index) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
+  const handleSizeChange = (index, field, value) => {
+    const newSizes = sizes.map((size, i) => {
       if (i === index) {
-        return { ...dropdown, options: [...dropdown.options, ''] };
+        return { ...size, [field]: value };
       }
-      return dropdown;
+      return size;
     });
-    setDropdowns(newDropdowns);
+    setSizes(newSizes);
   };
-  const handleDropdownChange = (index, value) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
+  const handleDeleteSize = (index) => {
+    const newSizes = sizes.filter((_, i) => i !== index);
+    setSizes(newSizes);
+  };
+
+  const handleAddImageOption = () => {
+    setImageOptions([
+      ...imageOptions,
+      { name: '', price: '', description: '' },
+    ]);
+  };
+
+  const handleImageOptionChange = (index, field, value) => {
+    const newImageOptions = imageOptions.map((option, i) => {
       if (i === index) {
-        return { ...dropdown, name: value };
+        return { ...option, [field]: value };
       }
-      return dropdown;
+      return option;
     });
-    setDropdowns(newDropdowns);
+    setImageOptions(newImageOptions);
   };
-  const handleOptionChange = (dropdownIndex, optionIndex, value) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === dropdownIndex) {
-        const newOptions = dropdown.options.map((option, j) => {
-          if (j === optionIndex) {
-            return value;
-          }
-          return option;
-        });
-        return { ...dropdown, options: newOptions };
+
+  const handleDeleteImageOption = (index) => {
+    const newImageOptions = imageOptions.filter((_, i) => i !== index);
+    setImageOptions(newImageOptions);
+  };
+
+  const handleAddTextOption = () => {
+    setTextOptions([...textOptions, { name: '', price: '', description: '' }]);
+  };
+
+  const handleTextOptionChange = (index, field, value) => {
+    const newTextOptions = textOptions.map((option, i) => {
+      if (i === index) {
+        return { ...option, [field]: value };
       }
-      return dropdown;
+      return option;
     });
-    setDropdowns(newDropdowns);
+    setTextOptions(newTextOptions);
   };
-  const handleDeleteDropdown = (index) => {
-    const newDropdowns = dropdowns.filter((_, i) => i !== index);
-    setDropdowns(newDropdowns);
-  };
-  const handleDeleteOption = (dropdownIndex, optionIndex) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === dropdownIndex) {
-        const newOptions = dropdown.options.filter((_, j) => j !== optionIndex);
-        return { ...dropdown, options: newOptions };
-      }
-      return dropdown;
-    });
-    setDropdowns(newDropdowns);
+
+  const handleDeleteTextOption = (index) => {
+    const newTextOptions = textOptions.filter((_, i) => i !== index);
+    setTextOptions(newTextOptions);
   };
 
   const handleImageChange = (e) => {
     e.preventDefault();
-
     const files = Array.from(e.target.files);
-    console.log('create product files: ', files);
-
     setImages([]);
-
     files.forEach((file) => {
       const reader = new FileReader();
       reader.onload = () => {
@@ -127,12 +123,9 @@ const CreateProduct = ({ setOpen }) => {
     });
   };
 
-  console.log(admin._id);
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const newForm = new FormData();
-
     images.forEach((image) => {
       newForm.set('images', image);
     });
@@ -146,8 +139,12 @@ const CreateProduct = ({ setOpen }) => {
     newForm.append('discountPrice', discountPrice);
     newForm.append('stock', stock);
     newForm.append('adminId', admin._id);
-    newForm.append('intructions', instructions);
-    newForm.append('dropdown', dropdowns);
+    newForm.append('instructions', instructions);
+    newForm.append('sizes', JSON.stringify(sizes));
+    newForm.append('colors', JSON.stringify(colors.split(',')));
+    newForm.append('mediaType', mediaType);
+    newForm.append('imageOptions', JSON.stringify(imageOptions));
+    newForm.append('textOptions', JSON.stringify(textOptions));
 
     dispatch(
       createProduct({
@@ -162,14 +159,18 @@ const CreateProduct = ({ setOpen }) => {
         adminId: admin._id,
         images,
         instructions,
+        sizes,
+        colors: colors.split(','),
+        mediaType,
         dropdowns,
+        imageOptions,
+        textOptions,
       })
     );
   };
 
   return (
     <div className="800px:w-[50%] w-[90%] bg-white shadow-lg h-[80vh] rounded-lg p-5 overflow-y-scroll hide-scrollbar">
-      {/* Cross Icon */}
       <div className="w-full flex justify-end">
         <RxCross1
           size={30}
@@ -177,15 +178,11 @@ const CreateProduct = ({ setOpen }) => {
           onClick={() => setOpen(false)}
         />
       </div>
-
       <h5 className="text-3xl font-bold text-center text-gray-900 mb-6">
         Create Product
       </h5>
-
-      {/* Create Product Form */}
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
-          {/* Name */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Name <span className="text-red-500">*</span>
@@ -199,8 +196,6 @@ const CreateProduct = ({ setOpen }) => {
               placeholder="Enter your product name..."
             />
           </div>
-
-          {/* Description */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Description <span className="text-red-500">*</span>
@@ -216,8 +211,6 @@ const CreateProduct = ({ setOpen }) => {
               placeholder="Enter your product description..."
             ></textarea>
           </div>
-
-          {/* Categories */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Category <span className="text-red-500">*</span>
@@ -236,8 +229,6 @@ const CreateProduct = ({ setOpen }) => {
                 ))}
             </select>
           </div>
-
-          {/* Tags */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Tags <span className="text-red-500">*</span>
@@ -251,8 +242,6 @@ const CreateProduct = ({ setOpen }) => {
               placeholder="Enter your product tags..."
             />
           </div>
-
-          {/* Gross Price */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Gross Price <span className="text-red-500">*</span>
@@ -266,8 +255,6 @@ const CreateProduct = ({ setOpen }) => {
               placeholder="Enter your product gross price..."
             />
           </div>
-
-          {/* Selling Price */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Selling Price <span className="text-red-500">*</span>
@@ -281,8 +268,6 @@ const CreateProduct = ({ setOpen }) => {
               placeholder="Enter your product selling price..."
             />
           </div>
-
-          {/* Price with Discount */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Price (With Discount)
@@ -311,8 +296,6 @@ const CreateProduct = ({ setOpen }) => {
               placeholder="Enter your product stock..."
             />
           </div>
-
-          {/* Product Images*/}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Upload Images <span className="text-red-500">*</span>
@@ -344,8 +327,6 @@ const CreateProduct = ({ setOpen }) => {
                 ))}
             </div>
           </div>
-
-          {/* Instructions */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Instruction For Personalization{' '}
@@ -357,87 +338,200 @@ const CreateProduct = ({ setOpen }) => {
               name="description"
               value={instructions}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              onChange={(e) => setIntructions(e.target.value)}
-              placeholder="Enter your personalizationinstructions..."
+              onChange={(e) => setInstructions(e.target.value)}
+              placeholder="Enter your personalization instructions..."
             ></textarea>
           </div>
-
-          {/* Dynamic Dropdowns */}
-          <div className="space-y-4">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
-              type="button"
-              onClick={handleAddDropdown}
-            >
-              <FaPlus className="mr-2" /> Add Dropdown For Product
-              Personalization
-            </button>
-            <div className="space-y-4">
-              {dropdowns.map((dropdown, dropdownIndex) => (
-                <div
-                  key={dropdownIndex}
-                  className="border p-4 rounded-lg shadow-md"
-                >
-                  <div className="flex items-center mb-2">
-                    <input
-                      className="text-black flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-green-200"
-                      placeholder={`Dropdown Name ${dropdownIndex + 1}`}
-                      value={dropdown.name}
-                      onChange={(e) =>
-                        handleDropdownChange(dropdownIndex, e.target.value)
-                      }
-                      required
-                    />
-
-                    <button
-                      className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                      type="button"
-                      onClick={() => handleDeleteDropdown(dropdownIndex)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    {dropdown.options.map((option, optionIndex) => (
-                      <div key={optionIndex} className="flex items-center">
-                        <input
-                          className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          type="text"
-                          placeholder={`Option ${optionIndex + 1}`}
-                          value={option}
-                          onChange={(e) =>
-                            handleOptionChange(
-                              dropdownIndex,
-                              optionIndex,
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                        <button
-                          className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                          type="button"
-                          onClick={() =>
-                            handleDeleteOption(dropdownIndex, optionIndex)
-                          }
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    className="mt-2 bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center"
-                    type="button"
-                    onClick={() => handleAddOption(dropdownIndex)}
-                  >
-                    <FaPlus className="mr-2" /> Add Option
-                  </button>
-                </div>
-              ))}
-            </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Colors (comma separated)
+            </label>
+            <input
+              type="text"
+              value={colors}
+              onChange={(e) => setColors(e.target.value)}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter colors separated by commas"
+            />
           </div>
-
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Media Type
+            </label>
+            <select
+              value={mediaType}
+              onChange={(e) => setMediaType(e.target.value)}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="none">None</option>
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Sizes
+            </label>
+            <button
+              type="button"
+              onClick={handleAddSize}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Size
+            </button>
+            {sizes.map((size, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Size name"
+                  value={size.name}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'name', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Size price"
+                  value={size.price}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Size description"
+                  value={size.description}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'description', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteSize(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Image Options
+            </label>
+            <button
+              type="button"
+              onClick={handleAddImageOption}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Image Option
+            </button>
+            {imageOptions.map((option, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Option name"
+                  value={option.name}
+                  onChange={(e) =>
+                    handleImageOptionChange(index, 'name', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Option price"
+                  value={option.price}
+                  onChange={(e) =>
+                    handleImageOptionChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Option description"
+                  value={option.description}
+                  onChange={(e) =>
+                    handleImageOptionChange(
+                      index,
+                      'description',
+                      e.target.value
+                    )
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteImageOption(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Text Options
+            </label>
+            <button
+              type="button"
+              onClick={handleAddTextOption}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Text Option
+            </button>
+            {textOptions.map((option, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Option name"
+                  value={option.name}
+                  onChange={(e) =>
+                    handleTextOptionChange(index, 'name', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Option price"
+                  value={option.price}
+                  onChange={(e) =>
+                    handleTextOptionChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Option description"
+                  value={option.description}
+                  onChange={(e) =>
+                    handleTextOptionChange(index, 'description', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTextOption(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
           <div>
             <input
               type="submit"

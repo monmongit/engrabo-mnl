@@ -52,7 +52,10 @@ router.post(
 
       for (const [adminId, items] of adminItemsMap) {
         const order = await Order.create({
-          cart: items,
+          cart: items.map((item) => ({
+            ...item,
+            subTotal: item.qty * item.price,
+          })),
           shippingAddress,
           user,
           totalPrice,

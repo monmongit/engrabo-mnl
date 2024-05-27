@@ -8,168 +8,8 @@ import {
   Image as KonvaImage,
   Transformer,
 } from 'react-konva';
-import axios from 'axios';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { server } from '../server';
-
-/* 
- Things to do 
- - get all the product here (done)
- - allow user to select from the product (done )
- - allow user to  create canvas 
-   - Type 
-   - draw (done)
-   - Use selected product image in the canvas 
-   - upload photo
- */
-
-// const UserCreateDesign2 = () => {
-//   const { allProducts, isLoading } = useSelector((state) => state.products);
-//   const [products, setProducts] = useState([]);
-//   const [selectedProduct, setSelectedProduct] = useState(null);
-//   const [isProductListVisible, setIsProductListVisible] = useState(true);
-
-//   const handleSelectProduct = (event) => {
-//     const productId = event.target.value;
-//     const product = products.find((product) => product._id === productId);
-//     setSelectedProduct(product);
-//     setIsProductListVisible(true); // Hide the product list panel after selection
-//   };
-
-//   useEffect(() => {
-//     if (allProducts) {
-//       setProducts(allProducts);
-//       if (allProducts.length > 0) {
-//         setSelectedProduct(allProducts[0]);
-//       }
-//     }
-//   }, [allProducts]);
-
-//   console.log(products);
-
-//   return (
-//     <div className="flex h-full">
-//       <div className="flex flex-col h-full">
-//         {isProductListVisible && (
-//           <div className="w-64 bg-white border-l border-gray-300 p-4">
-//             <h1 className="text-xl font-bold mb-4">Product List</h1>
-//             <select
-//               onChange={handleSelectProduct}
-//               defaultValue=""
-//               className="w-full p-2 border border-gray-300 rounded"
-//             >
-//               <option value="" disabled>
-//                 Select a product
-//               </option>
-//               {products &&
-//                 products.map((product) => (
-//                   <option key={product._id} value={product._id}>
-//                     {product.name}
-//                   </option>
-//                 ))}
-//             </select>
-
-//             {selectedProduct && (
-//               <div className="mt-4">
-//                 <h2 className="text-lg font-bold">Selected Product</h2>
-//                 <p>Name: {selectedProduct.name}</p>
-//                 <p>Description: {selectedProduct.description}</p>
-//                 <p>Price: ${selectedProduct.originalPrice}</p>
-//                 {selectedProduct.images &&
-//                   selectedProduct.images.length > 0 && (
-//                     <img
-//                       src={selectedProduct.images[0].url}
-//                       alt={selectedProduct.name}
-//                       className="w-full h-[170px] object-contain"
-//                     />
-//                   )}
-//               </div>
-//             )}
-//           </div>
-//         )}
-//       </div>
-//       <div className="border-solid">
-//         <DrawingCanvas />
-//       </div>
-//       {/* <div className="flex flex-col h-full">
-//         <SidePanel className="h-full" />
-
-//         {isProductListVisible && (
-//           <div className="w-64 bg-white border-l border-gray-300 p-4">
-//             <h1 className="text-xl font-bold mb-4">Product List</h1>
-//             <select
-//               onChange={handleSelectProduct}
-//               defaultValue=""
-//               className="w-full p-2 border border-gray-300 rounded"
-//             >
-//               <option value="" disabled>
-//                 Select a product
-//               </option>
-//               {products &&
-//                 products.map((product) => (
-//                   <option key={product._id} value={product._id}>
-//                     {product.name}
-//                   </option>
-//                 ))}
-//             </select>
-
-//             {selectedProduct && (
-//               <div className="mt-4">
-//                 <h2 className="text-lg font-bold">Selected Product</h2>
-//                 <p>Name: {selectedProduct.name}</p>
-//                 <p>Description: {selectedProduct.description}</p>
-//                 <p>Price: ${selectedProduct.originalPrice}</p>
-//                 {selectedProduct.images &&
-//                   selectedProduct.images.length > 0 && (
-//                     <img
-//                       src={selectedProduct.images[0].url}
-//                       alt={selectedProduct.name}
-//                       className="w-full h-[170px] object-contain"
-//                     />
-//                   )}
-//               </div>
-//             )}
-//           </div>
-//         )}
-//       </div> */}
-
-//      </div>
-//   );
-// };
-
-// const SidePanel = () => {
-//   return (
-//     <div className="w-64 bg-gray-200 h-full p-4">
-//       <button className="w-full bg-blue-500 text-white py-2 rounded">
-//         Products
-//       </button>
-//     </div>
-//   );
-// };
-
-// const OrderPanel = () => {
-//   return (
-//     <div className="w-64 bg-gray-200 h-full p-4">
-//       <button className="w-full bg-blue-500 text-white py-2 rounded">
-//         Products
-//       </button>
-//     </div>
-//   );
-// };
-
-// const AddToCart = () => {
-
-//   return (
-//     <div
-//     className={`${styles.button} mt-6 rounded-[1px] h-15 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
-//     // onClick={() => addToCartHandler(data._id)}
-//     onClick = {()=> (console.log("added to cart"))}
-//   >
-//     <span className="flex items-center">
-//       Add to cart <AiOutlineShoppingCart className="ml-1" />
-//     </span>
-//   </div>
-//   )
-// }
 
 const UserCreateDesign = ({ data }) => {
   const [tool, setTool] = useState('pen');
@@ -183,14 +23,9 @@ const UserCreateDesign = ({ data }) => {
   const [selectedId, setSelectedId] = useState(null);
   const transformerRef = useRef(null);
 
-  console.log('Data design: ', data);
-
   // cart and design
   const { cart } = useSelector((state) => state.cart);
   const [design, SetDesign] = useState(null);
-
-  console.log('Design cart: ', cart);
-
   const [finalDesign, setFinalDesign] = useState(null);
 
   useEffect(() => {
@@ -201,7 +36,6 @@ const UserCreateDesign = ({ data }) => {
       };
       img.onerror = () => {
         console.error('Failed to load image');
-        // Handle error here, such as showing a message to the user
       };
       img.src = imageURL;
     }
@@ -281,44 +115,25 @@ const UserCreateDesign = ({ data }) => {
   };
 
   const handleExport = () => {
-    // Get the stage
     const stage = stageRef.current.getStage();
-
-    // Ensure stage exists
-    if (!stage) {
-      console.error('Stage not found');
-      return;
-    }
-
-    // Set stage background to transparent
-    // Set the background color of the container element to transparent
     const container = stage.container();
     container.style.backgroundColor = 'transparent';
 
-    // Convert stage to data URL
     try {
       const dataURL = stage.toDataURL({ mimeType: 'image/png' });
-
-      // Create a link element
       const link = document.createElement('a');
       link.download = 'canvas.png';
       link.href = dataURL;
-
-      // Append link to document and trigger click
       document.body.appendChild(link);
       link.click();
-
-      // Clean up
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error exporting canvas:', error);
     }
   };
 
-  // customer upload
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    console.log('uploaded file: ', file);
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -332,14 +147,12 @@ const UserCreateDesign = ({ data }) => {
     const stage = stageRef.current.getStage();
     const dataURL = stage.toDataURL({ mimeType: 'image/jpeg', quality: 1 });
 
-    console.log('data url: ', dataURL);
-
     fetch(`${server}/custom/create-custom`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ canvasDataURL: dataURL }), // Changed 'dataURL' to 'canvasDataURL' to match server expectation
+      body: JSON.stringify({ canvasDataURL: dataURL }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -359,65 +172,53 @@ const UserCreateDesign = ({ data }) => {
         >
           Select
         </button>
-        <button
-          onClick={() => setTool('pen')}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Draw
-        </button>
-        <button
-          onClick={() => setTool('eraser')}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Erase
-        </button>
-        <button
-          onClick={() => setTool('text')}
-          className="bg-green-500 text-white px-4 py-2 rounded"
-        >
-          Text
-        </button>
+        {(data.mediaType === 'both' || data.mediaType === 'text') && (
+          <button
+            onClick={() => setTool('pen')}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Draw
+          </button>
+        )}
+        {data.mediaType !== 'image' && (
+          <>
+            <button
+              onClick={() => setTool('text')}
+              className="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              Text
+            </button>
+            {tool === 'text' && (
+              <input
+                type="text"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Type text and click on canvas"
+                className="border border-gray-300 px-4 py-2 rounded"
+              />
+            )}
+          </>
+        )}
+        {data.mediaType !== 'text' && (
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="bg-white border border-gray-300 px-4 py-2 rounded"
+          />
+        )}
         <button
           onClick={handleClear}
           className="bg-gray-500 text-white px-4 py-2 rounded"
         >
           Clear
         </button>
-        {tool === 'text' && (
-          <input
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Type text and click on canvas"
-            className="border border-gray-300 px-4 py-2 rounded"
-          />
-        )}
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          className="bg-white border border-gray-300 px-4 py-2 rounded"
-        />{' '}
         <button
           onClick={handleExport}
           className="bg-purple-500 text-white px-4 py-2 rounded"
         >
           Export
         </button>
-        {/* <label
-          htmlFor="file-input"
-          className="ml-5 flex items-center justify-center px-4 py-2 border border-brown-lightdark rounded-md shadow-sm text-sm font-medium  text-brown-semidark bg-white hover:border-brown-semidark"
-        > */}
-        {/* <span>Add the design</span>
-          <input
-            type="file"
-            name="avatar"
-            id="file-input"
-            accept=".jpg,.jpeg,.png"
-            onChange={saveExportedImage}
-            className="sr-only"
-          /> */}
-        {/* </label> */}
       </div>
       <button
         onClick={saveExportedImage}
@@ -427,8 +228,6 @@ const UserCreateDesign = ({ data }) => {
       </button>
 
       <Stage
-        // width={window.innerWidth}
-        // height={window.innerHeight}
         width={900}
         height={400}
         onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
