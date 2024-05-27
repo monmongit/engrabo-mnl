@@ -104,9 +104,6 @@ const Cart = ({ setOpenCart }) => {
 const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
   const [value, setValue] = useState(data?.qty || 1);
 
-  const itemPrice = data?.price || 0;
-  const totalPrice = itemPrice * value;
-
   const increment = () => {
     if (data.stock <= value) {
       toast.error(
@@ -114,7 +111,11 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
       );
     } else {
       setValue((prevValue) => prevValue + 1);
-      const updateCartData = { ...data, qty: value + 1 };
+      const updateCartData = {
+        ...data,
+        qty: value + 1,
+        subTotal: (value + 1) * data.price,
+      };
       quantityChangeHandler(updateCartData);
     }
   };
@@ -122,10 +123,16 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
   const decrement = () => {
     if (value > 1) {
       setValue((prevValue) => prevValue - 1);
-      const updateCartData = { ...data, qty: value - 1 };
+      const updateCartData = {
+        ...data,
+        qty: value - 1,
+        subTotal: (value - 1) * data.price,
+      };
       quantityChangeHandler(updateCartData);
     }
   };
+
+  const subTotal = data?.subTotal || data?.price * value;
 
   return (
     <div className="border-b p-4 border-[#d8c68f]">
@@ -164,7 +171,7 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
               : data.name}
           </h1>
           <h4 className="font-[600] text-[17px] text-[#171203]">
-            ₱ {itemPrice}
+            ₱ {data.price}
           </h4>
           {data.size && data.size.name && (
             <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
@@ -185,7 +192,7 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
             Stocks: {data.stock}
           </h4>
           <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
-            Total: ₱ {totalPrice.toFixed(2)}
+            Sub Total: ₱ {subTotal.toFixed(2)}
           </h4>
           <br />
         </div>
