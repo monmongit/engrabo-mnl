@@ -13,7 +13,7 @@ const ProductsPage = () => {
   const [searchParams] = useSearchParams();
   const { allProducts = [], isLoading } = useSelector(
     (state) => state.products
-  ); // Default value for allProducts
+  );
   const [data, setData] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [selectedRating, setSelectedRating] = useState(0);
@@ -28,8 +28,16 @@ const ProductsPage = () => {
       : [];
 
   useEffect(() => {
+    const categoryFromQuery = searchParams.get('category');
+    if (categoryFromQuery) {
+      setSelectedCategory(categoryFromQuery);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     if (allProducts && !isLoading) {
       let filteredData = allProducts;
+
       if (selectedCategory) {
         filteredData = filteredData.filter(
           (i) => i.category === selectedCategory
