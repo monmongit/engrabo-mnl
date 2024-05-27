@@ -524,7 +524,7 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
-          <UserCreateDesign data={data} />
+          {data.mediaType !== 'none' && <UserCreateDesign data={data} />}
           <ProductDetailsInfo
             data={data}
             products={products}

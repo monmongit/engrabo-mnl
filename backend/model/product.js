@@ -47,7 +47,11 @@ const productSchema = new mongoose.Schema({
   createAt: { type: Date, default: Date.now },
   sizes: [{ name: String, price: Number, description: String }], // Add sizes field
   colors: [String], // Add colors field
-  mediaType: { type: String, enum: ['text', 'image', 'both'] }, // Add mediaType field
+  mediaType: {
+    type: String,
+    enum: ['none', 'text', 'image', 'both'],
+    default: 'none',
+  }, // Add mediaType field
   imageOptions: [{ name: String, price: Number, description: String }], // Add imageOptions field
   textOptions: [{ name: String, price: Number, description: String }], // Add textOptions field
 });

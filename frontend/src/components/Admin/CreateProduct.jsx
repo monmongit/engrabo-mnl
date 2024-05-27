@@ -27,7 +27,7 @@ const CreateProduct = ({ setOpen }) => {
   const [stock, setStock] = useState('');
   const [sizes, setSizes] = useState([]); // Add state for sizes
   const [colors, setColors] = useState(''); // Add state for colors
-  const [mediaType, setMediaType] = useState(''); // Add state for media type
+  const [mediaType, setMediaType] = useState('none'); // Add state for media type
   const [instructions, setInstructions] = useState('');
   const [personalization, setPersonalization] = useState('');
   const [dropdowns, setDropdowns] = useState([]);
@@ -363,7 +363,7 @@ const CreateProduct = ({ setOpen }) => {
               onChange={(e) => setMediaType(e.target.value)}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="">Choose a media type</option>
+              <option value="none">None</option>
               <option value="text">Text</option>
               <option value="image">Image</option>
               <option value="both">Both</option>
