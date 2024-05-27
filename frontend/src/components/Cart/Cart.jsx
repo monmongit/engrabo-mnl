@@ -72,6 +72,17 @@ const Cart = ({ setOpenCart }) => {
               </div>
             </div>
             <div className="px-5 mb-3">
+              {/* Additional Orders */}
+              <Link to="/products?category=Additionals">
+                <div
+                  className={`h-[45px] flex items-center justify-center w-[100%] bg-[#171203] rounded-[5px] cursor-pointer mb-2`}
+                >
+                  <h1 className="text-[#fff4d7] text-[18px] font-[600]">
+                    Additional Orders
+                  </h1>
+                </div>
+              </Link>
+
               {/* Checkout Button */}
               <Link to="/checkout">
                 <div
