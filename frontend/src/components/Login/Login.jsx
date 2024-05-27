@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai';
-import { Link, useNavigate } from 'react-router-dom';
-import styles from '../../styles/style';
+import React, { useState } from "react";
+import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { Link, useNavigate } from "react-router-dom";
+import styles from "../../styles/style";
 //import logo from '../../assets/Logo/engrabo-logo.png';
-import Homebackground from '../../assets/Logo/home-background.jpg';
-import axios from 'axios';
-import { server } from '../../server';
-import { toast } from 'react-toastify';
-import '../../styles/toastDesign.css';
+import Homebackground from "../../assets/Logo/home-background.jpg";
+import axios from "axios";
+import { server } from "../../server";
+import { toast } from "react-toastify";
+import "../../styles/toastDesign.css";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [visible, setVisible] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [visible, setVisible] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,8 +28,8 @@ const Login = () => {
         { withCredentials: true }
       )
       .then((res) => {
-        toast.success('Login success!');
-        navigate('/');
+        toast.success("Login success!");
+        navigate("/");
         window.location.reload(true);
       })
       .catch((err) => {
@@ -38,7 +38,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 px-4">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-brown-dark">
           Login to your account
@@ -83,7 +83,7 @@ const Login = () => {
               </label>
               <div className="mt-1 relative">
                 <input
-                  type={visible ? 'text' : 'password'}
+                  type={visible ? "text" : "password"}
                   name="password"
                   autoComplete="current-password"
                   required

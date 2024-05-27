@@ -1,26 +1,30 @@
-const express = require('express');
-const User = require('../model/user');
+const express = require("express");
+const User = require("../model/user");
+const Admin = require("../model/admin");
 const router = express.Router();
-const cloudinary = require('cloudinary');
-const ErrorHandler = require('../utils/ErrorHandler');
-const catchAsyncErrors = require('../middleware/catchAsyncError');
-const jwt = require('jsonwebtoken');
-const sendMail = require('../utils/sendMail');
-const sendToken = require('../utils/jwtToken');
-const { isAuthenticated, isAdmin } = require('../middleware/auth');
+const cloudinary = require("cloudinary");
+const ErrorHandler = require("../utils/ErrorHandler");
+const catchAsyncErrors = require("../middleware/catchAsyncError");
+const jwt = require("jsonwebtoken");
+const sendMail = require("../utils/sendMail");
+const resetMail = require("../utils/resetMail");
+const { upload } = require("../multer");
+
+const sendToken = require("../utils/jwtToken");
+const { isAuthenticated, isAdmin } = require("../middleware/auth");
 
 // Create user
-router.post('/create-user', async (req, res, next) => {
+router.post("/create-user", async (req, res, next) => {
   try {
     const { name, email, password, avatar } = req.body;
     const userEmail = await User.findOne({ email });
 
     if (userEmail) {
-      return next(new ErrorHandler('User already exists', 400));
+      return next(new ErrorHandler("User already exists", 400));
     }
 
     const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-      folder: 'avatars',
+      folder: "avatars",
     });
 
     const user = {
@@ -38,10 +42,12 @@ router.post('/create-user', async (req, res, next) => {
     const activationUrl = `http://localhost:3000/activation/${activationToken}`;
 
     try {
-      await sendMail({
+      await resetMail({
+        name: user.name,
         email: user.email,
-        subject: 'Activate your account',
-        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
+        subject: "Activate your account",
+        url: activationUrl,
+        // message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
       });
       res.status(201).json({
         success: true,
@@ -55,16 +61,149 @@ router.post('/create-user', async (req, res, next) => {
   }
 });
 
+const findUserOrAdmin = async (email) => {
+  let user = await User.findOne({ email }).select("name").lean();
+  let userType = "User";
+
+  if (!user) {
+    user = await Admin.findOne({ email }).select("name").lean();
+    let userType = "Admin";
+  }
+  return { user, userType };
+};
+
+// Forgot Password
+router.post("/forgot-pass", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return next(new ErrorHandler("Please provide the field", 400));
+    }
+
+    const { user, userType } = await findUserOrAdmin(email);
+
+    if (!user) {
+      return next(new ErrorHandler("User doesn't exist", 400));
+    }
+
+    const userFirstName = user.name.split(" ")[0];
+
+    const userPayload = { email: email };
+    const activationToken = createActivationToken(userPayload);
+    const activationUrl = `http://localhost:3000/reset/${activationToken}`;
+
+    try {
+      await resetMail({
+        name: userFirstName,
+        email: email,
+        subject: "Reset your account password",
+        url: activationUrl,
+      });
+      res.status(201).json({
+        success: true,
+        message: `Please check your email:- ${user.email} to reset your account!`,
+        userType: userType,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 400));
+  }
+});
+
+//Verify token
+router.post(
+  "/reset",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { reset_token } = req.body;
+
+      const verifyToken = jwt.verify(
+        reset_token,
+        process.env.ACTIVATION_SECRET
+      );
+      if (!verifyToken) {
+        return next(new ErrorHandler("Invalid Token", 400));
+      }
+
+      const { email } = verifyToken;
+
+      let foundUser = await User.findOne({ email });
+
+      if (!foundUser) {
+        foundUser = await Admin.findOne({ email });
+
+        if (!foundUser) {
+          return next(new ErrorHandler("User doesn't exist", 400));
+        }
+      }
+
+      sendToken(foundUser, 201, res); // Assuming this function handles token creation and response
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+//Update password (reset)
+router.post(
+  "/reset-password",
+  catchAsyncErrors(async (req, res, next) => {
+    const { newPassword, confirmPassword, reset_token } = req.body;
+
+    const verifyToken = jwt.verify(reset_token, process.env.ACTIVATION_SECRET);
+    if (!verifyToken) {
+      return next(new ErrorHandler("Invalid Token", 400));
+    }
+
+    if (!newPassword || !confirmPassword) {
+      return next(new ErrorHandler("Please provide all the fields", 400));
+    }
+
+    if (newPassword !== confirmPassword) {
+      return next(new ErrorHandler("New password does not matched!", 400));
+    }
+
+    try {
+      const { email } = verifyToken;
+      const { userType } = await findUserOrAdmin(email);
+
+      let user = await User.findOne({ email });
+      // let userType = "User";
+
+      if (!user) {
+        user = await Admin.findOne({ email });
+        // userType = "Admin";
+      }
+
+      if (user) {
+        user.password = newPassword;
+        await user.save();
+        return res.status(200).json({
+          success: true,
+          message: "Password was updated successfully!",
+          userType: userType,
+        });
+      } else {
+        return next(new ErrorHandler("Email doesn't exist", 400));
+      }
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 // Create activation token
 const createActivationToken = (user) => {
   return jwt.sign(user, process.env.ACTIVATION_SECRET, {
-    expiresIn: '5m',
+    expiresIn: "5m",
   });
 };
 
 // Activate user
 router.post(
-  '/activation',
+  "/activation",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { activation_token } = req.body;
@@ -74,7 +213,7 @@ router.post(
         process.env.ACTIVATION_SECRET
       );
       if (!newUser) {
-        return next(new ErrorHandler('Invalid Token', 400));
+        return next(new ErrorHandler("Invalid Token", 400));
       }
 
       const { name, email, password, avatar } = newUser;
@@ -82,7 +221,7 @@ router.post(
       let user = await User.findOne({ email });
 
       if (user) {
-        return next(new ErrorHandler('User already exists', 400));
+        return next(new ErrorHandler("User already exists", 400));
       }
 
       // Now, create the user with the verified information
@@ -102,16 +241,16 @@ router.post(
 
 // Login user
 router.post(
-  '/login-user',
+  "/login-user",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return next(new ErrorHandler('Please provide all the fields', 400));
+        return next(new ErrorHandler("Please provide all the fields", 400));
       }
 
-      const user = await User.findOne({ email }).select('+password');
+      const user = await User.findOne({ email }).select("+password");
 
       if (!user) {
         return next(new ErrorHandler("User doesn't exists!", 400));
@@ -121,7 +260,7 @@ router.post(
 
       if (!isPasswordValid) {
         return next(
-          new ErrorHandler('Please enter your credentials correctly!', 400)
+          new ErrorHandler("Please enter your credentials correctly!", 400)
         );
       }
       sendToken(user, 201, res);
@@ -133,7 +272,7 @@ router.post(
 
 // Load user
 router.get(
-  '/getuser',
+  "/getuser",
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
@@ -154,20 +293,20 @@ router.get(
 
 // Logout User
 router.get(
-  '/logout',
+  "/logout",
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      res.cookie('token', null, {
+      res.cookie("token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: "none",
         secure: true,
       });
 
       res.status(201).json({
         success: true,
-        message: 'Logout Successfully!',
+        message: "Logout Successfully!",
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -177,23 +316,23 @@ router.get(
 
 // Update user info
 router.put(
-  '/update-user-info',
+  "/update-user-info",
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { email, password, phoneNumber, name } = req.body;
 
-      const user = await User.findOne({ email }).select('+password');
+      const user = await User.findOne({ email }).select("+password");
 
       if (!user) {
-        return next(new ErrorHandler('User not found', 400));
+        return next(new ErrorHandler("User not found", 400));
       }
 
       const isPasswordValid = await user.comparePassword(password);
 
       if (!isPasswordValid) {
         return next(
-          new ErrorHandler('Please provide the correct information', 400)
+          new ErrorHandler("Please provide the correct information", 400)
         );
       }
 
@@ -215,18 +354,18 @@ router.put(
 
 // Update user avatar
 router.put(
-  '/update-avatar',
+  "/update-avatar",
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
       let existsUser = await User.findById(req.user.id);
-      if (req.body.avatar !== '') {
+      if (req.body.avatar !== "") {
         const imageId = existsUser.avatar.public_id;
 
         await cloudinary.v2.uploader.destroy(imageId);
 
         const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-          folder: 'avatars',
+          folder: "avatars",
           width: 150,
         });
 
@@ -250,7 +389,7 @@ router.put(
 
 // Update user addresses
 router.put(
-  '/update-user-addresses',
+  "/update-user-addresses",
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
@@ -291,7 +430,7 @@ router.put(
 
 // Delete user address
 router.delete(
-  '/delete-user-address/:id',
+  "/delete-user-address/:id",
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
@@ -315,22 +454,22 @@ router.delete(
 
 // Update user password
 router.put(
-  '/update-user-password',
+  "/update-user-password",
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const user = await User.findById(req.user.id).select('+password');
+      const user = await User.findById(req.user.id).select("+password");
 
       const isPasswordMatched = await user.comparePassword(
         req.body.oldPassword
       );
 
       if (!isPasswordMatched) {
-        return next(new ErrorHandler('Current password is incorrect!', 400));
+        return next(new ErrorHandler("Current password is incorrect!", 400));
       }
 
       if (req.body.newPassword !== req.body.confirmPassword) {
-        return next(new ErrorHandler('New password does not matched!', 400));
+        return next(new ErrorHandler("New password does not matched!", 400));
       }
 
       user.password = req.body.newPassword;
@@ -339,7 +478,7 @@ router.put(
 
       res.status(200).json({
         success: true,
-        message: 'Password updated successfully!',
+        message: "Password updated successfully!",
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -349,7 +488,7 @@ router.put(
 
 // Get all user by admin
 router.get(
-  '/admin-all-users/:userID',
+  "/admin-all-users/:userID",
   // isAuthenticated,
   isAdmin,
   catchAsyncErrors(async (req, res, next) => {
@@ -369,7 +508,7 @@ router.get(
 
 // Delete all user by admin
 router.delete(
-  '/delete-user/:id',
+  "/delete-user/:id",
   isAdmin,
   catchAsyncErrors(async (req, res, next) => {
     try {
@@ -377,7 +516,7 @@ router.delete(
 
       if (!user) {
         return next(
-          new ErrorHandler('User is not available with this id', 400)
+          new ErrorHandler("User is not available with this id", 400)
         );
       }
 
@@ -389,7 +528,7 @@ router.delete(
 
       res.status(201).json({
         success: true,
-        message: 'User deleted successfully!',
+        message: "User deleted successfully!",
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -399,7 +538,7 @@ router.delete(
 
 // Find user information with the userId
 router.get(
-  '/user-info/:id',
+  "/user-info/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const user = await User.findById(req.params.id);

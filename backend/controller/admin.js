@@ -1,26 +1,26 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const sendMail = require('../utils/sendMail');
-const Admin = require('../model/admin');
-const { isAdmin } = require('../middleware/auth');
-const cloudinary = require('cloudinary');
-const catchAsyncError = require('../middleware/catchAsyncError');
-const ErrorHandler = require('../utils/ErrorHandler');
-const sendAdminToken = require('../utils/adminToken');
+const jwt = require("jsonwebtoken");
+const sendMail = require("../utils/sendMail");
+const Admin = require("../model/admin");
+const { isAdmin } = require("../middleware/auth");
+const cloudinary = require("cloudinary");
+const catchAsyncError = require("../middleware/catchAsyncError");
+const ErrorHandler = require("../utils/ErrorHandler");
+const sendAdminToken = require("../utils/adminToken");
 
 router.post(
-  '/create-admin',
+  "/create-admin",
   catchAsyncError(async (req, res, next) => {
     try {
       const { email } = req.body;
       const adminEmail = await Admin.findOne({ email });
       if (adminEmail) {
-        return next(new ErrorHandler('User already exist!', 400));
+        return next(new ErrorHandler("User already exist!", 400));
       }
 
       const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-        folder: 'avatars',
+        folder: "avatars",
       });
 
       const admin = {
@@ -43,7 +43,7 @@ router.post(
       try {
         await sendMail({
           email: admin.email,
-          subject: 'Active your admin account!',
+          subject: "Active your admin account!",
           message: `Hello ${admin.name}, please click on the link to activate your admin account: ${activationUrl}!`,
         });
         res.status(201).json({
@@ -62,13 +62,13 @@ router.post(
 // Create activation token
 const createActivationToken = (admin) => {
   return jwt.sign(admin, process.env.ACTIVATION_SECRET, {
-    expiresIn: '5m',
+    expiresIn: "5m",
   });
 };
 
 // Activate admin
 router.post(
-  '/activation',
+  "/activation",
   catchAsyncError(async (req, res, next) => {
     try {
       const { activation_token } = req.body;
@@ -79,7 +79,7 @@ router.post(
       );
 
       if (!newAdmin) {
-        return next(new ErrorHandler('Invalid Token', 400));
+        return next(new ErrorHandler("Invalid Token", 400));
       }
 
       const { name, email, password, avatar, zipCode, address, phoneNumber } =
@@ -88,7 +88,7 @@ router.post(
       // Check if user already exists
       let admin = await Admin.findOne({ email });
       if (admin) {
-        return next(new ErrorHandler('User already exists', 400));
+        return next(new ErrorHandler("User already exists", 400));
       }
       // Now, create the user with the verified information
       admin = await Admin.create({
@@ -110,16 +110,16 @@ router.post(
 
 // Login admin
 router.post(
-  '/login-admin',
+  "/login-admin",
   catchAsyncError(async (req, res, next) => {
     try {
       const { email, password } = req.body;
 
       if (!email || !password) {
-        return next(new ErrorHandler('Please provide all the fields', 400));
+        return next(new ErrorHandler("Please provide all the fields", 400));
       }
 
-      const user = await Admin.findOne({ email }).select('+password');
+      const user = await Admin.findOne({ email }).select("+password");
 
       if (!user) {
         return next(new ErrorHandler("User doesn't exists!", 400));
@@ -129,7 +129,7 @@ router.post(
 
       if (!isPasswordValid) {
         return next(
-          new ErrorHandler('Please enter your credentials correctly!', 400)
+          new ErrorHandler("Please enter your credentials correctly!", 400)
         );
       }
 
@@ -142,7 +142,7 @@ router.post(
 
 // Load admin
 router.get(
-  '/getAdmin',
+  "/getAdmin",
   isAdmin,
   catchAsyncError(async (req, res, next) => {
     try {
@@ -164,19 +164,19 @@ router.get(
 
 // Logout Admin
 router.get(
-  '/logout',
+  "/logout",
   catchAsyncError(async (req, res, next) => {
     try {
-      res.cookie('admin_token', null, {
+      res.cookie("admin_token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: "none",
         secure: true,
       });
 
       res.status(201).json({
         success: true,
-        message: 'Your admin account is successfully logout!',
+        message: "Your admin account is successfully logout!",
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -186,7 +186,7 @@ router.get(
 
 // Get admin info
 router.get(
-  '/get-admin-info/:id',
+  "/get-admin-info/:id",
   catchAsyncError(async (req, res, next) => {
     try {
       const admin = await Admin.findById(req.params.id);
@@ -202,7 +202,7 @@ router.get(
 
 // Update admin profile picture
 router.put(
-  '/update-admin-avatar',
+  "/update-admin-avatar",
   isAdmin,
   catchAsyncError(async (req, res, next) => {
     try {
@@ -213,7 +213,7 @@ router.put(
       await cloudinary.v2.uploader.destroy(imageId);
 
       const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-        folder: 'avatars',
+        folder: "avatars",
         width: 150,
       });
 
@@ -236,7 +236,7 @@ router.put(
 
 // Update admin info
 router.put(
-  '/update-admin-info',
+  "/update-admin-info",
   isAdmin,
   catchAsyncError(async (req, res, next) => {
     try {
@@ -245,7 +245,7 @@ router.put(
       const admin = await Admin.findOne(req.admin._id);
 
       if (!admin) {
-        return next(new ErrorHandler('Admin not found', 400));
+        return next(new ErrorHandler("Admin not found", 400));
       }
 
       admin.name = name;
@@ -268,14 +268,14 @@ router.put(
 
 // Update admin password
 router.put(
-  '/update-admin-password',
+  "/update-admin-password",
   isAdmin,
   catchAsyncError(async (req, res, next) => {
     try {
-      const admin = await Admin.findById(req.admin._id).select('+password');
+      const admin = await Admin.findById(req.admin._id).select("+password");
 
       if (!(await admin.comparePassword(req.body.oldPassword))) {
-        return next(new ErrorHandler('Current password is incorrect!', 400));
+        return next(new ErrorHandler("Current password is incorrect!", 400));
       }
 
       admin.password = req.body.newPassword;
@@ -283,7 +283,7 @@ router.put(
 
       res.status(200).json({
         success: true,
-        message: 'Password updated successfully!',
+        message: "Password updated successfully!",
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
