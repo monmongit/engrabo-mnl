@@ -13,6 +13,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { MdOutlineLocalOffer } from 'react-icons/md';
 import { toast } from 'react-toastify';
+import { FaRegUser } from 'react-icons/fa';
 
 const DashboardSideBar = ({ active }) => {
   const navigate = useNavigate();
@@ -44,6 +45,23 @@ const DashboardSideBar = ({ active }) => {
             }`}
           >
             Dashboard
+          </h5>
+        </Link>
+      </div>
+
+      {/* Dashboard */}
+      <div className="w-full flex items-center p-4">
+        <Link to="/dashboard-users" className="w-full flex items-center">
+          <FaRegUser
+            size={30}
+            color={`${active === 12 ? '#171203' : '#6b540f'}`}
+          />
+          <h5
+            className={`800px:block hidden pl-2 text-[18px] font-[400] ${
+              active === 12 ? 'text-[#171203]' : 'text-[#6b540f]'
+            }`}
+          >
+            All Users
           </h5>
         </Link>
       </div>
