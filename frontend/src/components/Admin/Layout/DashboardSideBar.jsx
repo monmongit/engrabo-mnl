@@ -151,7 +151,7 @@ const DashboardSideBar = ({ active }) => {
         </Link>
       </div>
 
-      {/* Refunds */}
+      {/* Refunds
       <div className="w-full flex items-center p-4">
         <Link to="/dashboard-refunds" className="w-full flex items-center">
           <HiOutlineReceiptRefund
@@ -166,7 +166,7 @@ const DashboardSideBar = ({ active }) => {
             Refunds
           </h5>
         </Link>
-      </div>
+      </div> */}
 
       {/* Change Password */}
       <div className="w-full flex items-center p-4">

@@ -20,7 +20,6 @@ const AllUsers = () => {
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       dispatch(deleteUser(id));
-      dispatch(getAllUsers(admin._id));
     }
   };
 
