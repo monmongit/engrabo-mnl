@@ -42,7 +42,6 @@ const ProfileSidebar = ({ setActive, active }) => {
           Profile
         </span>
       </div>
-
       {/* Orders Sidebar */}
       <div
         className="flex items-center cursor-pointer w-full mb-8"
@@ -60,8 +59,7 @@ const ProfileSidebar = ({ setActive, active }) => {
           Orders
         </span>
       </div>
-
-      {/* Refunds Sidebar */}
+      {/* Refunds Sidebar
       <div
         className="flex items-center cursor-pointer w-full mb-8"
         onClick={() => setActive(3)}
@@ -77,8 +75,7 @@ const ProfileSidebar = ({ setActive, active }) => {
         >
           Refunds
         </span>
-      </div>
-
+      </div> */}
       {/* Inbox Sidebar */}
       <div
         className="flex items-center cursor-pointer w-full mb-8"
@@ -97,7 +94,7 @@ const ProfileSidebar = ({ setActive, active }) => {
         </span>
       </div>
 
-      {/* Tract Order Sidebar */}
+      {/* Tract Order Sidebar
       <div
         className="flex items-center cursor-pointer w-full mb-8"
         onClick={() => setActive(5)}
@@ -113,7 +110,7 @@ const ProfileSidebar = ({ setActive, active }) => {
         >
           Tract Order
         </span>
-      </div>
+      </div> */}
 
       {/* Change Password Sidebar */}
       <div
@@ -132,7 +129,6 @@ const ProfileSidebar = ({ setActive, active }) => {
           Change Password
         </span>
       </div>
-
       {/* Address Sidebar */}
       <div
         className="flex items-center cursor-pointer w-full mb-8"
@@ -147,7 +143,6 @@ const ProfileSidebar = ({ setActive, active }) => {
           Address
         </span>
       </div>
-
       {/* Logout Sidebar */}
       <div
         className="flex items-center cursor-pointer w-full mb-8"
