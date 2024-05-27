@@ -3,8 +3,8 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   LoginPage,
-  ForgotPage,
   SignupPage,
+  ForgotPage,
   ActivationPage,
   ResetPage,
   HomePage,
@@ -24,6 +24,8 @@ import {
   TrackOrderPage,
   UserInboxPage,
   CreatePage,
+  AboutPage,
+  ContactPage,
 } from "./routes/Routes.js";
 import {
   AdminHomePage,
@@ -82,7 +84,8 @@ const App = () => {
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/create" element={<CreatePage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/about" element={<AboutPage />} />
 
         <Route
           path="/checkout"
@@ -130,7 +133,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
         {/* Admin Route */}
         <Route path="/admin/preview/:id" element={<AdminPreviewPage />} />
 
