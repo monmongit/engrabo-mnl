@@ -1,6 +1,8 @@
 import LoginPage from "../pages/LoginPage";
+import ForgotPage from "../pages/ForgotPage";
 import SignupPage from "../pages/SignupPage";
 import ActivationPage from "../pages/ActivationPage";
+import ResetPage from "../pages/ResetPage";
 import HomePage from "../pages/HomePage";
 import ProductsPage from "../pages/ProductsPage";
 import BestSellingPage from "../pages/BestSellingPage";
@@ -21,8 +23,10 @@ import CreatePage from "../pages/CreatePage.jsx";
 
 export {
   LoginPage,
+  ForgotPage,
   SignupPage,
   ActivationPage,
+  ResetPage,
   HomePage,
   ProductsPage,
   BestSellingPage,

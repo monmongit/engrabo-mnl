@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai';
-import { RxAvatar } from 'react-icons/rx';
-import Homebackground from '../../assets/Logo/home-background.jpg'; //import logo from '../../assets/Logo/engrabo-logo.png';
-import styles from '../../styles/style';
-import axios from 'axios';
-import { server } from '../../server';
-import { toast } from 'react-toastify';
-import '../../styles/toastDesign.css';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { RxAvatar } from "react-icons/rx";
+import Homebackground from "../../assets/Logo/home-background.jpg"; //import logo from '../../assets/Logo/engrabo-logo.png';
+import styles from "../../styles/style";
+import axios from "axios";
+import { server } from "../../server";
+import { toast } from "react-toastify";
+import "../../styles/toastDesign.css";
 
 const Signup = () => {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [visible, setVisible] = useState('');
-  const [avatar, setAvatar] = useState('');
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [visible, setVisible] = useState("");
+  const [avatar, setAvatar] = useState("");
 
   const handleFileInputChange = (e) => {
     const reader = new FileReader();
@@ -35,9 +35,9 @@ const Signup = () => {
       .post(`${server}/user/create-user`, { name, email, password, avatar })
       .then((res) => {
         toast.success(res.data.message);
-        setName('');
-        setEmail('');
-        setPassword('');
+        setName("");
+        setEmail("");
+        setPassword("");
         setAvatar();
       })
       .catch((error) => {
@@ -46,7 +46,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 px-4">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/*<img src={logo} alt="Engrabo Logo" className="m-0 p-0" />*/}
         <h2 className="mt-6 text-center text-3xl font-extrabold text-brown-dark">
@@ -111,7 +111,7 @@ const Signup = () => {
               </label>
               <div className="mt-1 relative">
                 <input
-                  type={visible ? 'text' : 'password'}
+                  type={visible ? "text" : "password"}
                   name="password"
                   autoComplete="current-password"
                   required
