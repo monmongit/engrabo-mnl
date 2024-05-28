@@ -173,6 +173,7 @@ export const getAllUsers = (adminId) => async (dispatch) => {
   }
 };
 
+
 // Delete user
 export const deleteUser = (id) => async (dispatch, getState) => {
   try {
