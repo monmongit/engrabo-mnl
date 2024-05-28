@@ -150,15 +150,17 @@ export const getAllUsers = (adminId) => async (dispatch) => {
     dispatch({
       type: 'getAllUsersRequest',
     });
-    console.log("admin id from redux: ", adminId)
-   
-    const { data } = await axios.get(`${server}/user/admin-all-users/${adminId}`, {
-      withCredentials: true,
-    });
+    console.log('admin id from redux: ', adminId);
 
-     console.log("data: ", data);
+    const { data } = await axios.get(
+      `${server}/user/admin-all-users/${adminId}`,
+      {
+        withCredentials: true,
+      }
+    );
 
-  
+    console.log('data: ', data);
+
     dispatch({
       type: 'getAllUsersSuccess',
       payload: { users: data.users },
@@ -168,5 +170,32 @@ export const getAllUsers = (adminId) => async (dispatch) => {
       type: 'getAllUsersFailed',
       payload: error.response.data.message,
     });
+  }
+};
+
+// Delete user
+export const deleteUser = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: 'deleteUserRequest' });
+
+    const { data } = await axios.delete(`${server}/user/delete-user/${id}`, {
+      withCredentials: true,
+    });
+
+    dispatch({
+      type: 'deleteUserSuccess',
+      payload: data.message,
+    });
+
+    const adminId = getState().admin.admin._id;
+    dispatch(getAllUsers(adminId)); // Refresh the user list
+
+    toast.success('User deleted successfully!');
+  } catch (error) {
+    dispatch({
+      type: 'deleteUserFailed',
+      payload: error.response.data.message,
+    });
+    toast.error(error.response.data.message);
   }
 };

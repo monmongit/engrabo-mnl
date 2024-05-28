@@ -8,168 +8,99 @@ import {
   Image as KonvaImage,
   Transformer,
 } from 'react-konva';
+import WebFont from 'webfontloader';
 import axios from 'axios';
 import { server } from '../server';
 
-/* 
- Things to do 
- - get all the product here (done)
- - allow user to select from the product (done )
- - allow user to  create canvas 
-   - Type 
-   - draw (done)
-   - Use selected product image in the canvas 
-   - upload photo
- */
+// Add the font families you want to use
+const fontFamilies = [
+  'Arial',
+  'Times New Roman',
+  'Courier New',
+  'Georgia',
+  'Verdana',
+  'Tahoma',
+  'Trebuchet MS',
+  'Impact',
+  'Comic Sans MS',
+  'Lucida Console',
+  'Lucida Sans Unicode',
+  'Palatino Linotype',
+  'Garamond',
+  'Bookman',
+  'Arial Black',
+  'Narrow',
+  'Roboto',
+  'Open Sans',
+  'Lato',
+  'Montserrat',
+  'Oswald',
+  'Raleway',
+  'Pacifico',
+  'Playfair Display',
+  'Merriweather',
+  'Fjalla One',
+  'Ubuntu',
+  'PT Sans',
+  'Droid Sans',
+  'Lobster',
+  'Bitter',
+  'Anton',
+  'Dancing Script',
+  'Maven Pro',
+  'Indie Flower',
+  'Bangers',
+  'Cabin',
+  'Cinzel',
+  'Comfortaa',
+  'Cormorant Garamond',
+  'Courgette',
+  'Dosis',
+  'Exo',
+  'Fira Sans',
+  'Frank Ruhl Libre',
+  'Gloria Hallelujah',
+  'Great Vibes',
+  'Josefin Sans',
+  'Kalam',
+  'Karla',
+  'Lobster Two',
+  'Merriweather Sans',
+  'Muli',
+  'Nunito',
+  'Oxygen',
+  'Patua One',
+  'Quicksand',
+  'Righteous',
+  'Russo One',
+  'Satisfy',
+  'Shadows Into Light',
+  'Signika',
+  'Source Code Pro',
+  'Spectral',
+  'Titillium Web',
+  'Yanone Kaffeesatz',
+  'Zilla Slab',
+  'Mountains of Christmas',
+  'Mr De Haviland',
+  'Over the Rainbow',
+  'Licorice',
+  'Bilbo Swash Caps',
+  'Comforter Brush',
+  'Hachi Maru Pop',
+  'Smooch',
+  'Edu TAS Beginner',
+  'Sevillana',
+  'Dancing Script',
+  'Jersey',
+  'Jacquard',
+  'Bodoni Moda',
+  'Sacramento',
+  'Rubik Bubbles',
+  'Bad Script',
 
-// const UserCreateDesign2 = () => {
-//   const { allProducts, isLoading } = useSelector((state) => state.products);
-//   const [products, setProducts] = useState([]);
-//   const [selectedProduct, setSelectedProduct] = useState(null);
-//   const [isProductListVisible, setIsProductListVisible] = useState(true);
-
-//   const handleSelectProduct = (event) => {
-//     const productId = event.target.value;
-//     const product = products.find((product) => product._id === productId);
-//     setSelectedProduct(product);
-//     setIsProductListVisible(true); // Hide the product list panel after selection
-//   };
-
-//   useEffect(() => {
-//     if (allProducts) {
-//       setProducts(allProducts);
-//       if (allProducts.length > 0) {
-//         setSelectedProduct(allProducts[0]);
-//       }
-//     }
-//   }, [allProducts]);
-
-//   console.log(products);
-
-//   return (
-//     <div className="flex h-full">
-//       <div className="flex flex-col h-full">
-//         {isProductListVisible && (
-//           <div className="w-64 bg-white border-l border-gray-300 p-4">
-//             <h1 className="text-xl font-bold mb-4">Product List</h1>
-//             <select
-//               onChange={handleSelectProduct}
-//               defaultValue=""
-//               className="w-full p-2 border border-gray-300 rounded"
-//             >
-//               <option value="" disabled>
-//                 Select a product
-//               </option>
-//               {products &&
-//                 products.map((product) => (
-//                   <option key={product._id} value={product._id}>
-//                     {product.name}
-//                   </option>
-//                 ))}
-//             </select>
-
-//             {selectedProduct && (
-//               <div className="mt-4">
-//                 <h2 className="text-lg font-bold">Selected Product</h2>
-//                 <p>Name: {selectedProduct.name}</p>
-//                 <p>Description: {selectedProduct.description}</p>
-//                 <p>Price: ${selectedProduct.originalPrice}</p>
-//                 {selectedProduct.images &&
-//                   selectedProduct.images.length > 0 && (
-//                     <img
-//                       src={selectedProduct.images[0].url}
-//                       alt={selectedProduct.name}
-//                       className="w-full h-[170px] object-contain"
-//                     />
-//                   )}
-//               </div>
-//             )}
-//           </div>
-//         )}
-//       </div>
-//       <div className="border-solid">
-//         <DrawingCanvas />
-//       </div>
-//       {/* <div className="flex flex-col h-full">
-//         <SidePanel className="h-full" />
-
-//         {isProductListVisible && (
-//           <div className="w-64 bg-white border-l border-gray-300 p-4">
-//             <h1 className="text-xl font-bold mb-4">Product List</h1>
-//             <select
-//               onChange={handleSelectProduct}
-//               defaultValue=""
-//               className="w-full p-2 border border-gray-300 rounded"
-//             >
-//               <option value="" disabled>
-//                 Select a product
-//               </option>
-//               {products &&
-//                 products.map((product) => (
-//                   <option key={product._id} value={product._id}>
-//                     {product.name}
-//                   </option>
-//                 ))}
-//             </select>
-
-//             {selectedProduct && (
-//               <div className="mt-4">
-//                 <h2 className="text-lg font-bold">Selected Product</h2>
-//                 <p>Name: {selectedProduct.name}</p>
-//                 <p>Description: {selectedProduct.description}</p>
-//                 <p>Price: ${selectedProduct.originalPrice}</p>
-//                 {selectedProduct.images &&
-//                   selectedProduct.images.length > 0 && (
-//                     <img
-//                       src={selectedProduct.images[0].url}
-//                       alt={selectedProduct.name}
-//                       className="w-full h-[170px] object-contain"
-//                     />
-//                   )}
-//               </div>
-//             )}
-//           </div>
-//         )}
-//       </div> */}
-
-//      </div>
-//   );
-// };
-
-// const SidePanel = () => {
-//   return (
-//     <div className="w-64 bg-gray-200 h-full p-4">
-//       <button className="w-full bg-blue-500 text-white py-2 rounded">
-//         Products
-//       </button>
-//     </div>
-//   );
-// };
-
-// const OrderPanel = () => {
-//   return (
-//     <div className="w-64 bg-gray-200 h-full p-4">
-//       <button className="w-full bg-blue-500 text-white py-2 rounded">
-//         Products
-//       </button>
-//     </div>
-//   );
-// };
-
-// const AddToCart = () => {
-
-//   return (
-//     <div
-//     className={`${styles.button} mt-6 rounded-[1px] h-15 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
-//     // onClick={() => addToCartHandler(data._id)}
-//     onClick = {()=> (console.log("added to cart"))}
-//   >
-//     <span className="flex items-center">
-//       Add to cart <AiOutlineShoppingCart className="ml-1" />
-//     </span>
-//   </div>
-//   )
-// }
+  // Add more fonts here if needed
+];
 
 const UserCreateDesign = ({ data }) => {
   const [tool, setTool] = useState('pen');
@@ -181,17 +112,12 @@ const UserCreateDesign = ({ data }) => {
   const [text, setText] = useState('');
   const [texts, setTexts] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [fontFamily, setFontFamily] = useState('Arial');
+  const [fontStyle, setFontStyle] = useState('normal');
+  const [textDecoration, setTextDecoration] = useState('');
   const transformerRef = useRef(null);
 
-  console.log('Data design: ', data);
-
-  // cart and design
   const { cart } = useSelector((state) => state.cart);
-  const [design, SetDesign] = useState(null);
-
-  console.log('Design cart: ', cart);
-
-  const [finalDesign, setFinalDesign] = useState(null);
 
   useEffect(() => {
     if (imageURL) {
@@ -201,7 +127,6 @@ const UserCreateDesign = ({ data }) => {
       };
       img.onerror = () => {
         console.error('Failed to load image');
-        // Handle error here, such as showing a message to the user
       };
       img.src = imageURL;
     }
@@ -221,6 +146,14 @@ const UserCreateDesign = ({ data }) => {
       transformer.getLayer().batchDraw();
     }
   }, [selectedId]);
+
+  useEffect(() => {
+    WebFont.load({
+      google: {
+        families: fontFamilies,
+      },
+    });
+  }, []);
 
   const handleMouseDown = (e) => {
     if (tool === 'pen' || tool === 'eraser') {
@@ -249,7 +182,15 @@ const UserCreateDesign = ({ data }) => {
     const pointer = stage.getPointerPosition();
     setTexts([
       ...texts,
-      { id: `text${texts.length}`, text, x: pointer.x, y: pointer.y },
+      {
+        id: `text${texts.length}`,
+        text,
+        x: pointer.x,
+        y: pointer.y,
+        fontFamily,
+        fontStyle,
+        textDecoration,
+      },
     ]);
     setText('');
   };
@@ -278,44 +219,41 @@ const UserCreateDesign = ({ data }) => {
 
   const handleSelect = (e) => {
     setSelectedId(e.target.id());
+    const selectedText = texts.find((text) => text.id === e.target.id());
+    if (selectedText) {
+      setFontFamily(selectedText.fontFamily);
+      setFontStyle(selectedText.fontStyle);
+      setTextDecoration(selectedText.textDecoration);
+    }
   };
 
   const handleExport = () => {
-    // Get the stage
     const stage = stageRef.current.getStage();
 
-    // Ensure stage exists
     if (!stage) {
       console.error('Stage not found');
       return;
     }
 
-    // Set stage background to transparent
-    // Set the background color of the container element to transparent
     const container = stage.container();
     container.style.backgroundColor = 'transparent';
 
-    // Convert stage to data URL
     try {
       const dataURL = stage.toDataURL({ mimeType: 'image/png' });
 
-      // Create a link element
       const link = document.createElement('a');
       link.download = 'canvas.png';
       link.href = dataURL;
 
-      // Append link to document and trigger click
       document.body.appendChild(link);
       link.click();
 
-      // Clean up
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error exporting canvas:', error);
     }
   };
 
-  // customer upload
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     console.log('uploaded file: ', file);
@@ -339,7 +277,7 @@ const UserCreateDesign = ({ data }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ canvasDataURL: dataURL }), // Changed 'dataURL' to 'canvasDataURL' to match server expectation
+      body: JSON.stringify({ canvasDataURL: dataURL }),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -348,6 +286,42 @@ const UserCreateDesign = ({ data }) => {
       .catch((error) => {
         console.error('Error:', error);
       });
+  };
+
+  const handleFontFamilyChange = (e) => {
+    const newFamily = e.target.value;
+    setFontFamily(newFamily);
+    setTexts(
+      texts.map((textItem) =>
+        textItem.id === selectedId
+          ? { ...textItem, fontFamily: newFamily }
+          : textItem
+      )
+    );
+  };
+
+  const toggleItalic = () => {
+    const newFontStyle = fontStyle === 'italic' ? 'normal' : 'italic';
+    setFontStyle(newFontStyle);
+    setTexts(
+      texts.map((textItem) =>
+        textItem.id === selectedId
+          ? { ...textItem, fontStyle: newFontStyle }
+          : textItem
+      )
+    );
+  };
+
+  const toggleUnderline = () => {
+    const newTextDecoration = textDecoration === 'underline' ? '' : 'underline';
+    setTextDecoration(newTextDecoration);
+    setTexts(
+      texts.map((textItem) =>
+        textItem.id === selectedId
+          ? { ...textItem, textDecoration: newTextDecoration }
+          : textItem
+      )
+    );
   };
 
   return (
@@ -397,28 +371,49 @@ const UserCreateDesign = ({ data }) => {
           accept="image/*"
           onChange={handleImageUpload}
           className="bg-white border border-gray-300 px-4 py-2 rounded"
-        />{' '}
+        />
         <button
           onClick={handleExport}
           className="bg-purple-500 text-white px-4 py-2 rounded"
         >
           Export
         </button>
-        {/* <label
-          htmlFor="file-input"
-          className="ml-5 flex items-center justify-center px-4 py-2 border border-brown-lightdark rounded-md shadow-sm text-sm font-medium  text-brown-semidark bg-white hover:border-brown-semidark"
-        > */}
-        {/* <span>Add the design</span>
-          <input
-            type="file"
-            name="avatar"
-            id="file-input"
-            accept=".jpg,.jpeg,.png"
-            onChange={saveExportedImage}
-            className="sr-only"
-          /> */}
-        {/* </label> */}
       </div>
+      {selectedId && (
+        <div className="flex space-x-2">
+          <label>
+            Font Family:
+            <select
+              value={fontFamily}
+              onChange={handleFontFamilyChange}
+              className="border border-gray-300 px-2 py-1 rounded"
+              style={{ fontFamily }}
+            >
+              {fontFamilies.map((family) => (
+                <option
+                  key={family}
+                  value={family}
+                  style={{ fontFamily: family }}
+                >
+                  {family}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            onClick={toggleItalic}
+            className="bg-gray-300 text-black px-2 py-1 rounded"
+          >
+            <em>I</em>
+          </button>
+          <button
+            onClick={toggleUnderline}
+            className="bg-gray-300 text-black px-2 py-1 rounded"
+          >
+            <u>U</u>
+          </button>
+        </div>
+      )}
       <button
         onClick={saveExportedImage}
         className="bg-green-500 text-white px-4 py-2 rounded"
@@ -427,15 +422,13 @@ const UserCreateDesign = ({ data }) => {
       </button>
 
       <Stage
-        // width={window.innerWidth}
-        // height={window.innerHeight}
         width={900}
         height={400}
         onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
         onMousemove={handleMouseMove}
         onMouseup={handleMouseUp}
         ref={stageRef}
-        className=" bg-white border rounded border-black"
+        className="bg-white border rounded border-black"
         onClick={handleSelect}
       >
         <Layer>
@@ -461,6 +454,9 @@ const UserCreateDesign = ({ data }) => {
               x={textItem.x}
               y={textItem.y}
               fontSize={20}
+              fontFamily={textItem.fontFamily}
+              fontStyle={textItem.fontStyle}
+              textDecoration={textItem.textDecoration}
               draggable
               onClick={handleSelect}
               onDblClick={handleTextDblClick}

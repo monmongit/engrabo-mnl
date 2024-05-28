@@ -17,7 +17,10 @@ export const createProduct =
     instructions,
     dropdowns,
     sizes,
-    packaging
+    colors,
+    mediaType,
+    imageOptions,
+    textOptions
   ) =>
   async (dispatch) => {
     try {
@@ -40,7 +43,10 @@ export const createProduct =
         instructions,
         dropdowns,
         sizes,
-        packaging
+        colors,
+        mediaType,
+        imageOptions,
+        textOptions
       );
 
       console.log('action-create new product data: ', data);

@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import styles from '../styles/style';
-import { BsFillBagFill } from 'react-icons/bs';
-import { Link, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { server } from '../server';
-import { getAllOrdersOfUser } from '../redux/action/order';
-import { RxCross1 } from 'react-icons/rx';
-import { AiFillStar, AiOutlinePlusCircle, AiOutlineStar } from 'react-icons/ai';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import styles from "../styles/style";
+import { BsFillBagFill } from "react-icons/bs";
+import { Link, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { server } from "../server";
+import { getAllOrdersOfUser } from "../redux/action/order";
+import { RxCross1 } from "react-icons/rx";
+import { AiFillStar, AiOutlinePlusCircle, AiOutlineStar } from "react-icons/ai";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const UserOrderDetails = () => {
   const { orders } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.user);
   const [open, setOpen] = useState(false);
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
   const [rating, setRating] = useState(1);
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -46,6 +46,7 @@ const UserOrderDetails = () => {
   };
 
   const data = orders && orders.find((item) => item._id === id);
+
   console.log(id);
   const reviewHandler = async (e) => {
     await axios
@@ -68,7 +69,7 @@ const UserOrderDetails = () => {
         toast.success(res.data.message);
         dispatch(getAllOrdersOfUser(user._id));
 
-        setComment('');
+        setComment("");
         setRating(null);
         setIsAnonymous(false);
         setOpen(false);
@@ -81,7 +82,7 @@ const UserOrderDetails = () => {
   const refundHandler = async () => {
     await axios
       .put(`${server}/order/order-refund/${id}`, {
-        status: 'Processing Refund',
+        status: "Processing Refund",
       })
       .then((res) => {
         toast.success(res.data.message);
@@ -138,7 +139,7 @@ const UserOrderDetails = () => {
                 Quantity: {item.qty}
               </h5>
             </div>
-            {data?.status === 'Delivered' && !item.isReviewed ? (
+            {data?.status === "Delivered" && !item.isReviewed ? (
               <div
                 className={`${styles.button} !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 font-[600] text-[15px] text-[#fff4d7]`}
                 onClick={() => {
@@ -223,8 +224,8 @@ const UserOrderDetails = () => {
             <br />
             <div className="w-full ml-3">
               <label className="block text-[20px] font-[500] text-[#171203]">
-                {' '}
-                Write a Comment{' '}
+                {" "}
+                Write a Comment{" "}
                 <span className="ml-1 font-[400] text-[16px] text-[#534723]">
                   (optional)
                 </span>
@@ -308,7 +309,7 @@ const UserOrderDetails = () => {
           <h4 className="pt-3 text-[20px] font-[600]">Shipping Address</h4>
           <h4 className="pt-3 text-[20px]">
             {data?.shippingAddress.address1 +
-              ' ' +
+              " " +
               data?.shippingAddress.address2}
           </h4>
           <h4 className="pt-3 text-[20px]">{data?.shippingAddress.country}</h4>
@@ -325,8 +326,8 @@ const UserOrderDetails = () => {
         <div className="w-full 800px:w-[40%] ">
           <h4 className="pt-3 text-[20px] font-[600]">Payment Information</h4>
           <h4>
-            Status:{' '}
-            {data?.paymentInfo?.status ? data?.paymentInfo?.status : 'Not Paid'}
+            Status:{" "}
+            {data?.paymentInfo?.status ? data?.paymentInfo?.status : "Not Paid"}
           </h4>
         </div>
       </div>
@@ -340,7 +341,7 @@ const UserOrderDetails = () => {
             Send Message
           </div>
         </Link>
-        {data?.status === 'Delivered' ? (
+        {data?.status === "Delivered" ? (
           <div
             className={`${styles.button}!w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 font-[600] text-[18px] text-[#fff4d7]`}
             onClick={refundHandler}
@@ -363,33 +364,37 @@ const cartInfo = (datas) => {
   console.log("Datas : ", data);
   return (
     <div>
-    {data.map((item, index) => {
-      // Check if the item contains a cart array
-      if (item[0] === 'cart') {
-        return (
-          <div key={index}>
-            {item[1].map((cartItem, cartIndex) => (
-              <div key={cartIndex}>
-                <strong><h2>Item Ordered : {cartItem.name}</h2></strong>
-                <h2>Customer Note: <br /> {cartItem.response}</h2>
-                <h2>Selected Options:</h2>
-                 {cartItem.options ? (
-                  <ul>
-                    {Object.entries(cartItem.options).map(([key, value]) => (
-                      <li key={key}>{`${key}: ${value}`}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No options available.</p>
-                )}
-              </div>
-            ))}
-          </div>
-        );
-      }
-      return null;
-    })}
-  </div>
+      {data.map((item, index) => {
+        // Check if the item contains a cart array
+        if (item[0] === "cart") {
+          return (
+            <div key={index}>
+              {item[1].map((cartItem, cartIndex) => (
+                <div key={cartIndex}>
+                  <strong>
+                    <h2>Item Ordered : {cartItem.name}</h2>
+                  </strong>
+                  <h2>
+                    Customer Note: <br /> {cartItem.response}
+                  </h2>
+                  <h2>Selected Options:</h2>
+                  {cartItem.options ? (
+                    <ul>
+                      {Object.entries(cartItem.options).map(([key, value]) => (
+                        <li key={key}>{`${key}: ${value}`}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No options available.</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          );
+        }
+        return null;
+      })}
+    </div>
   );
 };
 
