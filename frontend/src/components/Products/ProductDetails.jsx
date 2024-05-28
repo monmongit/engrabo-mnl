@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styles from '../../styles/style';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import styles from "../../styles/style";
 import {
   AiFillHeart,
   AiOutlineClose,
@@ -8,17 +8,19 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineFontSize,
-} from 'react-icons/ai';
-import { server } from '../../server';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductsAdmin } from '../../redux/action/product';
-import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
-import { toast } from 'react-toastify';
-import { addTocart } from '../../redux/action/cart';
-import Ratings from './Ratings';
-import axios from 'axios';
-import Modal from 'react-modal';
-import UserCreateDesign from '../UserCreateDesign';
+} from "react-icons/ai";
+import { server } from "../../server";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsAdmin } from "../../redux/action/product";
+import { addToWishlist, removeFromWishlist } from "../../redux/action/wishlist";
+import { toast } from "react-toastify";
+import { addTocart } from "../../redux/action/cart";
+import Ratings from "./Ratings";
+import axios from "axios";
+import Modal from "react-modal";
+import UserCreateDesign from "../UserCreateDesign";
+import CreateProduct from "../Admin/CreateProduct";
+import UserOrderOptions from "./UserOrderOptions";
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -26,9 +28,7 @@ const ProductDetails = ({ data }) => {
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
 
-  const [insResponse, setInsResponse] = useState('');
-  const [selectedOptions, setSelectedOptions] = useState({});
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [insResponse, setInsResponse] = useState("");
   const [selectedImageOption, setSelectedImageOption] = useState(null);
   const [selectedTextOption, setSelectedTextOption] = useState(null);
   const [count, setCount] = useState(1);
@@ -36,6 +36,13 @@ const ProductDetails = ({ data }) => {
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // section for options
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedOptions, setSelectedOptions] = useState({});
+  const [selectedColor, setSelectedColor] = useState("");
+  const [drawingInfo, setDrawingInfo] = useState("");
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (data && data.admin) {
@@ -47,6 +54,10 @@ const ProductDetails = ({ data }) => {
       setClick(false);
     }
   }, [dispatch, data, wishlist]);
+
+  const handleColorClick = (color) => {
+    setSelectedColor(color === selectedColor ? null : color);
+  };
 
   const createDesignHandler = () => {
     return <></>;
@@ -64,7 +75,7 @@ const ProductDetails = ({ data }) => {
 
   const decrementCount = () => {
     if (count <= 1) {
-      toast.error('You cannot order less than 1 item.');
+      toast.error("You cannot order less than 1 item.");
       return;
     }
     setCount(count - 1);
@@ -88,7 +99,7 @@ const ProductDetails = ({ data }) => {
           toast.error(error.response.data.message);
         });
     } else {
-      toast.error('Please login to make a conversation');
+      toast.error("Please login to make a conversation");
     }
   };
 
@@ -205,6 +216,7 @@ const ProductDetails = ({ data }) => {
     <div className="bg-[#fff4d7] min-h-screen py-10">
       {data ? (
         <div className={`${styles.section} w-[90%] md:w-[80%] mx-auto`}>
+          {/* IMAGE AND DESCRIPTION */}
           <div className="py-5 flex flex-col md:flex-row gap-10">
             {/* Images of Product */}
             <div className="w-full md:w-1/2 flex flex-col items-center">
@@ -212,7 +224,7 @@ const ProductDetails = ({ data }) => {
               <img
                 src={`${data && data.images[select]?.url}`}
                 alt=""
-                className=" h-[90%] w-[100%] rounded-md shadow-lg"
+                className=" shadow-lg w-full h-full aspect-square rounded-xl"
               />
 
               <div className="flex mt-4 space-x-2">
@@ -222,7 +234,7 @@ const ProductDetails = ({ data }) => {
                     <div
                       key={index}
                       className={`cursor-pointer p-1 rounded-md ${
-                        select === index ? 'border-2 border-gray-500' : ''
+                        select === index ? "border-2 border-gray-500" : ""
                       }`}
                       onClick={() => setSelect(index)}
                     >
@@ -236,26 +248,33 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
 
-            {/* Description of Product */}
+            {/* description */}
             <div className="w-full md:w-1/2 pt-5 space-y-5">
               {/* Image of Product Description */}
-              <h1 className={`${styles.productTitle} text-3xl font-bold`}>
-                {data.name}
-              </h1>
-              <p className="text-justify text-[#534723]">
-                {selectedSize
-                  ? selectedSize.description
-                  : selectedImageOption
-                  ? selectedImageOption.description
-                  : selectedTextOption
-                  ? selectedTextOption.description
-                  : data.description}
-              </p>
+              <>
+                <h1 className={`${styles.productTitle}`}>
+                  <span class="mb-0.5 inline-block text-gray-500 text-base">
+                    {data.category}
+                  </span>
 
+                  <h2 class="text-2xl font-bold text-gray-800 lg:text-3xl">
+                    {data.name}
+                  </h2>
+                </h1>
+                <p className="text-justify text-[#534723]">
+                  {selectedSize
+                    ? selectedSize.description
+                    : selectedImageOption
+                    ? selectedImageOption.description
+                    : selectedTextOption
+                    ? selectedTextOption.description
+                    : data.description}
+                </p>
+              </>
               <div className="py-2 flex items-center justify-between">
                 {/* Price of Product */}
                 <div className="flex items-center space-x-2">
-                  <h5 className={`${styles.productDiscountPrice} text-2xl`}>
+                  <h5 className={`text-xl font-bold text-gray-800 md:text-2xl`}>
                     ₱
                     {selectedSize
                       ? selectedSize.price
@@ -279,6 +298,59 @@ const ProductDetails = ({ data }) => {
                     )}
                 </div>
               </div>
+
+              {/* Colors */}
+              {data.colors && data.colors.length > 0 && (
+                <div className="mb-4 md:mb-6">
+                  {data.colors && data.colors.length > 0 && (
+                    <>
+                      <span className="mb-3 inline-block text-sm font-semibold text-gray-500 md:text-base">
+                        Color
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {data.colors.map((color, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            className={`h-8 w-8 rounded-full border transition duration-100 ring-2 ring-offset-1 ${
+                              selectedColor === color
+                                ? "ring-gray-800"
+                                : "ring-transparent hover:ring-gray-200"
+                            }`}
+                            style={{ backgroundColor: color }}
+                            onClick={() => setSelectedColor(color)}
+                          ></button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {/* SIZES */}
+              {data.sizes && data.sizes.length > 0 && (
+                <div className="mt-4">
+                  <label className="block font-medium text-[#534723]">
+                    Sizes:
+                  </label>
+                  <div className="flex space-x-2">
+                    {data.sizes.map((size, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSizeChange(size)}
+                        className={`px-4 py-2 border rounded-md ${
+                          selectedSize && selectedSize.name === size.name
+                            ? "bg-blue-500 text-white"
+                            : "bg-white text-gray-700"
+                        }`}
+                      >
+                        {size.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="flex justify-between items-center">
                 {/* Products Stock */}
                 <h4 className="font-[400] text-[#534723] font-Roboto">
@@ -334,7 +406,7 @@ const ProductDetails = ({ data }) => {
 
               {/* Cart Button */}
               <div
-                className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
+                className="flex items-center justify-center bg-gradient-to-r from-blue-400 to-blue-600 text-white font-semibold py-3 px-8 md:px-16 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-800 transition duration-300 ease-in-out mt-4 md:mt-0"
                 onClick={() => addToCartHandler(data._id)}
               >
                 <span className="flex items-center">
@@ -343,38 +415,32 @@ const ProductDetails = ({ data }) => {
               </div>
 
               {/* Create Design Button */}
-              <div
-                className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
-                onClick={() => createDesignHandler(data._id)}
-              >
-                <span className="flex items-center">
-                  Create Design <AiOutlineFontSize className="ml-1" />
-                </span>
-              </div>
-
-              {/* Sizes */}
-              {data.sizes && data.sizes.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Sizes:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.sizes.map((size, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleSizeChange(size)}
-                        className={`px-4 py-2 border rounded-md ${
-                          selectedSize && selectedSize.name === size.name
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
-                        }`}
-                      >
-                        {size.name}
-                      </button>
-                    ))}
-                  </div>
+              {data.mediaType !== "none" && (
+                <div className="flex items-center justify-center bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-3 px-8 md:px-16 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-green-600 hover:to-green-800 transition duration-300 ease-in-out mt-4 md:mt-0">
+                  <button onClick={() => setOpen(true)}>
+                    <span className="flex items-center">
+                      Create Your Own Design
+                      <AiOutlineFontSize className="ml-1" />
+                    </span>
+                  </button>
                 </div>
               )}
+
+              {/* pops us the drawing page */}
+              {open && (
+                <div className="fixed inset-0 flex justify-center p-10 items-center z-50">
+                  {/* <UserOrderOptions setOpen={setOpen} /> */}
+                  {
+                    <UserCreateDesign
+                      data={data}
+                      setDrawingInfo={setDrawingInfo}
+                      setOpen={setOpen}
+                    />
+                  }
+                </div>
+              )}
+
+              {/* THIS WILL BE IN A MODAL  */}
 
               {/* Image Options */}
               {data.imageOptions && data.imageOptions.length > 0 && (
@@ -390,8 +456,8 @@ const ProductDetails = ({ data }) => {
                         className={`px-4 py-2 border rounded-md ${
                           selectedImageOption &&
                           selectedImageOption.name === option.name
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
+                            ? "bg-blue-500 text-white"
+                            : "bg-white text-gray-700"
                         }`}
                       >
                         {option.name}
@@ -415,8 +481,8 @@ const ProductDetails = ({ data }) => {
                         className={`px-4 py-2 border rounded-md ${
                           selectedTextOption &&
                           selectedTextOption.name === option.name
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
+                            ? "bg-blue-500 text-white"
+                            : "bg-white text-gray-700"
                         }`}
                       >
                         {option.name}
@@ -426,27 +492,7 @@ const ProductDetails = ({ data }) => {
                 </div>
               )}
 
-              {/* Colors */}
-              {data.colors && data.colors.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Colors:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.colors.map((color, index) => (
-                      <span
-                        key={index}
-                        className="px-4 py-2 border rounded-md"
-                        style={{ backgroundColor: color }}
-                      >
-                        {color}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Dropdown options */}
+              {/*DROP */}
               {data.dropdowns &&
                 data.dropdowns.map((dropdown, index) => (
                   <div key={index} className="mt-4">
@@ -470,25 +516,28 @@ const ProductDetails = ({ data }) => {
                   </div>
                 ))}
 
-              {/* Instructions */}
+              {/* INSTRUCTIONS */}
               <div className="mt-6">
-                <p className="text-lg font-semibold text-[#534723]">
-                  Instructions for Personalised Product
-                </p>
                 <span className="font-[200] text-[17px] text-[#b19b56]">
-                  {data?.instructions}
+                  {data?.instructions && (
+                    <>
+                      <p className=" font- text-[#534723]">
+                        Instruction For Personalization
+                      </p>
+                      {data?.instructions}
+                    </>
+                  )}
                 </span>
               </div>
 
-              {/* Customer response to instructions */}
+              {/* CUSTOMER/ RESPONSE OR NOTE */}
               {data?.instructions && (
                 <div className="mt-4">
                   <label className="block font-medium text-[#534723]">
-                    Response To Instructions
+                    Customer Response Notes
                   </label>
                   <textarea
                     className="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    value={insResponse}
                     onChange={(e) => setInsResponse(e.target.value)}
                   />
                 </div>
@@ -524,7 +573,8 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
-          {data.mediaType !== 'none' && <UserCreateDesign data={data} />}
+
+          {/* DETAILS AND REVIEWS */}
           <ProductDetailsInfo
             data={data}
             products={products}
@@ -548,13 +598,13 @@ const ProductDetailsInfo = ({
   const [selectedImage, setSelectedImage] = useState(null);
 
   const maskName = (name) => {
-    const parts = name.split(' ');
+    const parts = name.split(" ");
     return parts
       .map((part, index) => {
-        if (index === 0) return part.slice(0, 2) + '*****';
-        return '*****';
+        if (index === 0) return part.slice(0, 2) + "*****";
+        return "*****";
       })
-      .join(' ');
+      .join(" ");
   };
 
   const openModal = (image) => {
@@ -573,7 +623,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(1)}
           >
@@ -584,7 +634,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(2)}
           >
@@ -595,7 +645,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(3)}
           >
@@ -679,18 +729,18 @@ const ProductDetailsInfo = ({
               <h5 className="font-[600] text-[#171203]">
                 Joined on:
                 <span className="font-[500] text-[#534723]">
-                  {' '}
+                  {" "}
                   14 March, 2023
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Products:{' '}
+                Total Products:{" "}
                 <span className="font-[500]">
                   {products && products.length}
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Reviews:{' '}
+                Total Reviews:{" "}
                 <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">
@@ -726,5 +776,10 @@ const ProductDetailsInfo = ({
     </div>
   );
 };
+
+/*
+  personalized button will be a form
+
+*/
 
 export default ProductDetails;

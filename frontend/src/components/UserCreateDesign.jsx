@@ -8,6 +8,8 @@ import {
   Image as KonvaImage,
   Transformer,
 } from 'react-konva';
+import { RxCross1 } from 'react-icons/rx';
+
 import WebFont from 'webfontloader';
 import axios from 'axios';
 import { server } from '../server';
@@ -102,7 +104,7 @@ const fontFamilies = [
   // Add more fonts here if needed
 ];
 
-const UserCreateDesign = ({ data }) => {
+const UserCreateDesign = ({ data, setDrawingInfo, setOpen }) => {
   const [tool, setTool] = useState('pen');
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -167,11 +169,19 @@ const UserCreateDesign = ({ data }) => {
     if (!isDrawing) return;
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
+    
+    if (lines.length === 0) return; // Ensure there's at least one line before proceeding
+  
     let lastLine = lines[lines.length - 1];
-    lastLine.points = lastLine.points.concat([point.x, point.y]);
-    lines.splice(lines.length - 1, 1, lastLine);
-    setLines(lines.concat());
+    lastLine = {
+      ...lastLine,
+      points: lastLine.points.concat([point.x, point.y])
+    };
+    
+    const newLines = lines.slice(0, lines.length - 1).concat(lastLine);
+    setLines(newLines);
   };
+  
 
   const handleMouseUp = () => {
     setIsDrawing(false);
@@ -282,6 +292,7 @@ const UserCreateDesign = ({ data }) => {
       .then((response) => response.json())
       .then((data) => {
         console.log('secure url: ', data.secureURL);
+      
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -325,7 +336,15 @@ const UserCreateDesign = ({ data }) => {
   };
 
   return (
-    <div className="flex flex-col items-start p-4 space-y-4">
+    <div className="flex flex-col items-center p-4 space-y-4 bg-slate-500 rounded-md">
+       <span className="w-full flex justify-end">
+        <RxCross1
+          size={30}
+          className="cursor-pointer text-white-600 hover:text-gray-800"
+          onClick={() => setOpen(false)}
+        />
+        </span>
+      
       <div className="flex space-x-2">
         <button
           onClick={() => setTool('select')}
@@ -353,7 +372,7 @@ const UserCreateDesign = ({ data }) => {
         </button>
         <button
           onClick={handleClear}
-          className="bg-gray-500 text-white px-4 py-2 rounded"
+          className="bg-gray-700 text-white px-4 py-2 rounded"
         >
           Clear
         </button>
@@ -366,12 +385,16 @@ const UserCreateDesign = ({ data }) => {
             className="border border-gray-300 px-4 py-2 rounded"
           />
         )}
-        <input
+        <button
           type="file"
           accept="image/*"
           onChange={handleImageUpload}
-          className="bg-white border border-gray-300 px-4 py-2 rounded"
-        />
+          className="bg-white border border-gray-300 px-4 py-2 rounded w-50%"
+        >
+          Upload
+        </button>
+
+
         <button
           onClick={handleExport}
           className="bg-purple-500 text-white px-4 py-2 rounded"
