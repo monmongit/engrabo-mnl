@@ -46,6 +46,7 @@ const UserOrderDetails = () => {
   };
 
   const data = orders && orders.find((item) => item._id === id);
+  console.log("data in user order details compoent: ", data);
 
   console.log(id);
   const reviewHandler = async (e) => {
@@ -323,6 +324,13 @@ const UserOrderDetails = () => {
           </h4>
           {cartInfo(data)}
         </div>
+
+        <div className="w-full 800px:w-[40%] mr-5">
+          <h4 className="pt-3 text-[20px] font-[600]">
+            Orders Custom Design
+            {orderCustomDesign(data.cart)}
+          </h4>
+        </div>
         <div className="w-full 800px:w-[40%] ">
           <h4 className="pt-3 text-[20px] font-[600]">Payment Information</h4>
           <h4>
@@ -355,6 +363,32 @@ const UserOrderDetails = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const orderCustomDesign = (data) => {
+  console.log("order custom design ", data);
+
+  return (
+    <>
+      {data.map((item, index) => (
+        <div key={index} className="bg-gray-100 rounded p-4 mb-4">
+          <a
+            key={index}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+          >
+            <img
+              src={item.url}
+              alt={`Image ${index + 1}`}
+              className="w-full h-full border-solid"
+            />
+          </a>
+        </div>
+      ))}
+    </>
   );
 };
 

@@ -43,6 +43,9 @@ const ProductDetails = ({ data }) => {
   const [selectedColor, setSelectedColor] = useState("");
   const [drawingInfo, setDrawingInfo] = useState("");
   const [open, setOpen] = useState(false);
+  const [urls, setUrls] = useState([]);
+
+  console.log("return urls from other component", urls)
 
   useEffect(() => {
     if (data && data.admin) {
@@ -165,6 +168,7 @@ const ProductDetails = ({ data }) => {
             : data.discountPrice > 0
             ? data.discountPrice
             : data.originalPrice,
+          url: urls
         };
         dispatch(addTocart(cartData));
         toast.success(`${data.name} added to cart successfully!`);
@@ -435,6 +439,7 @@ const ProductDetails = ({ data }) => {
                       data={data}
                       setDrawingInfo={setDrawingInfo}
                       setOpen={setOpen}
+                      setUrls={setUrls}
                     />
                   }
                 </div>
