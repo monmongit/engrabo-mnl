@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/sendMail");
+const resetMail = require("../utils/resetMail");
 const Admin = require("../model/admin");
 const { isAdmin } = require("../middleware/auth");
 const cloudinary = require("cloudinary");
@@ -41,10 +42,11 @@ router.post(
       const activationUrl = `http://localhost:3000/admin/activation/${activationToken}`;
 
       try {
-        await sendMail({
+        await resetMail({
+          name: admin.name,
           email: admin.email,
-          subject: "Active your admin account!",
-          message: `Hello ${admin.name}, please click on the link to activate your admin account: ${activationUrl}!`,
+          subject: "Activate your admin account",
+          url: activationUrl,
         });
         res.status(201).json({
           success: true,
