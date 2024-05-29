@@ -126,7 +126,7 @@ const drawHeartPath = (x1, y1, x2, y2) => {
   `;
 };
 
-const UserCreateDesign = ({ data, setDrawingInfo, setOpen }) => {
+const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls}) => {
   const [tool, setTool] = useState("select");
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -156,6 +156,9 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isToolCollapsed, setIsToolCollapsed] = useState(true);
   const [selectedTools, setTools] = useState("");
+
+ 
+
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -362,7 +365,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen }) => {
     }
 
     const container = stage.container();
-    container.style.backgroundColor = "transparent";
+    container.style.backgroundColor = "white";
 
     try {
       const dataURL = stage.toDataURL({ mimeType: "image/png" });
@@ -388,6 +391,51 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen }) => {
     }
   };
 
+  /*
+    task for design upload 
+    - user should be able to upload single drawing 
+    - user should be able to upload multiple drawings
+    - user should be able to retrieve his drawing and put it in his cart
+  */
+  const saveToCartDesignAll = async (index) => {
+    try {
+      const stage = stageRef.current.getStage();
+      const dataURL = stage.toDataURL({ mimeType: "image/png", quality: 1 });
+
+      console.log("data url: ", dataURL);
+
+      const response = await fetch(`${server}/custom/create-custom`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ canvasDataURL: dataURL }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("secure url: ", data.secureURL);
+
+      return data.secureURL; // Return secureURL instead of data
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const saveToCartDesign = async () => {
+    const urls = []; // Array to store the URLs
+    for (let i = 0; i < pages.length; i++) {
+      await loadPage(i);
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Give some time for the page to render
+      const url = await saveToCartDesignAll(i); // Save the URL returned by saveToCartDesignAll
+      urls.push(url); // Push the URL to the array
+    }
+    setUrls(urls) ; // Return the array of URLs
+  };
+
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     console.log("uploaded file: ", file);
@@ -398,28 +446,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen }) => {
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const saveExportedImage = async () => {
-    const stage = stageRef.current.getStage();
-    const dataURL = stage.toDataURL({ mimeType: "image/jpeg", quality: 1 });
-
-    console.log("data url: ", dataURL);
-
-    fetch(`${server}/custom/create-custom`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ canvasDataURL: dataURL }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("secure url: ", data.secureURL);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
   };
 
   const handleFontFamilyChange = (e) => {
@@ -510,6 +536,8 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen }) => {
     setSaveMessage("Your design is now saved.");
     setTimeout(() => setSaveMessage(""), 3000); // Hide message after 3 seconds
   };
+
+  const saveMultipleImage = async () => {};
 
   return (
     <>
@@ -792,10 +820,11 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen }) => {
 
           {/* Add the design to the customer possible cart */}
           <button
-            onClick={saveExportedImage}
+            // onClick={saveExportedImage}
+            onClick={saveToCartDesign}
             className="bg-green-500 text-white px-4 py-2 rounded"
           >
-            Add the design
+            Add Design to Order
           </button>
         </div>
 
@@ -1019,5 +1048,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen }) => {
     </>
   );
 };
+
 
 export default UserCreateDesign;
