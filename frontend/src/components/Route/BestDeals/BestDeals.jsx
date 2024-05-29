@@ -20,7 +20,7 @@ const BestDeals = () => {
         <div className={`${styles.heading} text-[#171203]`}>
           <h1>Best Deals</h1>
         </div>
-        <div className="grid grid-center grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-4 lg:gap-[25px] xl:grid-cols-5 xl:gap-[30px] mb-12 border-0 ">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 justify-items-center">
           {data && data.length !== 0 && (
             <>
               {data &&

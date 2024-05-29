@@ -1,7 +1,7 @@
 import React from "react";
 import Logo from "../../assets/Logo/engrabo-logo.png";
 import { IoLogoTiktok } from "react-icons/io5";
-import gcLogo from "../../assets/Logo/gcash-logo.png";
+// import gcLogo from "../../assets/Logo/gcash-logo.png";
 
 import {
   AiFillFacebook,
@@ -48,19 +48,16 @@ const Footer = () => {
             Engraving shop for wooden signages, souvenirs, decors and displays.
           </p>
           <div className="flex items-center mt-[15px]">
-            <AiFillFacebook size={25} className="cursor-pointer" />
-            <AiOutlineTwitter
-              size={25}
-              style={{ marginLeft: "15px", cursor: "pointer" }}
-            />
-            <AiOutlineInstagram
-              size={25}
-              style={{ marginLeft: "15px", cursor: "pointer" }}
-            />
-            <IoLogoTiktok
-              size={25}
-              style={{ marginLeft: "15px", cursor: "pointer" }}
-            />
+            <a href="https://www.facebook.com/engrabo.mnl">
+              <AiFillFacebook size={25} className="cursor-pointer" />
+            </a>
+
+            <a href="https://www.instagram.com/engrabo.mnl">
+              <AiOutlineInstagram
+                size={25}
+                style={{ marginLeft: "15px", cursor: "pointer" }}
+              />
+            </a>
           </div>
         </ul>
 
@@ -109,9 +106,9 @@ const Footer = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-center pt-2 text-[#e1c570] text-sm pb-8">
         <span>© 2024 EngraboMNL, All rights reserved.</span>
         <span>Terms · Privacy Policy</span>
-        <div className="sm:block flex items-center justify-center w-full">
+        {/* <div className="sm:block flex items-center justify-center w-full">
           <img src={gcLogo} alt="" className="h-[45px]" />
-        </div>
+        </div> */}
       </div>
     </div>
   );
