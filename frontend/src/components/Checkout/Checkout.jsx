@@ -488,8 +488,21 @@ const cartInfo = (data = []) => {
           </div>
         ))}
       </div>
+      <div className="">
+        <p>Custom Designs:</p>
+        {data.map((item, index) => (
+          <div key={index} className="bg-gray-100 rounded p-4 mb-4">
+            <a key={index} href={item.url} target="_blank" rel="noopener noreferrer">
+            <img src={item.url} alt={`Image ${index + 1}`} className="w-full h-full border-solid" />
+        </a>
+          </div>
+        ))}
+      </div>
+     
+      
     </div>
   );
 };
+
 
 export default Checkout;

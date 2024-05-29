@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState, useRef } from "react";
+import { useSelector } from "react-redux";
 import {
   Stage,
   Layer,
@@ -13,97 +13,99 @@ import {
   Star,
   RegularPolygon,
   Path,
-} from 'react-konva';
-import WebFont from 'webfontloader';
-import axios from 'axios';
-import { server } from '../server';
+} from "react-konva";
+import { RxCross1 } from "react-icons/rx";
+
+import WebFont from "webfontloader";
+import axios from "axios";
+import { server } from "../server";
 
 // Add the font families you want to use
 const fontFamilies = [
-  'Arial',
-  'Times New Roman',
-  'Courier New',
-  'Georgia',
-  'Verdana',
-  'Tahoma',
-  'Trebuchet MS',
-  'Impact',
-  'Comic Sans MS',
-  'Lucida Console',
-  'Lucida Sans Unicode',
-  'Palatino Linotype',
-  'Garamond',
-  'Bookman',
-  'Arial Black',
-  'Narrow',
-  'Roboto',
-  'Open Sans',
-  'Lato',
-  'Montserrat',
-  'Oswald',
-  'Raleway',
-  'Pacifico',
-  'Playfair Display',
-  'Merriweather',
-  'Fjalla One',
-  'Ubuntu',
-  'PT Sans',
-  'Droid Sans',
-  'Lobster',
-  'Bitter',
-  'Anton',
-  'Dancing Script',
-  'Maven Pro',
-  'Indie Flower',
-  'Bangers',
-  'Cabin',
-  'Cinzel',
-  'Comfortaa',
-  'Cormorant Garamond',
-  'Courgette',
-  'Dosis',
-  'Exo',
-  'Fira Sans',
-  'Frank Ruhl Libre',
-  'Gloria Hallelujah',
-  'Great Vibes',
-  'Josefin Sans',
-  'Kalam',
-  'Karla',
-  'Lobster Two',
-  'Merriweather Sans',
-  'Muli',
-  'Nunito',
-  'Oxygen',
-  'Patua One',
-  'Quicksand',
-  'Righteous',
-  'Russo One',
-  'Satisfy',
-  'Shadows Into Light',
-  'Signika',
-  'Source Code Pro',
-  'Spectral',
-  'Titillium Web',
-  'Yanone Kaffeesatz',
-  'Zilla Slab',
-  'Mountains of Christmas',
-  'Mr De Haviland',
-  'Over the Rainbow',
-  'Licorice',
-  'Bilbo Swash Caps',
-  'Comforter Brush',
-  'Hachi Maru Pop',
-  'Smooch',
-  'Edu TAS Beginner',
-  'Sevillana',
-  'Dancing Script',
-  'Jersey',
-  'Jacquard',
-  'Bodoni Moda',
-  'Sacramento',
-  'Rubik Bubbles',
-  'Bad Script',
+  "Arial",
+  "Times New Roman",
+  "Courier New",
+  "Georgia",
+  "Verdana",
+  "Tahoma",
+  "Trebuchet MS",
+  "Impact",
+  "Comic Sans MS",
+  "Lucida Console",
+  "Lucida Sans Unicode",
+  "Palatino Linotype",
+  "Garamond",
+  "Bookman",
+  "Arial Black",
+  "Narrow",
+  "Roboto",
+  "Open Sans",
+  "Lato",
+  "Montserrat",
+  "Oswald",
+  "Raleway",
+  "Pacifico",
+  "Playfair Display",
+  "Merriweather",
+  "Fjalla One",
+  "Ubuntu",
+  "PT Sans",
+  "Droid Sans",
+  "Lobster",
+  "Bitter",
+  "Anton",
+  "Dancing Script",
+  "Maven Pro",
+  "Indie Flower",
+  "Bangers",
+  "Cabin",
+  "Cinzel",
+  "Comfortaa",
+  "Cormorant Garamond",
+  "Courgette",
+  "Dosis",
+  "Exo",
+  "Fira Sans",
+  "Frank Ruhl Libre",
+  "Gloria Hallelujah",
+  "Great Vibes",
+  "Josefin Sans",
+  "Kalam",
+  "Karla",
+  "Lobster Two",
+  "Merriweather Sans",
+  "Muli",
+  "Nunito",
+  "Oxygen",
+  "Patua One",
+  "Quicksand",
+  "Righteous",
+  "Russo One",
+  "Satisfy",
+  "Shadows Into Light",
+  "Signika",
+  "Source Code Pro",
+  "Spectral",
+  "Titillium Web",
+  "Yanone Kaffeesatz",
+  "Zilla Slab",
+  "Mountains of Christmas",
+  "Mr De Haviland",
+  "Over the Rainbow",
+  "Licorice",
+  "Bilbo Swash Caps",
+  "Comforter Brush",
+  "Hachi Maru Pop",
+  "Smooch",
+  "Edu TAS Beginner",
+  "Sevillana",
+  "Dancing Script",
+  "Jersey",
+  "Jacquard",
+  "Bodoni Moda",
+  "Sacramento",
+  "Rubik Bubbles",
+  "Bad Script",
   // Add more fonts here if needed
 ];
 
@@ -124,19 +126,19 @@ const drawHeartPath = (x1, y1, x2, y2) => {
   `;
 };
 
-const UserCreateDesign = ({ data }) => {
-  const [tool, setTool] = useState('select');
+const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls}) => {
+  const [tool, setTool] = useState("select");
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [image, setImage] = useState(null);
-  const [imageURL, setImageURL] = useState('');
+  const [imageURL, setImageURL] = useState("");
   const stageRef = useRef(null);
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const [texts, setTexts] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [fontFamily, setFontFamily] = useState('Arial');
-  const [fontStyle, setFontStyle] = useState('normal');
-  const [textDecoration, setTextDecoration] = useState('');
+  const [fontFamily, setFontFamily] = useState("Arial");
+  const [fontStyle, setFontStyle] = useState("normal");
+  const [textDecoration, setTextDecoration] = useState("");
   const [fontSize, setFontSize] = useState(20);
   const [shapes, setShapes] = useState([]);
   const [pages, setPages] = useState([
@@ -146,9 +148,28 @@ const UserCreateDesign = ({ data }) => {
   const transformerRef = useRef(null);
   const fileInputRef = useRef(null);
   const [tempShape, setTempShape] = useState(null);
-  const [saveMessage, setSaveMessage] = useState('');
+  const [saveMessage, setSaveMessage] = useState("");
 
   const { cart } = useSelector((state) => state.cart);
+
+  // UI of canvas
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isToolCollapsed, setIsToolCollapsed] = useState(true);
+  const [selectedTools, setTools] = useState("");
+
+ 
+
+
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+  const toggleToolsCollapse = () => {
+    setIsToolCollapsed(!isToolCollapsed);
+  };
+
+  const getButtonClass = (tool) => {
+    return selectedTools === tool ? "bg-blue-500" : "bg-gray-500";
+  };
 
   useEffect(() => {
     if (imageURL) {
@@ -157,7 +178,7 @@ const UserCreateDesign = ({ data }) => {
         setImage(img);
       };
       img.onerror = () => {
-        console.error('Failed to load image');
+        console.error("Failed to load image");
       };
       img.src = imageURL;
     }
@@ -188,7 +209,7 @@ const UserCreateDesign = ({ data }) => {
 
   const saveCurrentPage = () => {
     const stage = stageRef.current.getStage();
-    const imageNode = stage.findOne('#uploadedImage');
+    const imageNode = stage.findOne("#uploadedImage");
     const currentPage = {
       id: currentPageIndex,
       lines: [...lines],
@@ -222,19 +243,19 @@ const UserCreateDesign = ({ data }) => {
   };
 
   const handleMouseDown = (e) => {
-    if (tool === 'pen' || tool === 'eraser') {
+    if (tool === "pen" || tool === "eraser") {
       setIsDrawing(true);
       const pos = e.target.getStage().getPointerPosition();
       setLines([...lines, { tool, points: [pos.x, pos.y] }]);
     } else if (
       [
-        'rectangle',
-        'circle',
-        'line',
-        'arrow',
-        'star',
-        'polygon',
-        'heart',
+        "rectangle",
+        "circle",
+        "line",
+        "arrow",
+        "star",
+        "polygon",
+        "heart",
       ].includes(tool)
     ) {
       const pos = e.target.getStage().getPointerPosition();
@@ -249,20 +270,20 @@ const UserCreateDesign = ({ data }) => {
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
 
-    if (tool === 'pen' || tool === 'eraser') {
+    if (tool === "pen" || tool === "eraser") {
       let lastLine = lines[lines.length - 1];
       lastLine.points = lastLine.points.concat([point.x, point.y]);
       lines.splice(lines.length - 1, 1, lastLine);
       setLines(lines.concat());
     } else if (
       [
-        'rectangle',
-        'circle',
-        'line',
-        'arrow',
-        'star',
-        'polygon',
-        'heart',
+        "rectangle",
+        "circle",
+        "line",
+        "arrow",
+        "star",
+        "polygon",
+        "heart",
       ].includes(tool)
     ) {
       let lastShape = shapes[shapes.length - 1];
@@ -295,7 +316,7 @@ const UserCreateDesign = ({ data }) => {
         fontSize,
       },
     ]);
-    setText('');
+    setText("");
   };
 
   const handleTextDblClick = (e) => {
@@ -318,9 +339,9 @@ const UserCreateDesign = ({ data }) => {
     setTexts([]);
     setShapes([]);
     setImage(null);
-    setImageURL('');
+    setImageURL("");
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -339,17 +360,17 @@ const UserCreateDesign = ({ data }) => {
     const stage = stageRef.current.getStage();
 
     if (!stage) {
-      console.error('Stage not found');
+      console.error("Stage not found");
       return;
     }
 
     const container = stage.container();
-    container.style.backgroundColor = 'transparent';
+    container.style.backgroundColor = "white";
 
     try {
-      const dataURL = stage.toDataURL({ mimeType: 'image/png' });
+      const dataURL = stage.toDataURL({ mimeType: "image/png" });
 
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.download = `canvas_page_${index + 1}.png`;
       link.href = dataURL;
 
@@ -358,7 +379,7 @@ const UserCreateDesign = ({ data }) => {
 
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error exporting canvas:', error);
+      console.error("Error exporting canvas:", error);
     }
   };
 
@@ -370,9 +391,54 @@ const UserCreateDesign = ({ data }) => {
     }
   };
 
+  /*
+    task for design upload 
+    - user should be able to upload single drawing 
+    - user should be able to upload multiple drawings
+    - user should be able to retrieve his drawing and put it in his cart
+  */
+  const saveToCartDesignAll = async (index) => {
+    try {
+      const stage = stageRef.current.getStage();
+      const dataURL = stage.toDataURL({ mimeType: "image/png", quality: 1 });
+
+      console.log("data url: ", dataURL);
+
+      const response = await fetch(`${server}/custom/create-custom`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ canvasDataURL: dataURL }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("secure url: ", data.secureURL);
+
+      return data.secureURL; // Return secureURL instead of data
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const saveToCartDesign = async () => {
+    const urls = []; // Array to store the URLs
+    for (let i = 0; i < pages.length; i++) {
+      await loadPage(i);
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Give some time for the page to render
+      const url = await saveToCartDesignAll(i); // Save the URL returned by saveToCartDesignAll
+      urls.push(url); // Push the URL to the array
+    }
+    setUrls(urls) ; // Return the array of URLs
+  };
+
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    console.log('uploaded file: ', file);
+    console.log("uploaded file: ", file);
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -380,28 +446,6 @@ const UserCreateDesign = ({ data }) => {
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const saveExportedImage = async () => {
-    const stage = stageRef.current.getStage();
-    const dataURL = stage.toDataURL({ mimeType: 'image/jpeg', quality: 1 });
-
-    console.log('data url: ', dataURL);
-
-    fetch(`${server}/custom/create-custom`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ canvasDataURL: dataURL }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('secure url: ', data.secureURL);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
   };
 
   const handleFontFamilyChange = (e) => {
@@ -429,7 +473,7 @@ const UserCreateDesign = ({ data }) => {
   };
 
   const toggleItalic = () => {
-    const newFontStyle = fontStyle === 'italic' ? 'normal' : 'italic';
+    const newFontStyle = fontStyle === "italic" ? "normal" : "italic";
     setFontStyle(newFontStyle);
     setTexts(
       texts.map((textItem) =>
@@ -441,7 +485,7 @@ const UserCreateDesign = ({ data }) => {
   };
 
   const toggleUnderline = () => {
-    const newTextDecoration = textDecoration === 'underline' ? '' : 'underline';
+    const newTextDecoration = textDecoration === "underline" ? "" : "underline";
     setTextDecoration(newTextDecoration);
     setTexts(
       texts.map((textItem) =>
@@ -450,10 +494,6 @@ const UserCreateDesign = ({ data }) => {
           : textItem
       )
     );
-  };
-
-  const getButtonClass = (currentTool) => {
-    return tool === currentTool ? 'bg-yellow-500' : 'bg-gray-300';
   };
 
   const addBlankPage = () => {
@@ -493,422 +533,521 @@ const UserCreateDesign = ({ data }) => {
 
   const handleSaveDesign = () => {
     saveCurrentPage();
-    setSaveMessage('Your design is now saved.');
-    setTimeout(() => setSaveMessage(''), 3000); // Hide message after 3 seconds
+    setSaveMessage("Your design is now saved.");
+    setTimeout(() => setSaveMessage(""), 3000); // Hide message after 3 seconds
   };
 
-  return (
-    <div className="flex flex-col items-start p-4 space-y-4">
-      <div className="flex space-x-2">
-        <button
-          onClick={() => setTool('select')}
-          className={`${getButtonClass('select')} text-white px-4 py-2 rounded`}
-        >
-          Select
-        </button>
-        <button
-          onClick={() => setTool('pen')}
-          className={`${getButtonClass('pen')} text-white px-4 py-2 rounded`}
-        >
-          Draw
-        </button>
-        <button
-          onClick={() => setTool('eraser')}
-          className={`${getButtonClass('eraser')} text-white px-4 py-2 rounded`}
-        >
-          Erase
-        </button>
-        <button
-          onClick={() => setTool('text')}
-          className={`${getButtonClass('text')} text-white px-4 py-2 rounded`}
-        >
-          Text
-        </button>
-        <button
-          onClick={() => setTool('rectangle')}
-          className={`${getButtonClass(
-            'rectangle'
-          )} text-white px-4 py-2 rounded`}
-        >
-          Rectangle
-        </button>
-        <button
-          onClick={() => setTool('circle')}
-          className={`${getButtonClass('circle')} text-white px-4 py-2 rounded`}
-        >
-          Circle
-        </button>
-        <button
-          onClick={() => setTool('line')}
-          className={`${getButtonClass('line')} text-white px-4 py-2 rounded`}
-        >
-          Line
-        </button>
-        <button
-          onClick={() => setTool('arrow')}
-          className={`${getButtonClass('arrow')} text-white px-4 py-2 rounded`}
-        >
-          Arrow
-        </button>
-        <button
-          onClick={() => setTool('star')}
-          className={`${getButtonClass('star')} text-white px-4 py-2 rounded`}
-        >
-          Star
-        </button>
-        <button
-          onClick={() => setTool('polygon')}
-          className={`${getButtonClass(
-            'polygon'
-          )} text-white px-4 py-2 rounded`}
-        >
-          Polygon
-        </button>
-        <button
-          onClick={() => setTool('heart')}
-          className={`${getButtonClass('heart')} text-white px-4 py-2 rounded`}
-        >
-          Heart
-        </button>
-        <button
-          onClick={handleClear}
-          className="bg-gray-500 text-white px-4 py-2 rounded"
-        >
-          Clear
-        </button>
-        {tool === 'text' && (
-          <input
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Type text and click on canvas"
-            className="border border-gray-300 px-4 py-2 rounded"
-          />
-        )}
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleImageUpload}
-          className="bg-white border border-gray-300 px-4 py-2 rounded"
-        />
-        <button
-          onClick={handleExport}
-          className="bg-purple-500 text-white px-4 py-2 rounded"
-        >
-          Export
-        </button>
-      </div>
-      <div className="flex space-x-2 mt-4">
-        <button
-          onClick={addBlankPage}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Add Blank Page
-        </button>
-        <button
-          onClick={handleExportAll}
-          className="bg-purple-500 text-white px-4 py-2 rounded"
-        >
-          Export All Pages
-        </button>
-        <button
-          onClick={handleSaveDesign}
-          className="bg-green-500 text-white px-4 py-2 rounded"
-        >
-          Save Design
-        </button>
-      </div>
-      <div className="flex space-x-2 mt-4">
-        {pages.map((page, index) => (
-          <div key={index} className="flex items-center space-x-2">
-            <button
-              onClick={() => selectPage(index)}
-              className={`${
-                currentPageIndex === index ? 'bg-yellow-500' : 'bg-gray-300'
-              } text-white px-4 py-2 rounded`}
-            >
-              Page {index + 1}
-            </button>
-            <button
-              onClick={() => deletePage(index)}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
-      {saveMessage && (
-        <div className="mt-4 p-2 bg-green-200 text-green-800 rounded">
-          {saveMessage}
-        </div>
-      )}
-      {selectedId && (
-        <div className="flex space-x-2">
-          <label>
-            Font Family:
-            <select
-              value={fontFamily}
-              onChange={handleFontFamilyChange}
-              className="border border-gray-300 px-2 py-1 rounded"
-              style={{ fontFamily }}
-            >
-              {fontFamilies.map((family) => (
-                <option
-                  key={family}
-                  value={family}
-                  style={{ fontFamily: family }}
-                >
-                  {family}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Font Size:
-            <input
-              type="number"
-              value={fontSize}
-              onChange={handleFontSizeChange}
-              className="border border-gray-300 px-2 py-1 rounded"
-              style={{ width: '60px' }}
-            />
-          </label>
-          <button
-            onClick={toggleItalic}
-            className="bg-gray-300 text-black px-2 py-1 rounded"
-          >
-            <em>I</em>
-          </button>
-          <button
-            onClick={toggleUnderline}
-            className="bg-gray-300 text-black px-2 py-1 rounded"
-          >
-            <u>U</u>
-          </button>
-        </div>
-      )}
-      <button
-        onClick={saveExportedImage}
-        className="bg-green-500 text-white px-4 py-2 rounded"
-      >
-        Add the design
-      </button>
+  const saveMultipleImage = async () => {};
 
-      <Stage
-        width={900}
-        height={400}
-        onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
-        onMousemove={handleMouseMove}
-        onMouseup={handleMouseUp}
-        ref={stageRef}
-        className="bg-white border rounded border-black"
-        onClick={handleSelect}
-      >
-        <Layer>
-          {lines.map((line, i) => (
-            <Line
-              key={i}
-              id={`line${i}`}
-              points={line.points}
-              stroke={line.tool === 'pen' ? 'black' : 'white'}
-              strokeWidth={5}
-              tension={0.5}
-              lineCap="round"
-              globalCompositeOperation={
-                line.tool === 'eraser' ? 'destination-out' : 'source-over'
-              }
+  return (
+    <>
+      <div className="grid grid-cols-2 lg:grid-cols-3 p-4  bg-slate-500 rounded-md gap-2">
+        {/* TOOLS */}
+        <div className="flex flex-col border-solid">
+          <span className="flex justify">
+            <RxCross1
+              size={30}
+              className="cursor-pointer text-white-600 hover:text-gray-800"
+              onClick={() => setOpen(false)}
             />
-          ))}
-          {shapes.map((shape, i) => {
-            if (shape.tool === 'rectangle') {
-              return (
-                <Rect
-                  key={i}
-                  id={`rect${i}`}
-                  x={shape.points[0]}
-                  y={shape.points[1]}
-                  width={shape.points[2] - shape.points[0]}
-                  height={shape.points[3] - shape.points[1]}
-                  stroke="black"
-                  draggable
-                  onClick={handleSelect}
-                />
-              );
-            } else if (shape.tool === 'circle') {
-              const radius = Math.sqrt(
-                Math.pow(shape.points[2] - shape.points[0], 2) +
-                  Math.pow(shape.points[3] - shape.points[1], 2)
-              );
-              return (
-                <Circle
-                  key={i}
-                  id={`circle${i}`}
-                  x={shape.points[0]}
-                  y={shape.points[1]}
-                  radius={radius}
-                  stroke="black"
-                  draggable
-                  onClick={handleSelect}
-                />
-              );
-            } else if (shape.tool === 'line') {
-              return (
-                <Line
-                  key={i}
-                  id={`line${i}`}
-                  points={shape.points}
-                  stroke="black"
-                  strokeWidth={2}
-                  lineCap="round"
-                  draggable
-                  onClick={handleSelect}
-                />
-              );
-            } else if (shape.tool === 'arrow') {
-              return (
-                <Arrow
-                  key={i}
-                  id={`arrow${i}`}
-                  points={shape.points}
-                  stroke="black"
-                  strokeWidth={2}
-                  lineCap="round"
-                  draggable
-                  onClick={handleSelect}
-                />
-              );
-            } else if (shape.tool === 'star') {
-              return (
-                <Star
-                  key={i}
-                  id={`star${i}`}
-                  x={shape.points[0]}
-                  y={shape.points[1]}
-                  numPoints={5}
-                  innerRadius={(shape.points[2] - shape.points[0]) / 2}
-                  outerRadius={(shape.points[3] - shape.points[1]) / 2}
-                  stroke="black"
-                  draggable
-                  onClick={handleSelect}
-                />
-              );
-            } else if (shape.tool === 'polygon') {
-              return (
-                <RegularPolygon
-                  key={i}
-                  id={`polygon${i}`}
-                  x={shape.points[0]}
-                  y={shape.points[1]}
-                  sides={6}
-                  radius={Math.sqrt(
-                    Math.pow(shape.points[2] - shape.points[0], 2) +
-                      Math.pow(shape.points[3] - shape.points[1], 2)
-                  )}
-                  stroke="black"
-                  draggable
-                  onClick={handleSelect}
-                />
-              );
-            } else if (shape.tool === 'heart') {
-              return (
-                <Path
-                  key={i}
-                  id={`heart${i}`}
-                  data={drawHeartPath(
-                    shape.points[0],
-                    shape.points[1],
-                    shape.points[2],
-                    shape.points[3]
-                  )}
-                  stroke="black"
-                  draggable
-                  onClick={handleSelect}
-                />
-              );
-            }
-            return null;
-          })}
-          {tempShape && ['line', 'arrow'].includes(tempShape.tool) && (
-            <Line
-              points={tempShape.points}
-              stroke="gray"
-              strokeWidth={2}
-              lineCap="round"
-              dash={[4, 4]}
-            />
-          )}
-          {tempShape && tempShape.tool === 'rectangle' && (
-            <Rect
-              x={tempShape.points[0]}
-              y={tempShape.points[1]}
-              width={tempShape.points[2] - tempShape.points[0]}
-              height={tempShape.points[3] - tempShape.points[1]}
-              stroke="gray"
-              dash={[4, 4]}
-            />
-          )}
-          {tempShape && tempShape.tool === 'circle' && (
-            <Circle
-              x={tempShape.points[0]}
-              y={tempShape.points[1]}
-              radius={Math.sqrt(
-                Math.pow(tempShape.points[2] - tempShape.points[0], 2) +
-                  Math.pow(tempShape.points[3] - tempShape.points[1], 2)
-              )}
-              stroke="gray"
-              dash={[4, 4]}
-            />
-          )}
-          {tempShape && tempShape.tool === 'heart' && (
-            <Path
-              data={drawHeartPath(
-                tempShape.points[0],
-                tempShape.points[1],
-                tempShape.points[2],
-                tempShape.points[3]
-              )}
-              stroke="gray"
-              dash={[4, 4]}
-            />
-          )}
-          {texts.map((textItem, i) => (
-            <Text
-              key={i}
-              id={textItem.id}
-              text={textItem.text}
-              x={textItem.x}
-              y={textItem.y}
-              fontSize={textItem.fontSize}
-              fontFamily={textItem.fontFamily}
-              fontStyle={textItem.fontStyle}
-              textDecoration={textItem.textDecoration}
-              draggable
+            Close
+          </span>
+          {/* TEXT TOOlS */}
+          <div className="flex flex-col">
+            <button
+              onClick={toggleToolsCollapse}
+              className="bg-gradient-to-r from-gray-800 to-gray-700 text-white px-4 py-2 rounded mb-2"
+            >
+              {isToolCollapsed ? "Show Tools" : "Hide Tools"}
+            </button>
+
+            <div
+              className={`transition-all duration-300 overflow-y-auto z-10 ${
+                isToolCollapsed ? "max-h-0" : "max-h-40"
+              }`}
+            >
+              <div className="grid grid-cols-1 mb-2 space-y-2">
+                <button
+                  onClick={() => setTool("text")}
+                  className={`${getButtonClass(
+                    "text"
+                  )} bg-gray-700 text-white px-4 py-2 rounded`}
+                >
+                  Text
+                </button>
+                {tool === "text" && (
+                  <input
+                    type="text"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Type text and click on canvas"
+                    className="border border-gray-300 px-4 py-2 rounded"
+                  />
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <button
+                  onClick={() => setTool("select")}
+                  className={`${getButtonClass(
+                    "select"
+                  )} bg-gray-700 text-white px-4 py-2 rounded`}
+                >
+                  Select
+                </button>
+                <button
+                  onClick={() => setTool("pen")}
+                  className={`${getButtonClass(
+                    "pen"
+                  )} bg-gray-700 text-white px-4 py-2 rounded`}
+                >
+                  Draw
+                </button>
+                <button
+                  onClick={() => setTool("eraser")}
+                  className={`${getButtonClass(
+                    "eraser"
+                  )} bg-gray-700 text-white px-4 py-2 rounded`}
+                >
+                  Erase
+                </button>
+
+                <button
+                  onClick={handleClear}
+                  className="bg-gray-700 text-white px-4 py-2 rounded"
+                >
+                  Clear
+                </button>
+                <button
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  className="bg-white border border-gray-300 px-4 py-2 rounded w-50%"
+                >
+                  Upload
+                </button>
+                <button
+                  onClick={handleExport}
+                  className="bg-purple-700 text-white px-4 py-2 rounded"
+                >
+                  Export
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* SHAPES */}
+          <div className="flex flex-col">
+            <button
+              onClick={toggleCollapse}
+              className="bg-gray-700 text-white px-4 py-2 rounded mb-2"
+            >
+              {isCollapsed ? "Show Shapes" : "Hide Shapes"}
+            </button>
+
+            <div className="overflow-y-auto max-h-20">
+              {" "}
+              {/* Added overflow-y-auto and max-h-80 */}
+              <div
+                className={`transition-all duration-300 ${
+                  isCollapsed ? "max-h-0 overflow-hidden" : "max-h-full"
+                }`}
+              >
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <button
+                    onClick={() => setTool("rectangle")}
+                    className={`${getButtonClass(
+                      "rectangle"
+                    )} text-white px-4 py-2 rounded`}
+                  >
+                    Rectangle
+                  </button>
+                  <button
+                    onClick={() => setTool("circle")}
+                    className={`${getButtonClass(
+                      "circle"
+                    )} text-white px-4 py-2 rounded`}
+                  >
+                    Circle
+                  </button>
+                  <button
+                    onClick={() => setTool("line")}
+                    className={`${getButtonClass(
+                      "line"
+                    )} text-white px-4 py-2 rounded`}
+                  >
+                    Line
+                  </button>
+                  <button
+                    onClick={() => setTool("arrow")}
+                    className={`${getButtonClass(
+                      "arrow"
+                    )} text-white px-4 py-2 rounded`}
+                  >
+                    Arrow
+                  </button>
+                  <button
+                    onClick={() => setTool("star")}
+                    className={`${getButtonClass(
+                      "star"
+                    )} text-white px-4 py-2 rounded`}
+                  >
+                    Star
+                  </button>
+                  <button
+                    onClick={() => setTool("polygon")}
+                    className={`${getButtonClass(
+                      "polygon"
+                    )} text-white px-4 py-2 rounded`}
+                  >
+                    Polygon
+                  </button>
+                  <button
+                    onClick={() => setTool("heart")}
+                    className={`${getButtonClass(
+                      "heart"
+                    )} text-white px-4 py-2 rounded`}
+                  >
+                    Heart
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Page Tools */}
+          <div className="p-4">
+            <div className="flex">
+              <button
+                onClick={addBlankPage}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Add Blank Page
+              </button>
+              <button
+                onClick={handleExportAll}
+                className="bg-purple-500 text-white px-4 py-2 rounded"
+              >
+                Export All Pages
+              </button>
+              <button
+                onClick={handleSaveDesign}
+                className="bg-green-500 text-white px-4 py-2 rounded"
+              >
+                Save Design
+              </button>
+            </div>
+            <div className="overflow-y-auto max-h-40">
+              {" "}
+              {/* Added overflow-y-auto and max-h-80 */}
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {pages.map((page, index) => (
+                  <div key={index} className="flex flex-col space-y-2">
+                    {" "}
+                    {/* Changed flex direction to column */}
+                    <button
+                      onClick={() => selectPage(index)}
+                      className={`${
+                        currentPageIndex === index
+                          ? "bg-yellow-500"
+                          : "bg-gray-300"
+                      } text-white px-4 py-2 rounded`}
+                    >
+                      Page {index + 1}
+                    </button>
+                    <button
+                      onClick={() => deletePage(index)}
+                      className="bg-red-500 text-white px-4 py-2 rounded"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {saveMessage && (
+              <div className="mt-4 p-2 bg-green-200 text-green-800 rounded">
+                {saveMessage}
+              </div>
+            )}
+            {selectedId && (
+              <div className="flex space-x-2">
+                <label>
+                  Font Family:
+                  <select
+                    value={fontFamily}
+                    onChange={handleFontFamilyChange}
+                    className="border border-gray-300 px-2 py-1 rounded"
+                    style={{ fontFamily }}
+                  >
+                    {fontFamilies.map((family) => (
+                      <option
+                        key={family}
+                        value={family}
+                        style={{ fontFamily: family }}
+                      >
+                        {family}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Font Size:
+                  <input
+                    type="number"
+                    value={fontSize}
+                    onChange={handleFontSizeChange}
+                    className="border border-gray-300 px-2 py-1 rounded"
+                    style={{ width: "60px" }}
+                  />
+                </label>
+                <button
+                  onClick={toggleItalic}
+                  className="bg-gray-300 text-black px-2 py-1 rounded"
+                >
+                  <em>I</em>
+                </button>
+                <button
+                  onClick={toggleUnderline}
+                  className="bg-gray-300 text-black px-2 py-1 rounded"
+                >
+                  <u>U</u>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Add the design to the customer possible cart */}
+          <button
+            // onClick={saveExportedImage}
+            onClick={saveToCartDesign}
+            className="bg-green-500 text-white px-4 py-2 rounded"
+          >
+            Add Design to Order
+          </button>
+        </div>
+
+        {/* canvas */}
+        <div className="lg:col-span-2">
+          <div className="h-full w-full">
+            <Stage
+              width={830}
+              height={500}
+              onMouseDown={tool === "text" ? handleTextAdd : handleMouseDown}
+              onMousemove={handleMouseMove}
+              onMouseup={handleMouseUp}
+              ref={stageRef}
+              className="bg-white border rounded border-black"
               onClick={handleSelect}
-              onDblClick={handleTextDblClick}
-              onChange={handleTextChange}
-            />
-          ))}
-          {image && (
-            <KonvaImage
-              id="uploadedImage"
-              image={image}
-              x={pages[currentPageIndex].imageProps.x || 50}
-              y={pages[currentPageIndex].imageProps.y || 50}
-              width={pages[currentPageIndex].imageProps.width || 200}
-              height={pages[currentPageIndex].imageProps.height || 200}
-              scaleX={pages[currentPageIndex].imageProps.scaleX || 1}
-              scaleY={pages[currentPageIndex].imageProps.scaleY || 1}
-              draggable
-              onClick={handleSelect}
-            />
-          )}
-          <Transformer ref={transformerRef} />
-        </Layer>
-      </Stage>
-    </div>
+            >
+              <Layer>
+                {lines.map((line, i) => (
+                  <Line
+                    key={i}
+                    id={`line${i}`}
+                    points={line.points}
+                    stroke={line.tool === "pen" ? "black" : "white"}
+                    strokeWidth={5}
+                    tension={0.5}
+                    lineCap="round"
+                    globalCompositeOperation={
+                      line.tool === "eraser" ? "destination-out" : "source-over"
+                    }
+                  />
+                ))}
+                {shapes.map((shape, i) => {
+                  if (shape.tool === "rectangle") {
+                    return (
+                      <Rect
+                        key={i}
+                        id={`rect${i}`}
+                        x={shape.points[0]}
+                        y={shape.points[1]}
+                        width={shape.points[2] - shape.points[0]}
+                        height={shape.points[3] - shape.points[1]}
+                        stroke="black"
+                        draggable
+                        onClick={handleSelect}
+                      />
+                    );
+                  } else if (shape.tool === "circle") {
+                    const radius = Math.sqrt(
+                      Math.pow(shape.points[2] - shape.points[0], 2) +
+                        Math.pow(shape.points[3] - shape.points[1], 2)
+                    );
+                    return (
+                      <Circle
+                        key={i}
+                        id={`circle${i}`}
+                        x={shape.points[0]}
+                        y={shape.points[1]}
+                        radius={radius}
+                        stroke="black"
+                        draggable
+                        onClick={handleSelect}
+                      />
+                    );
+                  } else if (shape.tool === "line") {
+                    return (
+                      <Line
+                        key={i}
+                        id={`line${i}`}
+                        points={shape.points}
+                        stroke="black"
+                        strokeWidth={2}
+                        lineCap="round"
+                        draggable
+                        onClick={handleSelect}
+                      />
+                    );
+                  } else if (shape.tool === "arrow") {
+                    return (
+                      <Arrow
+                        key={i}
+                        id={`arrow${i}`}
+                        points={shape.points}
+                        stroke="black"
+                        strokeWidth={2}
+                        lineCap="round"
+                        draggable
+                        onClick={handleSelect}
+                      />
+                    );
+                  } else if (shape.tool === "star") {
+                    return (
+                      <Star
+                        key={i}
+                        id={`star${i}`}
+                        x={shape.points[0]}
+                        y={shape.points[1]}
+                        numPoints={5}
+                        innerRadius={(shape.points[2] - shape.points[0]) / 2}
+                        outerRadius={(shape.points[3] - shape.points[1]) / 2}
+                        stroke="black"
+                        draggable
+                        onClick={handleSelect}
+                      />
+                    );
+                  } else if (shape.tool === "polygon") {
+                    return (
+                      <RegularPolygon
+                        key={i}
+                        id={`polygon${i}`}
+                        x={shape.points[0]}
+                        y={shape.points[1]}
+                        sides={6}
+                        radius={Math.sqrt(
+                          Math.pow(shape.points[2] - shape.points[0], 2) +
+                            Math.pow(shape.points[3] - shape.points[1], 2)
+                        )}
+                        stroke="black"
+                        draggable
+                        onClick={handleSelect}
+                      />
+                    );
+                  } else if (shape.tool === "heart") {
+                    return (
+                      <Path
+                        key={i}
+                        id={`heart${i}`}
+                        data={drawHeartPath(
+                          shape.points[0],
+                          shape.points[1],
+                          shape.points[2],
+                          shape.points[3]
+                        )}
+                        stroke="black"
+                        draggable
+                        onClick={handleSelect}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+                {tempShape && ["line", "arrow"].includes(tempShape.tool) && (
+                  <Line
+                    points={tempShape.points}
+                    stroke="gray"
+                    strokeWidth={2}
+                    lineCap="round"
+                    dash={[4, 4]}
+                  />
+                )}
+                {tempShape && tempShape.tool === "rectangle" && (
+                  <Rect
+                    x={tempShape.points[0]}
+                    y={tempShape.points[1]}
+                    width={tempShape.points[2] - tempShape.points[0]}
+                    height={tempShape.points[3] - tempShape.points[1]}
+                    stroke="gray"
+                    dash={[4, 4]}
+                  />
+                )}
+                {tempShape && tempShape.tool === "circle" && (
+                  <Circle
+                    x={tempShape.points[0]}
+                    y={tempShape.points[1]}
+                    radius={Math.sqrt(
+                      Math.pow(tempShape.points[2] - tempShape.points[0], 2) +
+                        Math.pow(tempShape.points[3] - tempShape.points[1], 2)
+                    )}
+                    stroke="gray"
+                    dash={[4, 4]}
+                  />
+                )}
+                {tempShape && tempShape.tool === "heart" && (
+                  <Path
+                    data={drawHeartPath(
+                      tempShape.points[0],
+                      tempShape.points[1],
+                      tempShape.points[2],
+                      tempShape.points[3]
+                    )}
+                    stroke="gray"
+                    dash={[4, 4]}
+                  />
+                )}
+                {texts.map((textItem, i) => (
+                  <Text
+                    key={i}
+                    id={textItem.id}
+                    text={textItem.text}
+                    x={textItem.x}
+                    y={textItem.y}
+                    fontSize={textItem.fontSize}
+                    fontFamily={textItem.fontFamily}
+                    fontStyle={textItem.fontStyle}
+                    textDecoration={textItem.textDecoration}
+                    draggable
+                    onClick={handleSelect}
+                    onDblClick={handleTextDblClick}
+                    onChange={handleTextChange}
+                  />
+                ))}
+                {image && (
+                  <KonvaImage
+                    id="uploadedImage"
+                    image={image}
+                    x={pages[currentPageIndex].imageProps.x || 50}
+                    y={pages[currentPageIndex].imageProps.y || 50}
+                    width={pages[currentPageIndex].imageProps.width || 200}
+                    height={pages[currentPageIndex].imageProps.height || 200}
+                    scaleX={pages[currentPageIndex].imageProps.scaleX || 1}
+                    scaleY={pages[currentPageIndex].imageProps.scaleY || 1}
+                    draggable
+                    onClick={handleSelect}
+                  />
+                )}
+                <Transformer ref={transformerRef} />
+              </Layer>
+            </Stage>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
+
 
 export default UserCreateDesign;

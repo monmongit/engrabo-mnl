@@ -22,6 +22,8 @@ router.post(
       }
     })
   );
+
+router.get("/get-customs")
   
 
 module.exports = router;

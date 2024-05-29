@@ -27,8 +27,15 @@ const UpdateProduct = ({ setOpen, productId }) => {
   const [stock, setStock] = useState("");
   const [instructions, setInstructions] = useState("");
   const [dropdowns, setDropdowns] = useState([]);
-  const [sizes, setSizes] = useState([]);
   const [packaging, setPackaging] = useState([]);
+
+  const [sizes, setSizes] = useState([]); // Add state for sizes
+  const [colors, setColors] = useState(''); // Add state for colors
+  const [mediaType, setMediaType] = useState('none'); // Add state for media type
+  const [personalization, setPersonalization] = useState('');
+  const [imageOptions, setImageOptions] = useState([]); // Add state for image options
+  const [textOptions, setTextOptions] = useState([]); // Add s
+
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -50,6 +57,9 @@ const UpdateProduct = ({ setOpen, productId }) => {
       setDropdowns(product.dropdowns || []);
       setSizes(product.sizes || []);
       setPackaging(product.packaging || []);
+      setMediaType(product.mediaType || 'none')
+      setImageOptions(product.imageOptions || [])
+      setTextOptions(product.textOptions || [])  
     }
   }, [product]);
 
@@ -82,7 +92,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
 
   // handlers to add sizes
   const handleAddSize = () => {
-    setSizes([...sizes, { name: "", price: "" }]);
+    setSizes([...sizes, { name: '', price: '' }]);
   };
   const handleSizeChange = (index, field, value) => {
     const newSizes = sizes.map((size, i) => {
@@ -96,6 +106,43 @@ const UpdateProduct = ({ setOpen, productId }) => {
   const handleDeleteSize = (index) => {
     const newSizes = sizes.filter((_, i) => i !== index);
     setSizes(newSizes);
+  };
+
+  const handleAddImageOption = () => {
+    setImageOptions([
+      ...imageOptions,
+      { name: '', price: '', description: '' },
+    ]);
+  };
+  const handleImageOptionChange = (index, field, value) => {
+    const newImageOptions = imageOptions.map((option, i) => {
+      if (i === index) {
+        return { ...option, [field]: value };
+      }
+      return option;
+    });
+    setImageOptions(newImageOptions);
+  };
+  const handleDeleteImageOption = (index) => {
+    const newImageOptions = imageOptions.filter((_, i) => i !== index);
+    setImageOptions(newImageOptions);
+  };
+
+  const handleAddTextOption = () => {
+    setTextOptions([...textOptions, { name: '', price: '', description: '' }]);
+  };
+  const handleTextOptionChange = (index, field, value) => {
+    const newTextOptions = textOptions.map((option, i) => {
+      if (i === index) {
+        return { ...option, [field]: value };
+      }
+      return option;
+    });
+    setTextOptions(newTextOptions);
+  };
+  const handleDeleteTextOption = (index) => {
+    const newTextOptions = textOptions.filter((_, i) => i !== index);
+    setTextOptions(newTextOptions);
   };
 
   // handlers for adding packaging
@@ -186,6 +233,11 @@ const UpdateProduct = ({ setOpen, productId }) => {
       dropdowns,
       sizes,
       packaging,
+      colors: colors.split(','),
+      mediaType,
+      dropdowns,
+      imageOptions,
+      textOptions,
     };
 
     console.log("Updated Product Data:", updatedProduct); // Add this line to debug
@@ -222,7 +274,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product name..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Description <span className="text-red-500">*</span>
@@ -238,7 +289,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product description..."
             ></textarea>
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Category <span className="text-red-500">*</span>
@@ -257,7 +307,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
                 ))}
             </select>
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Tags <span className="text-red-500">*</span>
@@ -271,42 +320,39 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product tags..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Gross Price <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
-              name="grossPrice"
+              name="price"
               value={grossPrice}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setGrossPrice(e.target.value)}
               placeholder="Enter your product gross price..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Selling Price <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
-              name="originalPrice"
+              name="price"
               value={originalPrice}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setOriginalPrice(e.target.value)}
               placeholder="Enter your product selling price..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Price (With Discount)
             </label>
             <input
               type="number"
-              name="discountPrice"
+              name="price"
               value={discountPrice}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setDiscountPrice(e.target.value)}
@@ -314,90 +360,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
             />
           </div>
 
-          {/* Sizes */}
-          <div className="space-y-4">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
-              type="button"
-              onClick={handleAddSize}
-            >
-              <FaPlus className="mr-2" /> Add Size
-            </button>
-            {sizes.map((size, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={size.name}
-                  placeholder={`Size Name ${index + 1}`}
-                  onChange={(e) =>
-                    handleSizeChange(index, "name", e.target.value)
-                  }
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  value={size.price}
-                  placeholder={`Price ${index + 1}`}
-                  onChange={(e) =>
-                    handleSizeChange(index, "price", e.target.value)
-                  }
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg"
-                  type="button"
-                  onClick={() => handleDeleteSize(index)}
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Packaging */}
-          <div className="space-y-4">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
-              type="button"
-              onClick={handleAddPackaging}
-            >
-              <FaPlus className="mr-2" /> Add Packaging
-            </button>
-            {packaging.map((pack, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <input
-                  type="text"
-                  value={pack.name}
-                  placeholder={`Packaging Name ${index + 1}`}
-                  onChange={(e) =>
-                    handlePackagingChange(index, "name", e.target.value)
-                  }
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  value={pack.price}
-                  placeholder={`Price ${index + 1}`}
-                  onChange={(e) =>
-                    handlePackagingChange(index, "price", e.target.value)
-                  }
-                  className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <button
-                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg"
-                  type="button"
-                  onClick={() => handleDeletePackaging(index)}
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            ))}
-          </div>
-
+          {/* Product Stock */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Product Stock <span className="text-red-500">*</span>
@@ -411,7 +374,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product stock..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Upload Images <span className="text-red-500">*</span>
@@ -442,97 +404,211 @@ const UpdateProduct = ({ setOpen, productId }) => {
                 ))}
             </div>
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Instruction For Personalization{" "}
+              Instruction For Personalization{' '}
               <span className="text-red-500">*</span>
             </label>
             <textarea
               cols="30"
               rows="8"
-              name="instructions"
+              name="description"
               value={instructions}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="Enter your personalization instructions..."
             ></textarea>
           </div>
-
-          <div className="space-y-4">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
-              type="button"
-              onClick={handleAddDropdown}
-            >
-              <FaPlus className="mr-2" /> Add Dropdown For Product
-              Personalization
-            </button>
-            <div className="space-y-4">
-              {dropdowns.map((dropdown, dropdownIndex) => (
-                <div
-                  key={dropdownIndex}
-                  className="border p-4 rounded-lg shadow-md"
-                >
-                  <div className="flex items-center mb-2">
-                    <input
-                      className="text-black flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-green-200"
-                      placeholder={`Dropdown Name ${dropdownIndex + 1}`}
-                      value={dropdown.name}
-                      onChange={(e) =>
-                        handleDropdownChange(dropdownIndex, e.target.value)
-                      }
-                      required
-                    />
-                    <button
-                      className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                      type="button"
-                      onClick={() => handleDeleteDropdown(dropdownIndex)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    {dropdown.options.map((option, optionIndex) => (
-                      <div key={optionIndex} className="flex items-center">
-                        <input
-                          className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          type="text"
-                          placeholder={`Option ${optionIndex + 1}`}
-                          value={option}
-                          onChange={(e) =>
-                            handleOptionChange(
-                              dropdownIndex,
-                              optionIndex,
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                        <button
-                          className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                          type="button"
-                          onClick={() =>
-                            handleDeleteOption(dropdownIndex, optionIndex)
-                          }
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    className="mt-2 bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center"
-                    type="button"
-                    onClick={() => handleAddOption(dropdownIndex)}
-                  >
-                    <FaPlus className="mr-2" /> Add Option
-                  </button>
-                </div>
-              ))}
-            </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Colors (comma separated)
+            </label>
+            <input
+              type="text"
+              value={colors}
+              onChange={(e) => setColors(e.target.value)}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter colors separated by commas"
+            />
           </div>
-
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Media Type
+            </label>
+            <select
+              value={mediaType}
+              onChange={(e) => setMediaType(e.target.value)}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="none">None</option>
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Sizes
+            </label>
+            <button
+              type="button"
+              onClick={handleAddSize}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Size
+            </button>
+            {sizes.map((size, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Size name"
+                  value={size.name}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'name', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Size price"
+                  value={size.price}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Size description"
+                  value={size.description}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'description', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteSize(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Image Options
+            </label>
+            <button
+              type="button"
+              onClick={handleAddImageOption}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Image Option
+            </button>
+            {imageOptions.map((option, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Option name"
+                  value={option.name}
+                  onChange={(e) =>
+                    handleImageOptionChange(index, 'name', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Option price"
+                  value={option.price}
+                  onChange={(e) =>
+                    handleImageOptionChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Option description"
+                  value={option.description}
+                  onChange={(e) =>
+                    handleImageOptionChange(
+                      index,
+                      'description',
+                      e.target.value
+                    )
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteImageOption(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Text Options
+            </label>
+            <button
+              type="button"
+              onClick={handleAddTextOption}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Text Option
+            </button>
+            {textOptions.map((option, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Option name"
+                  value={option.name}
+                  onChange={(e) =>
+                    handleTextOptionChange(index, 'name', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Option price"
+                  value={option.price}
+                  onChange={(e) =>
+                    handleTextOptionChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Option description"
+                  value={option.description}
+                  onChange={(e) =>
+                    handleTextOptionChange(index, 'description', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTextOption(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
           <div>
             <input
               type="submit"

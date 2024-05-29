@@ -202,7 +202,7 @@ const DashboardMessages = () => {
   }, [messages]);
 
   return (
-    <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll hide-scrollbar rounded">
+    <div className="w-[90%] bg-white m-5 p-4 h-[85vh] overflow-y-scroll hide-scrollbar rounded">
       {!open && (
         <>
           <h1 className="text-center text-[30px] py-3 font-Poppins">
@@ -283,8 +283,8 @@ const MessageList = ({
   console.log(online);
   return (
     <div
-      className={`w-full flex p-3 py-3 ${
-        data.seen ? 'bg-transparent' : 'bg-[#00000010]'
+      className={` rounded mb-3 w-full flex p-3 py-3 ${
+        data.seen ? 'bg-transparent' : 'bg-[#0b0a0a10]'
       } cursor-pointer`}
       onClick={() => handleClick(data._id)}
     >
