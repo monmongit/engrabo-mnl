@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { server } from '../../server';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { AiOutlineArrowRight, AiOutlineSend } from 'react-icons/ai';
-import styles from '../../styles/style';
-import { GrGallery } from 'react-icons/gr';
-import socketIO from 'socket.io-client';
-import { format } from 'timeago.js';
+import React, { useEffect, useRef, useState } from "react";
+import { server } from "../../server";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
+import styles from "../../styles/style";
+import { GrGallery } from "react-icons/gr";
+import socketIO from "socket.io-client";
+import { format } from "timeago.js";
 
-const ENDPOINT = 'http://localhost:4000/';
-const socket = socketIO(ENDPOINT, { transports: ['websocket'] });
+const ENDPOINT = "http://localhost:4000/";
+const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const DashboardMessages = () => {
   const { admin, isLoading } = useSelector((state) => state.admin);
@@ -18,7 +18,7 @@ const DashboardMessages = () => {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [userData, setUserData] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [activeStatus, setActiveStatus] = useState(false);
@@ -27,7 +27,7 @@ const DashboardMessages = () => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    socket.on('getMessage', (data) => {
+    socket.on("getMessage", (data) => {
       setArrivalMessage({
         sender: data.senderId,
         text: data.text,
@@ -65,8 +65,8 @@ const DashboardMessages = () => {
 
   useEffect(() => {
     if (admin) {
-      socket.emit('addUser', admin?._id);
-      socket.on('getUsers', (data) => {
+      socket.emit("addUser", admin?._id);
+      socket.on("getUsers", (data) => {
         setOnlineUsers(data);
       });
     }
@@ -107,14 +107,14 @@ const DashboardMessages = () => {
       (member) => member !== admin?._id
     );
 
-    socket.emit('sendMessage', {
+    socket.emit("sendMessage", {
       senderId: admin._id,
       receiverId,
       text: newMessage,
     });
 
     try {
-      if (newMessage !== '') {
+      if (newMessage !== "") {
         const res = await axios.post(
           `${server}/message/create-new-message`,
           message
@@ -128,7 +128,7 @@ const DashboardMessages = () => {
   };
 
   const updateLastMessage = async () => {
-    socket.emit('updateLastMessage', {
+    socket.emit("updateLastMessage", {
       lastMessage: newMessage,
       lastMessageId: admin._id,
     });
@@ -141,7 +141,7 @@ const DashboardMessages = () => {
           lastMessageId: admin._id,
         }
       );
-      setNewMessage('');
+      setNewMessage("");
     } catch (error) {
       console.log(error);
     }
@@ -162,7 +162,7 @@ const DashboardMessages = () => {
     const receiverId = currentChat.members.find(
       (member) => member !== admin._id
     );
-    socket.emit('sendMessage', {
+    socket.emit("sendMessage", {
       senderId: admin._id,
       receiverId,
       images: image, // Include image in the event
@@ -188,7 +188,7 @@ const DashboardMessages = () => {
       await axios.put(
         `${server}/conversation/update-last-message/${currentChat._id}`,
         {
-          lastMessage: 'Sent an image',
+          lastMessage: "Sent an image",
           lastMessageId: admin._id,
         }
       );
@@ -198,16 +198,26 @@ const DashboardMessages = () => {
   };
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (
-    <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll hide-scrollbar rounded">
+    <div
+      className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll hide-scrollbar rounded px-5 br"
+      style={{ marginBottom: "100px", borderRadius: "10" }}
+    >
+      <div className="mt-4 p-4 bg-[#171203] mb-4 rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+        <h3 className="text-[22px] font-Poppins pb-2 text-white">
+          {" "}
+          All Messages
+        </h3>
+      </div>
+
       {!open && (
         <>
-          <h1 className="text-center text-[30px] py-3 font-Poppins">
+          {/* <h1 className="text-center text-[30px] py-3 font-Poppins">
             All Messages
-          </h1>
+          </h1> */}
           {conversations.map((item, index) => (
             <MessageList
               key={index}
@@ -284,7 +294,7 @@ const MessageList = ({
   return (
     <div
       className={`w-full flex p-3 py-3 ${
-        data.seen ? 'bg-transparent' : 'bg-[#00000010]'
+        data.seen ? "bg-transparent" : "bg-[#00000010]"
       } cursor-pointer`}
       onClick={() => handleClick(data._id)}
     >
@@ -304,8 +314,8 @@ const MessageList = ({
         <h1 className="font-[600]">{user?.name}</h1>
         <p className="text-[14px] text-[#000000a1]">
           {!isLoading && data?.lastMessageId !== user?._id
-            ? 'You'
-            : `${user?.name?.split(' ')[0]} `}
+            ? "You"
+            : `${user?.name?.split(" ")[0]} `}
           : {data?.lastMessage}
         </p>
       </div>
@@ -339,7 +349,7 @@ const AdminInbox = ({
             <h1 className="text-[18px] font-[600] text-[#171203]">
               {userData?.name}
             </h1>
-            <h1>{activeStatus ? 'Active Now' : ''}</h1>
+            <h1>{activeStatus ? "Active Now" : ""}</h1>
           </div>
         </div>
         <AiOutlineArrowRight
@@ -350,12 +360,12 @@ const AdminInbox = ({
       </div>
 
       {/* messages */}
-      <div className="px-3 h-[65vh] py-3 overflow-y-scroll hide-scrollbar">
+      <div className="px-3 h-[65vh] py-3 overflow-y-scroll hide-scrollbar ">
         {messages.map((item, index) => (
           <div
             key={index}
             className={`flex w-full my-2 ${
-              item.sender === adminId ? 'justify-end' : 'justify-start'
+              item.sender === adminId ? "justify-end" : "justify-start"
             }`}
             ref={scrollRef}
           >
@@ -369,13 +379,13 @@ const AdminInbox = ({
 
             {item.images && (
               <div
-                className={`flex flex-col w-max ${
-                  item.sender === adminId ? 'items-end' : 'items-start'
+                className={`flex flex-col w-max  ${
+                  item.sender === adminId ? "items-end" : "items-start"
                 }`}
               >
                 <img
                   src={
-                    typeof item.images === 'string'
+                    typeof item.images === "string"
                       ? item.images
                       : item.images.url
                   }
@@ -388,12 +398,12 @@ const AdminInbox = ({
             {item.text && (
               <div
                 className={`flex flex-col w-max ${
-                  item.sender === adminId ? 'items-end' : 'items-start'
+                  item.sender === adminId ? "items-end" : "items-start"
                 }`}
               >
                 <div
                   className={`p-2 rounded ${
-                    item.sender === adminId ? 'bg-[#171203]' : 'bg-[#78683a96]'
+                    item.sender === adminId ? "bg-[#171203]" : "bg-[#78683a96]"
                   } text-[#fff]`}
                 >
                   <p>{item.text}</p>
@@ -412,7 +422,7 @@ const AdminInbox = ({
         className="p-3 relative w-full flex justify-between items-center"
         onSubmit={sendMessageHandler}
       >
-        <div className="w-[30px]">
+        <div className="w-[30px] ">
           <input
             type="file"
             name=""

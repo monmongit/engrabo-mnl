@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +7,6 @@ import { createProduct } from '../../redux/action/product';
 import { toast } from 'react-toastify';
 import { RxCross1 } from 'react-icons/rx';
 import { getAllCategories } from '../../redux/action/category';
-import { Button } from '@mui/material/Button';
 import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const CreateProduct = ({ setOpen }) => {
@@ -19,20 +19,17 @@ const CreateProduct = ({ setOpen }) => {
   const [images, setImages] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [details, setDetails] = useState('');
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [grossPrice, setGrossPrice] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
   const [discountPrice, setDiscountPrice] = useState('');
   const [stock, setStock] = useState('');
-  const [sizes, setSizes] = useState([]); // Add state for sizes
-  const [colors, setColors] = useState(''); // Add state for colors
-  const [mediaType, setMediaType] = useState('none'); // Add state for media type
+  const [sizes, setSizes] = useState([]);
+  const [engravings, setEngravings] = useState([]);
   const [instructions, setInstructions] = useState('');
-  const [personalization, setPersonalization] = useState('');
-  const [dropdowns, setDropdowns] = useState([]);
-  const [imageOptions, setImageOptions] = useState([]); // Add state for image options
-  const [textOptions, setTextOptions] = useState([]); // Add state for text options
+  const [mediaType, setMediaType] = useState('none');
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -43,15 +40,17 @@ const CreateProduct = ({ setOpen }) => {
       toast.error(error);
     }
     if (success) {
-      toast.success('Product created successfully');
-      navigate('/dashboard-products');
+      toast.success("Product created successfully");
+      navigate("/dashboard-products");
       window.location.reload();
     }
   }, [dispatch, error, success, navigate]);
 
-  // handlers to add sizes
   const handleAddSize = () => {
-    setSizes([...sizes, { name: '', price: '' }]);
+    setSizes([
+      ...sizes,
+      { name: '', grossPrice: '', price: '', stock: '', description: '' },
+    ]);
   };
   const handleSizeChange = (index, field, value) => {
     const newSizes = sizes.map((size, i) => {
@@ -67,45 +66,24 @@ const CreateProduct = ({ setOpen }) => {
     setSizes(newSizes);
   };
 
-  const handleAddImageOption = () => {
-    setImageOptions([
-      ...imageOptions,
-      { name: '', price: '', description: '' },
+  const handleAddEngraving = () => {
+    setEngravings([
+      ...engravings,
+      { type: '', grossPrice: '', price: '', stock: '', description: '' },
     ]);
   };
-
-  const handleImageOptionChange = (index, field, value) => {
-    const newImageOptions = imageOptions.map((option, i) => {
+  const handleEngravingChange = (index, field, value) => {
+    const newEngravings = engravings.map((engraving, i) => {
       if (i === index) {
-        return { ...option, [field]: value };
+        return { ...engraving, [field]: value };
       }
-      return option;
+      return engraving;
     });
-    setImageOptions(newImageOptions);
+    setEngravings(newEngravings);
   };
-
-  const handleDeleteImageOption = (index) => {
-    const newImageOptions = imageOptions.filter((_, i) => i !== index);
-    setImageOptions(newImageOptions);
-  };
-
-  const handleAddTextOption = () => {
-    setTextOptions([...textOptions, { name: '', price: '', description: '' }]);
-  };
-
-  const handleTextOptionChange = (index, field, value) => {
-    const newTextOptions = textOptions.map((option, i) => {
-      if (i === index) {
-        return { ...option, [field]: value };
-      }
-      return option;
-    });
-    setTextOptions(newTextOptions);
-  };
-
-  const handleDeleteTextOption = (index) => {
-    const newTextOptions = textOptions.filter((_, i) => i !== index);
-    setTextOptions(newTextOptions);
+  const handleDeleteEngraving = (index) => {
+    const newEngravings = engravings.filter((_, i) => i !== index);
+    setEngravings(newEngravings);
   };
 
   const handleImageChange = (e) => {
@@ -127,44 +105,89 @@ const CreateProduct = ({ setOpen }) => {
     e.preventDefault();
     const newForm = new FormData();
     images.forEach((image) => {
-      newForm.set('images', image);
+      newForm.set("images", image);
     });
 
+    const defaultSize = sizes[0];
+    const defaultEngraving = engravings[0];
+
     newForm.append('name', name);
-    newForm.append('description', description);
+    newForm.append(
+      'description',
+      defaultSize
+        ? defaultSize.description
+        : defaultEngraving
+        ? defaultEngraving.description
+        : description
+    );
+
+    newForm.append('details', details);
     newForm.append('category', category);
     newForm.append('tags', tags);
-    newForm.append('grossPrice', grossPrice);
-    newForm.append('originalPrice', originalPrice);
+    newForm.append(
+      'grossPrice',
+      defaultSize
+        ? defaultSize.grossPrice
+        : defaultEngraving
+        ? defaultEngraving.grossPrice
+        : grossPrice
+    );
+    newForm.append(
+      'originalPrice',
+      defaultSize
+        ? defaultSize.price
+        : defaultEngraving
+        ? defaultEngraving.price
+        : originalPrice
+    );
     newForm.append('discountPrice', discountPrice);
-    newForm.append('stock', stock);
+    newForm.append(
+      'stock',
+      defaultSize
+        ? defaultSize.stock
+        : defaultEngraving
+        ? defaultEngraving.stock
+        : stock
+    );
     newForm.append('adminId', admin._id);
     newForm.append('instructions', instructions);
     newForm.append('sizes', JSON.stringify(sizes));
-    newForm.append('colors', JSON.stringify(colors.split(',')));
+    newForm.append('engravings', JSON.stringify(engravings));
     newForm.append('mediaType', mediaType);
-    newForm.append('imageOptions', JSON.stringify(imageOptions));
-    newForm.append('textOptions', JSON.stringify(textOptions));
 
     dispatch(
       createProduct({
         name,
-        description,
+        description: defaultSize
+          ? defaultSize.description
+          : defaultEngraving
+          ? defaultEngraving.description
+          : description,
+        details,
         category,
         tags,
-        grossPrice,
-        originalPrice,
+        grossPrice: defaultSize
+          ? defaultSize.grossPrice
+          : defaultEngraving
+          ? defaultEngraving.grossPrice
+          : grossPrice,
+        originalPrice: defaultSize
+          ? defaultSize.price
+          : defaultEngraving
+          ? defaultEngraving.price
+          : originalPrice,
         discountPrice,
-        stock,
+        stock: defaultSize
+          ? defaultSize.stock
+          : defaultEngraving
+          ? defaultEngraving.stock
+          : stock,
         adminId: admin._id,
         images,
         instructions,
         sizes,
-        colors: colors.split(','),
+        engravings,
         mediaType,
-        dropdowns,
-        imageOptions,
-        textOptions,
       })
     );
   };
@@ -209,8 +232,26 @@ const CreateProduct = ({ setOpen }) => {
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter your product description..."
+              disabled={sizes.length > 0 || engravings.length > 0}
             ></textarea>
           </div>
+
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Details <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              cols="30"
+              required
+              rows="8"
+              name="details"
+              value={details}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={(e) => setDetails(e.target.value)}
+              placeholder="Enter your product details..."
+            ></textarea>
+          </div>
+
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Category <span className="text-red-500">*</span>
@@ -248,11 +289,12 @@ const CreateProduct = ({ setOpen }) => {
             </label>
             <input
               type="number"
-              name="price"
+              name="grossPrice"
               value={grossPrice}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setGrossPrice(e.target.value)}
               placeholder="Enter your product gross price..."
+              disabled={sizes.length > 0 || engravings.length > 0}
             />
           </div>
           <div>
@@ -261,11 +303,12 @@ const CreateProduct = ({ setOpen }) => {
             </label>
             <input
               type="number"
-              name="price"
+              name="originalPrice"
               value={originalPrice}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setOriginalPrice(e.target.value)}
               placeholder="Enter your product selling price..."
+              disabled={sizes.length > 0 || engravings.length > 0}
             />
           </div>
           <div>
@@ -274,15 +317,13 @@ const CreateProduct = ({ setOpen }) => {
             </label>
             <input
               type="number"
-              name="price"
+              name="discountPrice"
               value={discountPrice}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setDiscountPrice(e.target.value)}
               placeholder="Enter your product price with discount..."
             />
           </div>
-
-          {/* Product Stock */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Product Stock <span className="text-red-500">*</span>
@@ -294,6 +335,7 @@ const CreateProduct = ({ setOpen }) => {
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setStock(e.target.value)}
               placeholder="Enter your product stock..."
+              disabled={sizes.length > 0 || engravings.length > 0}
             />
           </div>
           <div>
@@ -302,7 +344,6 @@ const CreateProduct = ({ setOpen }) => {
             </label>
             <input
               type="file"
-              name=""
               required
               id="upload"
               className="hidden"
@@ -314,7 +355,7 @@ const CreateProduct = ({ setOpen }) => {
                 <AiOutlinePlusCircle
                   size={30}
                   className="mt-3 text-gray-600 hover:text-gray-800 cursor-pointer"
-                />{' '}
+                />{" "}
               </label>
               {images &&
                 images.map((i) => (
@@ -329,45 +370,18 @@ const CreateProduct = ({ setOpen }) => {
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Instruction For Personalization{' '}
+              Instruction For Personalization{" "}
               <span className="text-red-500">*</span>
             </label>
             <textarea
               cols="30"
               rows="8"
-              name="description"
+              name="instructions"
               value={instructions}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="Enter your personalization instructions..."
             ></textarea>
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-800 mb-2">
-              Colors (comma separated)
-            </label>
-            <input
-              type="text"
-              value={colors}
-              onChange={(e) => setColors(e.target.value)}
-              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter colors separated by commas"
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-800 mb-2">
-              Media Type
-            </label>
-            <select
-              value={mediaType}
-              onChange={(e) => setMediaType(e.target.value)}
-              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="none">None</option>
-              <option value="text">Text</option>
-              <option value="image">Image</option>
-              <option value="both">Both</option>
-            </select>
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
@@ -387,7 +401,17 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size name"
                   value={size.name}
                   onChange={(e) =>
-                    handleSizeChange(index, 'name', e.target.value)
+                    handleSizeChange(index, "name", e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Size gross price"
+                  value={size.grossPrice}
+                  onChange={(e) =>
+                    handleSizeChange(index, "grossPrice", e.target.value)     
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -397,7 +421,17 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size price"
                   value={size.price}
                   onChange={(e) =>
-                    handleSizeChange(index, 'price', e.target.value)
+                    handleSizeChange(index, "price", e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Size stock"
+                  value={size.stock}
+                  onChange={(e) =>
+                    handleSizeChange(index, "stock", e.target.value)                 
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -407,7 +441,8 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size description"
                   value={size.description}
                   onChange={(e) =>
-                    handleSizeChange(index, 'description', e.target.value)
+                    handleSizeChange(index, "description", e.target.value)
+               
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -424,54 +459,76 @@ const CreateProduct = ({ setOpen }) => {
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Image Options
+              Engravings
             </label>
             <button
               type="button"
-              onClick={handleAddImageOption}
+              onClick={handleAddEngraving}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
             >
-              <FaPlus className="mr-2" /> Add Image Option
+              <FaPlus className="mr-2" /> Add Engraving
             </button>
-            {imageOptions.map((option, index) => (
+            {engravings.map((engraving, index) => (
               <div key={index} className="mt-2 flex flex-wrap">
                 <input
                   type="text"
-                  placeholder="Option name"
-                  value={option.name}
+                  placeholder="Engraving type"
+                  value={engraving.type}
                   onChange={(e) =>
-                    handleImageOptionChange(index, 'name', e.target.value)
+                    handleEngravingChange(index, "type", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
                 <input
                   type="number"
-                  placeholder="Option price"
-                  value={option.price}
+                  placeholder="Engraving gross price"
+                  value={engraving.grossPrice}
                   onChange={(e) =>
-                    handleImageOptionChange(index, 'price', e.target.value)
+                    handleEngravingChange(index, "grossPrice", e.target.value)
+
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Engraving price"
+                  value={engraving.price}
+                  onChange={(e) =>
+
+                    handleEngravingChange(index, "price", e.target.value)
+
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Engraving stock"
+                  value={engraving.stock}
+                  onChange={(e) =>
+                    handleEngravingChange(index, "stock", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
                 <input
                   type="text"
-                  placeholder="Option description"
-                  value={option.description}
+                  placeholder="Engraving description"
+                  value={engraving.description}
                   onChange={(e) =>
-                    handleImageOptionChange(
-                      index,
-                      'description',
-                      e.target.value
-                    )
+                    handleEngravingChange(index, "description", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
                 <button
                   type="button"
-                  onClick={() => handleDeleteImageOption(index)}
+                  onClick={() => handleDeleteEngraving(index)}
                   className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
                 >
                   <FaTrash />
@@ -481,56 +538,18 @@ const CreateProduct = ({ setOpen }) => {
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Text Options
+              Media Type
             </label>
-            <button
-              type="button"
-              onClick={handleAddTextOption}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            <select
+              value={mediaType}
+              onChange={(e) => setMediaType(e.target.value)}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <FaPlus className="mr-2" /> Add Text Option
-            </button>
-            {textOptions.map((option, index) => (
-              <div key={index} className="mt-2 flex flex-wrap">
-                <input
-                  type="text"
-                  placeholder="Option name"
-                  value={option.name}
-                  onChange={(e) =>
-                    handleTextOptionChange(index, 'name', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Option price"
-                  value={option.price}
-                  onChange={(e) =>
-                    handleTextOptionChange(index, 'price', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Option description"
-                  value={option.description}
-                  onChange={(e) =>
-                    handleTextOptionChange(index, 'description', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => handleDeleteTextOption(index)}
-                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            ))}
+              <option value="none">None</option>
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+              <option value="both">Both</option>
+            </select>
           </div>
           <div>
             <input

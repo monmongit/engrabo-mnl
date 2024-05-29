@@ -1,23 +1,23 @@
-import axios from 'axios';
-import { server } from '../../server';
-import { toast } from 'react-toastify';
+import axios from "axios";
+import { server } from "../../server";
+import { toast } from "react-toastify";
 
 // load user
 export const loadUser = () => async (dispatch) => {
   try {
     dispatch({
-      type: 'LoadUserRequest',
+      type: "LoadUserRequest",
     });
     const { data } = await axios.get(`${server}/user/getuser`, {
       withCredentials: true,
     });
     dispatch({
-      type: 'LoadUserSuccess',
+      type: "LoadUserSuccess",
       payload: data.user,
     });
   } catch (error) {
     dispatch({
-      type: 'LoadUserFail',
+      type: "LoadUserFail",
       payload: error.response.data.message,
     });
   }
@@ -27,19 +27,19 @@ export const loadUser = () => async (dispatch) => {
 export const loadAdmin = () => async (dispatch) => {
   try {
     dispatch({
-      type: 'LoadAdminRequest',
+      type: "LoadAdminRequest",
     });
     const { data } = await axios.get(`${server}/admin/getAdmin`, {
       withCredentials: true,
     });
     console.log(data);
     dispatch({
-      type: 'LoadAdminSuccess',
+      type: "LoadAdminSuccess",
       payload: data.admin,
     });
   } catch (error) {
     dispatch({
-      type: 'LoadAdminFail',
+      type: "LoadAdminFail",
       payload: error.response.data.message,
     });
   }
@@ -50,7 +50,7 @@ export const updateUserInformation =
   (name, email, phoneNumber, password) => async (dispatch) => {
     try {
       dispatch({
-        type: 'updateUserInfoRequest',
+        type: "updateUserInfoRequest",
       });
 
       const { data } = await axios.put(
@@ -64,22 +64,22 @@ export const updateUserInformation =
         {
           withCredentials: true,
           headers: {
-            'Access-Control-Allow-Credentials': true,
+            "Access-Control-Allow-Credentials": true,
           },
         }
       );
 
       dispatch({
-        type: 'updateUserInfoSuccess',
+        type: "updateUserInfoSuccess",
         payload: data.user,
       });
-      toast.success('Your information updated successfully!');
+      toast.success("Your information updated successfully!");
     } catch (error) {
       dispatch({
-        type: 'updateUserInfoFailed',
+        type: "updateUserInfoFailed",
         payload: error.response.data.message,
       });
-      toast.error('Please input your correct password!');
+      toast.error("Please input your correct password!");
     }
   };
 
@@ -89,7 +89,7 @@ export const updateUserAddress =
   async (dispatch) => {
     try {
       dispatch({
-        type: 'updateUserAddressRequest',
+        type: "updateUserAddressRequest",
       });
 
       const { data } = await axios.put(
@@ -107,15 +107,15 @@ export const updateUserAddress =
       );
 
       dispatch({
-        type: 'updateUserAddressSuccess',
+        type: "updateUserAddressSuccess",
         payload: {
-          successMessage: 'User address updated successfully!',
+          successMessage: "User address updated successfully!",
           user: data.user,
         },
       });
     } catch (error) {
       dispatch({
-        type: 'updateUserAddressFailed',
+        type: "updateUserAddressFailed",
         payload: error.response.data.message,
       });
     }
@@ -123,22 +123,22 @@ export const updateUserAddress =
 
 // Delete User Address
 export const deleteUserAddress = (id) => async (dispatch) => {
-  dispatch({ type: 'deleteUserAddressRequest' });
+  dispatch({ type: "deleteUserAddressRequest" });
   try {
     const { data } = await axios.delete(
       `${server}/user/delete-user-address/${id}`,
       { withCredentials: true }
     );
     dispatch({
-      type: 'deleteUserAddressSuccess',
+      type: "deleteUserAddressSuccess",
       payload: {
-        successMessage: 'Address deleted successfully!',
+        successMessage: "Address deleted successfully!",
         user: data.user,
       },
     });
   } catch (error) {
     dispatch({
-      type: 'deleteUserAddressFailed',
+      type: "deleteUserAddressFailed",
       payload: error.response.data.message,
     });
   }

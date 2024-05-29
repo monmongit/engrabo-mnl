@@ -57,7 +57,6 @@ router.post(
     }
   })
 );
-
 // Get all Products
 router.get(
   '/get-all-products-admin/:id',
@@ -305,6 +304,7 @@ router.put(
       const updatedProductData = {
         name: req.body.name,
         description: req.body.description,
+        details: req.body.details,
         category: req.body.category,
         tags: req.body.tags,
         grossPrice: req.body.grossPrice,
@@ -313,12 +313,9 @@ router.put(
         stock: req.body.stock,
         images,
         instructions: req.body.instructions,
-        dropdowns: req.body.dropdowns,
         sizes: req.body.sizes,
-        colors: req.body.colors,
+        engravings: req.body.engravings,
         mediaType: req.body.mediaType,
-        imageOptions: req.body.imageOptions,
-        textOptions: req.body.textOptions,
       };
 
       const updatedProduct = await Product.findByIdAndUpdate(

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "../components/Layout/Header";
 import Footer from "../components/Layout/Footer";
 import styles from "../styles/style";
-import Loader from "../components/Layout/Loader";
+import team from "../assets/Logo/team.jpeg"
 
 const AboutPage = () => {
   return (
@@ -46,7 +46,7 @@ const About = () => {
             <div class="relative w-full max-w-xs mt-4 mb-10 mx-auto md:ml-auto">
               <img
                 class="ml-auto"
-                src="https://cdn.rareblocks.xyz/collection/celebration/images/features/1/person.jpg"
+                src={team}
                 alt=""
               />
               <img

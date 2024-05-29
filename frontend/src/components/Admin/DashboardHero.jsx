@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { AiOutlineArrowRight } from 'react-icons/ai';
-import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllOrdersOfAdmin } from '../../redux/action/order';
-import { getAllProductsAdmin } from '../../redux/action/product';
-import { getAllUsers } from '../../redux/action/user';
-import { Button, MenuItem, Select } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import { IoBagHandle, IoPieChart, IoPeople, IoCart } from 'react-icons/io5';
-import Chart from 'react-apexcharts';
+import React, { useEffect, useState } from "react";
+import { AiOutlineArrowRight } from "react-icons/ai";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllOrdersOfAdmin } from "../../redux/action/order";
+import { getAllProductsAdmin } from "../../redux/action/product";
+import { getAllUsers } from "../../redux/action/user";
+import { Button, MenuItem, Select } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import { IoBagHandle, IoPieChart, IoPeople, IoCart } from "react-icons/io5";
+import Chart from "react-apexcharts";
 
 const DashboardHero = () => {
   const dispatch = useDispatch();
@@ -17,8 +17,8 @@ const DashboardHero = () => {
   const { usersList } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
   const [deliveredOrder, setDeliveredOrder] = useState(null);
-  const [selectedMonth1, setSelectedMonth1] = useState('');
-  const [selectedMonth2, setSelectedMonth2] = useState('');
+  const [selectedMonth1, setSelectedMonth1] = useState("");
+  const [selectedMonth2, setSelectedMonth2] = useState("");
   const [comparisonData, setComparisonData] = useState(null);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const DashboardHero = () => {
 
   useEffect(() => {
     const orderData =
-      orders && orders.filter((item) => item.status === 'Delivered');
+      orders && orders.filter((item) => item.status === "Delivered");
     setDeliveredOrder(orderData);
   }, [orders]);
 
@@ -58,14 +58,14 @@ const DashboardHero = () => {
   }, [selectedMonth1, selectedMonth2, orders, products]);
 
   const computeComparisonData = (month, orders, products) => {
-    const [year, monthIndex] = month.split('-');
+    const [year, monthIndex] = month.split("-");
     const sales = orders
       .filter((order) => {
         const paidAt = new Date(order.paidAt);
         return (
           paidAt.getFullYear() === parseInt(year) &&
           paidAt.getMonth() === parseInt(monthIndex) &&
-          order.status === 'Delivered'
+          order.status === "Delivered"
         );
       })
       .reduce((acc, order) => acc + order.totalPrice, 0);
@@ -78,7 +78,29 @@ const DashboardHero = () => {
           createdAt.getMonth() === parseInt(monthIndex)
         );
       })
-      .reduce((acc, product) => acc + product.stock * product.grossPrice, 0);
+      .reduce((acc, product) => {
+        let productExpense = 0;
+        if (
+          (product.sizes && product.sizes.length > 0) ||
+          (product.engravings && product.engravings.length > 0)
+        ) {
+          const sizeExpenses = product.sizes.reduce(
+            (sizeAcc, size) =>
+              sizeAcc + (size.stock || 0) * (size.grossPrice || 0),
+            0
+          );
+          const engravingExpenses = product.engravings.reduce(
+            (engravingAcc, engraving) =>
+              engravingAcc +
+              (engraving.stock || 0) * (engraving.grossPrice || 0),
+            0
+          );
+          productExpense = sizeExpenses + engravingExpenses;
+        } else {
+          productExpense = (product.stock || 0) * (product.grossPrice || 0);
+        }
+        return acc + productExpense;
+      }, 0);
 
     const ordersCount = orders.filter((order) => {
       const paidAt = new Date(order.paidAt);
@@ -93,7 +115,7 @@ const DashboardHero = () => {
       return (
         paidAt.getFullYear() === parseInt(year) &&
         paidAt.getMonth() === parseInt(monthIndex) &&
-        order.status === 'Delivered'
+        order.status === "Delivered"
       );
     }).length;
 
@@ -126,9 +148,9 @@ const DashboardHero = () => {
   };
 
   const formatMonthYear = (month) => {
-    const [year, monthIndex] = month.split('-');
+    const [year, monthIndex] = month.split("-");
     const date = new Date(year, monthIndex, 1);
-    return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+    return date.toLocaleString("en-US", { month: "long", year: "numeric" });
   };
 
   const renderComparisonCharts = () => {
@@ -143,62 +165,62 @@ const DashboardHero = () => {
 
     const dailySalesExpensesSeries = [
       {
-        name: formatMonthYear(selectedMonth1) + ' Sales',
+        name: formatMonthYear(selectedMonth1) + " Sales",
         data: dailySeries1.sales,
       },
       {
-        name: formatMonthYear(selectedMonth1) + ' Expenses',
+        name: formatMonthYear(selectedMonth1) + " Expenses",
         data: dailySeries1.expenses,
       },
       {
-        name: formatMonthYear(selectedMonth2) + ' Sales',
+        name: formatMonthYear(selectedMonth2) + " Sales",
         data: dailySeries2.sales,
       },
       {
-        name: formatMonthYear(selectedMonth2) + ' Expenses',
+        name: formatMonthYear(selectedMonth2) + " Expenses",
         data: dailySeries2.expenses,
       },
     ];
 
     const dailyOrdersDeliveredSeries = [
       {
-        name: formatMonthYear(selectedMonth1) + ' Total Orders',
+        name: formatMonthYear(selectedMonth1) + " Total Orders",
         data: dailySeries1.orders,
       },
       {
-        name: formatMonthYear(selectedMonth1) + ' Delivered Orders',
+        name: formatMonthYear(selectedMonth1) + " Delivered Orders",
         data: dailySeries1.delivered,
       },
       {
-        name: formatMonthYear(selectedMonth2) + ' Total Orders',
+        name: formatMonthYear(selectedMonth2) + " Total Orders",
         data: dailySeries2.orders,
       },
       {
-        name: formatMonthYear(selectedMonth2) + ' Delivered Orders',
+        name: formatMonthYear(selectedMonth2) + " Delivered Orders",
         data: dailySeries2.delivered,
       },
     ];
 
     const chartOptions = {
       chart: {
-        type: 'line',
+        type: "line",
       },
       stroke: {
         width: 2,
-        curve: 'smooth',
+        curve: "smooth",
       },
       xaxis: {
         categories: dailyCategories,
       },
       yaxis: {
         title: {
-          text: 'Amount (₱)',
+          text: "Amount (₱)",
         },
       },
       tooltip: {
         y: {
           formatter: function (val) {
-            return '₱' + val.toFixed(2);
+            return '₱' + (val ? val.toFixed(2) : '0.00');
           },
         },
       },
@@ -236,7 +258,7 @@ const DashboardHero = () => {
   };
 
   const generateDailyCategories = (month) => {
-    const [year, monthIndex] = month.split('-');
+    const [year, monthIndex] = month.split("-");
     const date = new Date(year, monthIndex, 1);
     const daysInMonth = new Date(
       date.getFullYear(),
@@ -245,13 +267,13 @@ const DashboardHero = () => {
     ).getDate();
     const categories = [];
     for (let i = 1; i <= daysInMonth; i++) {
-      categories.push(`${year}-${parseInt(monthIndex) + 1}-${i}`);
+      categories.push(`${i}`);
     }
     return categories;
   };
 
   const generateDailySeries = (month, orders, products) => {
-    const [year, monthIndex] = month.split('-');
+    const [year, monthIndex] = month.split("-");
     const salesData = [];
     const expensesData = [];
     const ordersData = [];
@@ -266,7 +288,7 @@ const DashboardHero = () => {
             paidAt.getFullYear() === parseInt(year) &&
             paidAt.getMonth() === parseInt(monthIndex) &&
             paidAt.getDate() === i &&
-            order.status === 'Delivered'
+            order.status === "Delivered"
           );
         })
         .reduce((acc, order) => acc + order.totalPrice, 0);
@@ -281,7 +303,29 @@ const DashboardHero = () => {
             createdAt.getDate() === i
           );
         })
-        .reduce((acc, product) => acc + product.stock * product.grossPrice, 0);
+        .reduce((acc, product) => {
+          let productExpense = 0;
+          if (
+            (product.sizes && product.sizes.length > 0) ||
+            (product.engravings && product.engravings.length > 0)
+          ) {
+            const sizeExpenses = product.sizes.reduce(
+              (sizeAcc, size) =>
+                sizeAcc + (size.stock || 0) * (size.grossPrice || 0),
+              0
+            );
+            const engravingExpenses = product.engravings.reduce(
+              (engravingAcc, engraving) =>
+                engravingAcc +
+                (engraving.stock || 0) * (engraving.grossPrice || 0),
+              0
+            );
+            productExpense = sizeExpenses + engravingExpenses;
+          } else {
+            productExpense = (product.stock || 0) * (product.grossPrice || 0);
+          }
+          return acc + productExpense;
+        }, 0);
       expensesData.push(dayExpenses);
 
       const dayOrders = orders.filter((order) => {
@@ -300,7 +344,7 @@ const DashboardHero = () => {
           paidAt.getFullYear() === parseInt(year) &&
           paidAt.getMonth() === parseInt(monthIndex) &&
           paidAt.getDate() === i &&
-          order.status === 'Delivered'
+          order.status === "Delivered"
         );
       }).length;
       deliveredData.push(dayDeliveredOrders);
@@ -315,19 +359,22 @@ const DashboardHero = () => {
   };
 
   return (
-    <div className="w-full p-8">
-      <h3 className="text-[22px] font-Poppins pb-2">Overview</h3>
+    <div className="w-full p-2">
+      <div className="mt-2 p-4 bg-[#171203] mb-4 rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+        <h3 className="text-[22px] font-Poppins pb-2 text-white">Overview</h3>
+      </div>
+
       <div className="data-drid-analytic grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <BoxWrapper>
           <div className="rounded-full h-12 w-12 flex items-center justify-center bg-sky-500">
             <IoBagHandle className="text-2xl text-white" />
           </div>
-          <div className="pl-4">
-            <span className="text-sm text-gray-500 font-light">
+          <div className="pl-4 flex flex-col">
+            <span className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-500 font-light mb-1">
               Total Sales
             </span>
             <div className="flex items-center">
-              <strong className="text-xl text-gray-700 font-semibold">
+              <strong className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-semibold">
                 ₱ {availableBalance.toFixed(2)}
               </strong>
             </div>
@@ -337,12 +384,12 @@ const DashboardHero = () => {
           <div className="rounded-full h-12 w-12 flex items-center justify-center bg-orange-600">
             <IoPieChart className="text-2xl text-white" />
           </div>
-          <div className="pl-4">
-            <span className="text-sm text-gray-500 font-light">
+          <div className="pl-4 flex flex-col">
+            <span className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-500 font-light mb-1">
               Total Expenses
             </span>
             <div className="flex items-center">
-              <strong className="text-xl text-gray-700 font-semibold">
+              <strong className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-semibold">
                 ₱ {totalExpenses.toFixed(2)}
               </strong>
             </div>
@@ -353,12 +400,12 @@ const DashboardHero = () => {
             <div className="rounded-full h-12 w-12 flex items-center justify-center bg-yellow-400">
               <IoPeople className="text-2xl text-white" />
             </div>
-            <div className="pl-4">
-              <span className="text-sm text-gray-500 font-light">
+            <div className="pl-4 flex flex-col">
+              <span className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-500 font-light mb-1">
                 Total Customers
               </span>
               <div className="flex items-center">
-                <strong className="text-xl text-gray-700 font-semibold">
+                <strong className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-semibold">
                   {usersList && usersList.length}
                 </strong>
               </div>
@@ -370,12 +417,12 @@ const DashboardHero = () => {
             <div className="rounded-full h-12 w-12 flex items-center justify-center bg-green-600">
               <IoCart className="text-2xl text-white" />
             </div>
-            <div className="pl-4">
-              <span className="text-sm text-gray-500 font-light">
+            <div className="pl-4 flex flex-col">
+              <span className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-500 font-light mb-1">
                 Total Orders
               </span>
               <div className="flex items-center">
-                <strong className="text-xl text-gray-700 font-semibold">
+                <strong className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-semibold">
                   {orders && orders.length}
                 </strong>
               </div>
@@ -386,15 +433,20 @@ const DashboardHero = () => {
 
       <br />
       <div className="transaction-analytic">{displayAnalytics}</div>
-      <h3 className="text-[22px] font-Poppins pb-2 text-[171203]">
-        Compare Data
-      </h3>
-      <div className="flex items-center justify-between">
+
+      <div className="mt-4 p-4 bg-[#171203] mb-4 rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+        <h3 className="text-[22px] font-Poppins pb-2 text-white">
+          {" "}
+          Compare Data
+        </h3>
+      </div>
+
+      <div className="flex flex-col sm:flex-row items-center justify-between">
         <Select
           value={selectedMonth1}
           onChange={handleMonthChange1}
           displayEmpty
-          className="mr-4"
+          className="mb-2 sm:mr-4 sm:mb-0"
         >
           <MenuItem value="" disabled>
             Select Month
@@ -409,7 +461,7 @@ const DashboardHero = () => {
           value={selectedMonth2}
           onChange={handleMonthChange2}
           displayEmpty
-          className="mr-4"
+          className="mb-2 sm:mr-4 sm:mb-0"
         >
           <MenuItem value="" disabled>
             Select Month
@@ -425,16 +477,18 @@ const DashboardHero = () => {
       {comparisonData && (
         <div className="comparison-results mt-4">
           <h4 className="text-lg font-semibold">Comparison Results</h4>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <BoxWrapper>
-              <div className="flex w-full">
-                <div className="flex-1">
-                  <span className="text-sm text-gray-500 font-light">
+              <div className="flex flex-col md:flex-row w-full">
+                <div className="md:w-1/2">
+                  <span className="text-sm  text-gray-500 font-light">
                     Total Sales of {formatMonthYear(selectedMonth1)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      ₱ {comparisonData.data1.sales.toFixed(2)}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        ₱ {comparisonData.data1.sales.toFixed(2)}
+                      </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
@@ -442,27 +496,33 @@ const DashboardHero = () => {
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      ₱ {comparisonData.data2.sales.toFixed(2)}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        ₱ {comparisonData.data2.sales.toFixed(2)}
+                      </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
-                    Difference of {formatMonthYear(selectedMonth1)} and{' '}
+                    Difference of {formatMonthYear(selectedMonth1)} and{" "}
                     {formatMonthYear(selectedMonth2)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      ₱ {comparisonData.differences.salesDifference.toFixed(2)}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        ₱{" "}
+                        {comparisonData.differences.salesDifference.toFixed(2)}
+                      </span>
                     </strong>
                   </div>
                 </div>
-                <div className="w-1/2">
-                  <h4 className="text-lg font-semibold mb-4 ml-10">
+                <div className="md:w-1/2 md:text-right mt-4 md:mt-0">
+                  <h4 className="text-lg font-semibold mb-4">
                     Total Sales Comparison
                   </h4>
+
                   <Chart
                     options={{
                       chart: {
-                        type: 'pie',
+                        type: "pie",
                       },
                       labels: [
                         formatMonthYear(selectedMonth1),
@@ -480,15 +540,18 @@ const DashboardHero = () => {
                 </div>
               </div>
             </BoxWrapper>
+
             <BoxWrapper>
-              <div className="flex w-full">
-                <div className="flex-1">
+              <div className="flex flex-col md:flex-row w-full">
+                <div className="md:w-1/2">
                   <span className="text-sm text-gray-500 font-light">
                     Total Expenses of {formatMonthYear(selectedMonth1)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      ₱ {comparisonData.data1.expenses.toFixed(2)}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        ₱ {comparisonData.data1.expenses.toFixed(2)}
+                      </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
@@ -496,28 +559,34 @@ const DashboardHero = () => {
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      ₱ {comparisonData.data2.expenses.toFixed(2)}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        ₱ {comparisonData.data2.expenses.toFixed(2)}
+                      </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
-                    Difference of {formatMonthYear(selectedMonth1)} and{' '}
+                    Difference of {formatMonthYear(selectedMonth1)} and{" "}
                     {formatMonthYear(selectedMonth2)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      ₱{' '}
-                      {comparisonData.differences.expensesDifference.toFixed(2)}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        ₱{" "}
+                        {comparisonData.differences.expensesDifference.toFixed(
+                          2
+                        )}
+                      </span>
                     </strong>
                   </div>
                 </div>
-                <div className="w-1/2">
+                <div className="md:w-1/2 md:text-right mt-4 md:mt-0">
                   <h4 className="text-lg font-semibold mb-4 ml-10">
                     Total Expenses Comparison
                   </h4>
                   <Chart
                     options={{
                       chart: {
-                        type: 'pie',
+                        type: "pie",
                       },
                       labels: [
                         formatMonthYear(selectedMonth1),
@@ -536,14 +605,16 @@ const DashboardHero = () => {
               </div>
             </BoxWrapper>
             <BoxWrapper>
-              <div className="flex w-full">
-                <div className="flex-1">
+              <div className="flex flex-col md:flex-row w-full">
+                <div className="md:w-1/2">
                   <span className="text-sm text-gray-500 font-light">
                     Total Orders of {formatMonthYear(selectedMonth1)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      {comparisonData.data1.ordersCount}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        {comparisonData.data1.ordersCount}
+                      </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
@@ -551,27 +622,31 @@ const DashboardHero = () => {
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      {comparisonData.data2.ordersCount}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        {comparisonData.data2.ordersCount}
+                      </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
-                    Difference of {formatMonthYear(selectedMonth1)} and{' '}
+                    Difference of {formatMonthYear(selectedMonth1)} and{" "}
                     {formatMonthYear(selectedMonth2)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      {comparisonData.differences.ordersCountDifference}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        {comparisonData.differences.ordersCountDifference}
+                      </span>
                     </strong>
                   </div>
                 </div>
-                <div className="w-1/2">
+                <div className="md:w-1/2 md:text-right mt-4 md:mt-0">
                   <h4 className="text-lg font-semibold mb-4 ml-10">
                     Total Orders Comparison
                   </h4>
                   <Chart
                     options={{
                       chart: {
-                        type: 'pie',
+                        type: "pie",
                       },
                       labels: [
                         formatMonthYear(selectedMonth1),
@@ -590,14 +665,16 @@ const DashboardHero = () => {
               </div>
             </BoxWrapper>
             <BoxWrapper>
-              <div className="flex w-full">
-                <div className="flex-1">
+              <div className="flex flex-col md:flex-row w-full">
+                <div className="md:w-1/2">
                   <span className="text-sm text-gray-500 font-light">
                     Delivered Orders of {formatMonthYear(selectedMonth1)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      {comparisonData.data1.deliveredOrdersCount}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        {comparisonData.data1.deliveredOrdersCount}
+                      </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
@@ -605,30 +682,34 @@ const DashboardHero = () => {
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      {comparisonData.data2.deliveredOrdersCount}
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        {comparisonData.data2.deliveredOrdersCount}
+                      </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
-                    Difference of {formatMonthYear(selectedMonth1)} and{' '}
+                    Difference of {formatMonthYear(selectedMonth1)} and{" "}
                     {formatMonthYear(selectedMonth2)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
-                      {
-                        comparisonData.differences
-                          .deliveredOrdersCountDifference
-                      }
+                      <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+                        {
+                          comparisonData.differences
+                            .deliveredOrdersCountDifference
+                        }
+                      </span>
                     </strong>
                   </div>
                 </div>
-                <div className="w-1/2">
+                <div className="md:w-1/2 md:text-right mt-4 md:mt-0">
                   <h4 className="text-lg font-semibold mb-4 ml-10">
                     Delivered Orders Comparison
                   </h4>
                   <Chart
                     options={{
                       chart: {
-                        type: 'pie',
+                        type: "pie",
                       },
                       labels: [
                         formatMonthYear(selectedMonth1),
@@ -650,10 +731,16 @@ const DashboardHero = () => {
         </div>
       )}
 
-      <h3 className="text-[22px] font-Poppins pb-2 text-[171203]">
-        Latest Orders
-      </h3>
-      <div className="w-full min-h-[40vh] bg-white rounded">
+      <div className="mt-4 p-4 bg-[#171203] mb-4 rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+        <h3 className="text-[22px] font-Poppins pb-2 text-white">
+          {" "}
+          Latest Orders
+        </h3>
+      </div>
+      <div
+        className="w-full min-h-[40vh] bg-white rounded "
+        style={{ marginBottom: "100px" }}
+      >
         <DataGrid
           rows={row}
           columns={columns}
@@ -681,8 +768,23 @@ const computeTotalExpenses = (products) => {
   if (!products || products.length === 0) {
     return 0;
   }
+
   const totalExpenses = products.reduce((total, product) => {
-    const productExpense = product.stock * product.grossPrice;
+    let productExpense = 0;
+    if (product.sizes && product.sizes.length > 0) {
+      productExpense = product.sizes.reduce(
+        (sizeAcc, size) => sizeAcc + (size.stock || 0) * (size.grossPrice || 0),
+        0
+      );
+    } else if (product.engravings && product.engravings.length > 0) {
+      productExpense = product.engravings.reduce(
+        (engravingAcc, engraving) =>
+          engravingAcc + (engraving.stock || 0) * (engraving.grossPrice || 0),
+        0
+      );
+    } else {
+      productExpense = (product.stock || 0) * (product.grossPrice || 0);
+    }
     return total + productExpense;
   }, 0);
 
@@ -691,43 +793,44 @@ const computeTotalExpenses = (products) => {
 
 const ordersDashboard = (orders) => {
   const columns = [
-    { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
+    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
     {
-      field: 'status',
-      headerName: 'Status',
+      field: "status",
+      headerName: "Status",
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.row.status === 'Delivered' ? 'greenColor' : 'redColor';
+        return params.row.status === "Delivered" ? "greenColor" : "redColor";
       },
     },
     {
-      field: 'itemsQty',
-      headerName: 'Items Qty',
-      type: 'number',
+      field: "itemsQty",
+      headerName: "Items Qty",
+      type: "number",
       minWidth: 130,
       flex: 0.7,
     },
     {
-      field: 'total',
-      headerName: 'Total',
-      type: 'number',
+      field: "total",
+      headerName: "Total",
+      type: "number",
       minWidth: 130,
       flex: 0.8,
     },
     {
-      field: ' ',
+      field: " ",
       flex: 1,
       minWidth: 150,
-      headerName: '',
-      type: 'number',
+      headerName: "",
+      type: "number",
       sortable: false,
       renderCell: (params) => {
         return (
           <>
             <Link to={`/order/${params.id}`}>
-              <Button>
+              <Button variant="contained" color="secondary">
                 <AiOutlineArrowRight size={20} />
+                Check
               </Button>
             </Link>
           </>
@@ -743,7 +846,7 @@ const ordersDashboard = (orders) => {
       row.push({
         id: item._id,
         itemsQty: item.cart.reduce((acc, item) => acc + item.qty, 0),
-        total: '₱ ' + item.totalPrice,
+        total: "₱ " + item.totalPrice,
         status: item.status,
       });
     });
@@ -753,7 +856,7 @@ const ordersDashboard = (orders) => {
 
 const transactionChart = (orders, products) => {
   if (!orders || !orders.length) {
-    console.log('orders data not available');
+    console.log("orders data not available");
   }
 
   const currentDate = new Date();
@@ -777,7 +880,7 @@ const transactionChart = (orders, products) => {
     const year = paidAt.getFullYear();
     const key = `${year}-${month}`;
 
-    if (order.status === 'Delivered') {
+    if (order.status === "Delivered") {
       monthlySales[key].sales += order.totalPrice;
       monthlySales[key].delivered_orders++;
     }
@@ -790,7 +893,21 @@ const transactionChart = (orders, products) => {
     const month = createdAt.getMonth();
     const year = createdAt.getFullYear();
     const key = `${year}-${month}`;
-    const productExpenses = product.stock * product.grossPrice;
+    let productExpenses = 0;
+    if (product.sizes && product.sizes.length > 0) {
+      productExpenses = product.sizes.reduce(
+        (sizeAcc, size) => sizeAcc + (size.stock || 0) * (size.grossPrice || 0),
+        0
+      );
+    } else if (product.engravings && product.engravings.length > 0) {
+      productExpenses = product.engravings.reduce(
+        (engravingAcc, engraving) =>
+          engravingAcc + (engraving.stock || 0) * (engraving.grossPrice || 0),
+        0
+      );
+    } else {
+      productExpenses = (product.stock || 0) * (product.grossPrice || 0);
+    }
     if (!monthlyExpenses[key]) {
       monthlyExpenses[key] = {
         month: month,
@@ -803,15 +920,15 @@ const transactionChart = (orders, products) => {
   });
 
   const formattedData = Object.values(monthlySales).map((item) => ({
-    month: new Date(item.year, item.month, 1).toLocaleString('en-US', {
-      month: 'long',
+    month: new Date(item.year, item.month, 1).toLocaleString("en-US", {
+      month: "long",
     }),
     sales: item.sales.toFixed(2),
     orders: item.orders,
     delivered_orders: item.delivered_orders,
     expenses: monthlyExpenses[`${item.year}-${item.month}`]
       ? monthlyExpenses[`${item.year}-${item.month}`].expenses.toFixed(2)
-      : 0,
+      : '0.00',
   }));
 
   return (
@@ -827,28 +944,48 @@ const MyChartComponentSales = (formattedData) => {
   const salesData = formattedData.map((item) => parseFloat(item.sales));
   const expensesData = formattedData.map((item) => parseFloat(item.expenses));
 
+  const [fontSize, setFontSize] = useState("18px");
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 400) {
+        setFontSize("12px");
+      } else if (window.innerWidth < 576) {
+        setFontSize("14px");
+      } else if (window.innerWidth < 768) {
+        setFontSize("16px");
+      } else {
+        setFontSize("18px");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Call handler right away so state gets updated with initial window size
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const options = {
     chart: {
-      type: 'bar',
+      type: "bar",
     },
     title: {
-      text: 'Sales and Expenses By Month',
-      align: 'center',
+      text: "Sales and Expenses By Month",
+      align: "center",
       margin: 10,
       offsetX: 0,
       offsetY: 0,
       floating: false,
       style: {
-        fontSize: '18px',
-        fontWeight: 'bold',
-        color: '#333',
+        fontSize: fontSize,
+        fontWeight: "bold",
+        color: "#333",
       },
     },
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: '55%',
-        endingShape: 'rounded',
+        columnWidth: "55%",
+        endingShape: "rounded",
       },
     },
     dataLabels: {
@@ -857,20 +994,22 @@ const MyChartComponentSales = (formattedData) => {
     stroke: {
       show: true,
       width: 2,
-      colors: ['transparent'],
+      colors: ["transparent"],
     },
     xaxis: {
       categories: categories,
     },
     yaxis: {
       title: {
-        text: 'Amount (₱)',
+        text: "Amount (₱)",
       },
     },
     tooltip: {
       y: {
         formatter: function (val) {
-          return '₱' + val.toFixed(2);
+
+          return '₱' + (val ? val.toFixed(2) : '0.00');
+
         },
       },
     },
@@ -878,14 +1017,14 @@ const MyChartComponentSales = (formattedData) => {
 
   const series = [
     {
-      name: 'Sales',
+      name: "Sales",
       data: salesData,
-      color: '#228B22',
+      color: "#228B22",
     },
     {
-      name: 'Expenses',
+      name: "Expenses",
       data: expensesData,
-      color: '#B22222',
+      color: "#B22222",
     },
   ];
 
@@ -904,35 +1043,55 @@ const MyChartComponentSales = (formattedData) => {
 
 const MyChartComponentOrders = (formattedData) => {
   const categories = formattedData.map((item) => item.month);
-  const total_orders = formattedData.map((item) =>
-    item.orders.toLocaleString()
-  );
+  const total_orders = formattedData.map((item) => parseFloat(item.orders));
   const delivered_orders = formattedData.map((item) =>
-    item.delivered_orders.toLocaleString()
+    parseFloat(item.delivered_orders)
   );
+
+  //RESPONSIVENESS OF TITLE CHART
+  const [fontSize, setFontSize] = useState("18px");
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 400) {
+        setFontSize("12px");
+      } else if (window.innerWidth < 576) {
+        setFontSize("14px");
+      } else if (window.innerWidth < 768) {
+        setFontSize("16px");
+      } else {
+        setFontSize("18px");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Call handler right away so state gets updated with initial window size
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const options = {
     chart: {
-      type: 'bar',
+      type: "bar",
     },
     title: {
-      text: 'Total Orders and Delivered Orders By Month',
-      align: 'center',
+      text: "Total Orders and Delivered Orders By Month",
+      align: "center",
       margin: 10,
       offsetX: 0,
       offsetY: 0,
       floating: false,
       style: {
-        fontSize: '18px',
-        fontWeight: 'bold',
-        color: '#333',
+        fontSize: fontSize,
+        fontWeight: "bold",
+        color: "#333",
       },
     },
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: '55%',
-        endingShape: 'rounded',
+        columnWidth: "55%",
+        endingShape: "rounded",
       },
     },
     dataLabels: {
@@ -941,14 +1100,14 @@ const MyChartComponentOrders = (formattedData) => {
     stroke: {
       show: true,
       width: 2,
-      colors: ['transparent'],
+      colors: ["transparent"],
     },
     xaxis: {
       categories: categories,
     },
     yaxis: {
       title: {
-        text: '# of Orders',
+        text: "# of Orders",
       },
     },
     tooltip: {
@@ -962,19 +1121,19 @@ const MyChartComponentOrders = (formattedData) => {
 
   const series = [
     {
-      name: 'Total Orders',
+      name: "Total Orders",
       data: total_orders,
-      color: '#000080',
+      color: "#000080",
     },
     {
-      name: 'Delivered Orders',
+      name: "Delivered Orders",
       data: delivered_orders,
-      color: '#FFA500',
+      color: "#FFA500",
     },
   ];
 
   return (
-    <div className="bg-white rounded-sm p-5 mt-5">
+    <div className="bg-white rounded-sm p-5 mt-5 ">
       <Chart
         options={options}
         series={series}
@@ -993,8 +1152,8 @@ const getMonthOptions = () => {
 
   for (let year = currentYear - 5; year <= currentYear; year++) {
     for (let month = 0; month < 12; month++) {
-      const monthLabel = new Date(year, month, 1).toLocaleString('en-US', {
-        month: 'long',
+      const monthLabel = new Date(year, month, 1).toLocaleString("en-US", {
+        month: "long",
       });
       options.push({
         value: `${year}-${month}`,

@@ -20,6 +20,8 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import UserCreateDesign from '../UserCreateDesign';
 
+// import UserOrderOptions from './UserOrderOptions';
+
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
@@ -29,8 +31,10 @@ const ProductDetails = ({ data }) => {
   const [insResponse, setInsResponse] = useState('');
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedSize, setSelectedSize] = useState(null);
-  const [selectedImageOption, setSelectedImageOption] = useState(null);
-  const [selectedTextOption, setSelectedTextOption] = useState(null);
+  const [selectedEngraving, setSelectedEngraving] = useState(null);
+  const [drawingInfo, setDrawingInfo] = useState('');
+  const [open, setOpen] = useState(false);
+  const [urls, setUrls] = useState([]);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
@@ -53,7 +57,9 @@ const ProductDetails = ({ data }) => {
   };
 
   const incrementCount = () => {
-    if (data?.stock <= count) {
+    const stock =
+      selectedSize?.stock ?? selectedEngraving?.stock ?? data?.stock;
+    if (stock <= count) {
       toast.error(
         `${data?.name} stock is limited! Please contact us to reserve your order!`
       );
@@ -111,19 +117,12 @@ const ProductDetails = ({ data }) => {
       isItemExists = cart.find(
         (i) => i._id === id && i.size && i.size.name === selectedSize.name
       );
-    } else if (selectedImageOption) {
+    } else if (selectedEngraving) {
       isItemExists = cart.find(
         (i) =>
           i._id === id &&
-          i.imageOption &&
-          i.imageOption.name === selectedImageOption.name
-      );
-    } else if (selectedTextOption) {
-      isItemExists = cart.find(
-        (i) =>
-          i._id === id &&
-          i.textOption &&
-          i.textOption.name === selectedTextOption.name
+          i.engraving &&
+          i.engraving.type === selectedEngraving.type
       );
     }
 
@@ -132,7 +131,9 @@ const ProductDetails = ({ data }) => {
         `${data.name} with the selected option is already in the cart!`
       );
     } else {
-      if (data.stock < 1) {
+      const stock =
+        selectedSize?.stock ?? selectedEngraving?.stock ?? data?.stock;
+      if (stock < 1) {
         toast.error(
           `${data.name} stock is limited! Please contact us to reserve your order!`
         );
@@ -140,17 +141,15 @@ const ProductDetails = ({ data }) => {
         const cartData = {
           ...data,
           qty: count,
+          stock: stock,
           response: insResponse,
           options: selectedOptions,
           size: selectedSize, // Add selected size to cart data
-          imageOption: selectedImageOption, // Add selected image option to cart data
-          textOption: selectedTextOption, // Add selected text option to cart data
+          engraving: selectedEngraving, // Add selected engraving to cart data
           price: selectedSize
             ? selectedSize.price
-            : selectedImageOption
-            ? selectedImageOption.price
-            : selectedTextOption
-            ? selectedTextOption.price
+            : selectedEngraving
+            ? selectedEngraving.price
             : data.discountPrice > 0
             ? data.discountPrice
             : data.originalPrice,
@@ -170,20 +169,12 @@ const ProductDetails = ({ data }) => {
 
   const handleSizeChange = (size) => {
     setSelectedSize(size);
-    setSelectedImageOption(null);
-    setSelectedTextOption(null);
+    setSelectedEngraving(null); // Reset engraving if size is selected
   };
 
-  const handleImageOptionChange = (option) => {
-    setSelectedImageOption(option);
-    setSelectedSize(null);
-    setSelectedTextOption(null);
-  };
-
-  const handleTextOptionChange = (option) => {
-    setSelectedTextOption(option);
-    setSelectedSize(null);
-    setSelectedImageOption(null);
+  const handleEngravingChange = (engraving) => {
+    setSelectedEngraving(engraving);
+    setSelectedSize(null); // Reset size if engraving is selected
   };
 
   const totalReviewsLength =
@@ -212,7 +203,7 @@ const ProductDetails = ({ data }) => {
               <img
                 src={`${data && data.images[select]?.url}`}
                 alt=""
-                className=" h-[90%] w-[100%] rounded-md shadow-lg"
+                className=" shadow-lg w-full h-full aspect-square rounded-xl"
               />
 
               <div className="flex mt-4 space-x-2">
@@ -238,19 +229,25 @@ const ProductDetails = ({ data }) => {
 
             {/* Description of Product */}
             <div className="w-full md:w-1/2 pt-5 space-y-5">
-              {/* Image of Product Description */}
-              <h1 className={`${styles.productTitle} text-3xl font-bold`}>
-                {data.name}
-              </h1>
-              <p className="text-justify text-[#534723]">
-                {selectedSize
-                  ? selectedSize.description
-                  : selectedImageOption
-                  ? selectedImageOption.description
-                  : selectedTextOption
-                  ? selectedTextOption.description
-                  : data.description}
-              </p>
+              <>
+                {/* Image of Product Description */}
+                <h1 className={`${styles.productTitle}`}>
+                  <span class="mb-0.5 inline-block text-gray-500 text-base">
+                    {data.category}
+                  </span>
+
+                  <h2 class="text-2xl font-bold text-gray-800 lg:text-3xl">
+                    {data.name}
+                  </h2>
+                </h1>
+                <p className="text-[#534723] text-justify text-[17px] leading-8 pb-10 whitespace-pre-line">
+                  {selectedSize
+                    ? selectedSize.description
+                    : selectedEngraving
+                    ? selectedEngraving.description
+                    : data.description}
+                </p>
+              </>
 
               <div className="py-2 flex items-center justify-between">
                 {/* Price of Product */}
@@ -259,18 +256,15 @@ const ProductDetails = ({ data }) => {
                     ₱
                     {selectedSize
                       ? selectedSize.price
-                      : selectedImageOption
-                      ? selectedImageOption.price
-                      : selectedTextOption
-                      ? selectedTextOption.price
+                      : selectedEngraving
+                      ? selectedEngraving.price
                       : data.discountPrice > 0
                       ? data.discountPrice
                       : data.originalPrice}
                   </h5>
                   {data.discountPrice > 0 &&
                     !selectedSize &&
-                    !selectedImageOption &&
-                    !selectedTextOption && (
+                    !selectedEngraving && (
                       <h4
                         className={`${styles.price} text-xl line-through text-gray-500`}
                       >
@@ -282,13 +276,65 @@ const ProductDetails = ({ data }) => {
               <div className="flex justify-between items-center">
                 {/* Products Stock */}
                 <h4 className="font-[400] text-[#534723] font-Roboto">
-                  Stocks: {data.stock}
+                  Stocks:{' '}
+                  {selectedSize?.stock ??
+                    selectedEngraving?.stock ??
+                    data.stock}
                 </h4>
                 {/* Sold of Product */}
                 <span className="font-[400] text-[17px] text-[#b19b56]">
                   {data?.sold_out} sold
                 </span>
               </div>
+
+              {/* Sizes */}
+              {data.sizes && data.sizes.length > 0 && (
+                <div className="mt-4">
+                  <label className="block font-medium text-[#534723]">
+                    Sizes:
+                  </label>
+                  <div className="flex space-x-2">
+                    {data.sizes.map((size, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSizeChange(size)}
+                        className={`px-4 py-2 border rounded-md ${
+                          selectedSize && selectedSize.name === size.name
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-700'
+                        }`}
+                      >
+                        {size.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Engraving Options */}
+              {data.engravings && data.engravings.length > 0 && (
+                <div className="mt-4">
+                  <label className="block font-medium text-[#534723]">
+                    Engraving Options:
+                  </label>
+                  <div className="flex space-x-2">
+                    {data.engravings.map((engraving, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleEngravingChange(engraving)}
+                        className={`px-4 py-2 border rounded-md ${
+                          selectedEngraving &&
+                          selectedEngraving.type === engraving.type
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-700'
+                        }`}
+                      >
+                        {engraving.type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center mt-6 justify-between">
                 {/* Add and Dec number of a Product */}
@@ -334,7 +380,7 @@ const ProductDetails = ({ data }) => {
 
               {/* Cart Button */}
               <div
-                className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
+                className="flex items-center justify-center bg-gradient-to-r from-blue-400 to-blue-600 text-white font-semibold py-3 px-8 md:px-16 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-800 transition duration-300 ease-in-out mt-4 md:mt-0"
                 onClick={() => addToCartHandler(data._id)}
               >
                 <span className="flex items-center">
@@ -343,106 +389,30 @@ const ProductDetails = ({ data }) => {
               </div>
 
               {/* Create Design Button */}
-              <div
-                className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
-                onClick={() => createDesignHandler(data._id)}
-              >
-                <span className="flex items-center">
-                  Create Design <AiOutlineFontSize className="ml-1" />
-                </span>
-              </div>
-
-              {/* Sizes */}
-              {data.sizes && data.sizes.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Sizes:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.sizes.map((size, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleSizeChange(size)}
-                        className={`px-4 py-2 border rounded-md ${
-                          selectedSize && selectedSize.name === size.name
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
-                        }`}
-                      >
-                        {size.name}
-                      </button>
-                    ))}
-                  </div>
+              {data.mediaType !== 'none' && (
+                <div
+                  className="flex items-center justify-center bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-3 px-8 md:px-16 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-green-600 hover:to-green-800 transition duration-300 ease-in-out mt-4 md:mt-0"
+                  onClick={() => setOpen(true)}
+                >
+                  <span className="flex items-center">
+                    Create Your Own Design
+                    <AiOutlineFontSize className="ml-1" />
+                  </span>
                 </div>
               )}
 
-              {/* Image Options */}
-              {data.imageOptions && data.imageOptions.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Image Options:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.imageOptions.map((option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleImageOptionChange(option)}
-                        className={`px-4 py-2 border rounded-md ${
-                          selectedImageOption &&
-                          selectedImageOption.name === option.name
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
-                        }`}
-                      >
-                        {option.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Text Options */}
-              {data.textOptions && data.textOptions.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Text Options:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.textOptions.map((option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleTextOptionChange(option)}
-                        className={`px-4 py-2 border rounded-md ${
-                          selectedTextOption &&
-                          selectedTextOption.name === option.name
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
-                        }`}
-                      >
-                        {option.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Colors */}
-              {data.colors && data.colors.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Colors:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.colors.map((color, index) => (
-                      <span
-                        key={index}
-                        className="px-4 py-2 border rounded-md"
-                        style={{ backgroundColor: color }}
-                      >
-                        {color}
-                      </span>
-                    ))}
-                  </div>
+              {/* pops us the drawing page */}
+              {open && (
+                <div className="fixed inset-0 z-50 flex justify-center items-center">
+                  {/* <UserOrderOptions setOpen={setOpen} /> */}
+                  {
+                    <UserCreateDesign
+                      data={data}
+                      setDrawingInfo={setDrawingInfo}
+                      setOpen={setOpen}
+                      setUrls={setUrls}
+                    />
+                  }
                 </div>
               )}
 
@@ -524,7 +494,6 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
-          {data.mediaType !== 'none' && <UserCreateDesign data={data} />}
           <ProductDetailsInfo
             data={data}
             products={products}
@@ -607,7 +576,7 @@ const ProductDetailsInfo = ({
 
       {active === 1 && (
         <p className="text-[#534723] text-justify py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
-          {data.description}
+          {data.details}
         </p>
       )}
 
