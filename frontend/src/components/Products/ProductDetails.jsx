@@ -428,7 +428,7 @@ const ProductDetails = ({ data }) => {
 
               {/* pops us the drawing page */}
               {open && (
-                <div className="fixed inset-0 flex justify-center p-10 items-center z-50">
+                <div className="fixed inset-0 z-50 flex justify-center items-center">
                   {/* <UserOrderOptions setOpen={setOpen} /> */}
                   {
                     <UserCreateDesign
@@ -777,9 +777,7 @@ const ProductDetailsInfo = ({
   );
 };
 
-/*
-  personalized button will be a form
 
-*/
+
 
 export default ProductDetails;

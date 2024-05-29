@@ -253,7 +253,22 @@ const Header = ({ activeHeading }) => {
               />
             </Link>
           </div>
-          <div>
+          <div className='flex flex-row'>
+            {/* wishlist */}
+            <div className={`${styles.normalFlex}`}>
+              <div
+                className="relative mr-[20px] cursor-pointer"
+                onClick={() => setOpenWishlist(true)}
+              >
+                <GoHeart size={30} color="#fff4d7" />
+                <span className="absolute right-0 top-0 rounded-full bg-[#b19b56] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
+                  {wishlist && wishlist.length}
+                </span>
+              </div>
+            </div>
+            
+
+            {/* cart */}
             <div
               className="relative mr-[20px] cursor-pointer"
               onClick={() => setOpenCart(true)}
