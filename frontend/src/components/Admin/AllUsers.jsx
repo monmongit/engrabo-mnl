@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
-import Button from "@mui/material/Button";
-import { DataGrid } from "@mui/x-data-grid";
-import { useDispatch, useSelector } from "react-redux";
-import { AiOutlineDelete, AiOutlineSearch } from "react-icons/ai";
-import Loader from "../Layout/Loader";
-import { getAllUsers, deleteUser } from "../../redux/action/user";
+import React, { useEffect, useState } from 'react';
+import Button from '@mui/material/Button';
+import { DataGrid } from '@mui/x-data-grid';
+import { useDispatch, useSelector } from 'react-redux';
+import { AiOutlineDelete, AiOutlineSearch } from 'react-icons/ai';
+import Loader from '../Layout/Loader';
+import { getAllUsers, deleteUser } from '../../redux/action/user';
+import { Link } from 'react-router-dom';
 
 const AllUsers = () => {
   const { usersList, isLoading } = useSelector((state) => state.user);
   const { admin } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     dispatch(getAllUsers(admin._id));
@@ -18,6 +19,7 @@ const AllUsers = () => {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
+  
       dispatch(deleteUser(id));
     }
   };

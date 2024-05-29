@@ -26,7 +26,9 @@ const UpdateProduct = ({ setOpen, productId }) => {
   const [discountPrice, setDiscountPrice] = useState('');
   const [stock, setStock] = useState('');
   const [instructions, setInstructions] = useState('');
-  const [dropdowns, setDropdowns] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [engravings, setEngravings] = useState([]);
+  const [mediaType, setMediaType] = useState('none');
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -45,7 +47,9 @@ const UpdateProduct = ({ setOpen, productId }) => {
       setDiscountPrice(product.discountPrice || '');
       setStock(product.stock || '');
       setInstructions(product.instructions || '');
-      setDropdowns(product.dropdowns || []);
+      setSizes(product.sizes || []);
+      setEngravings(product.engravings || []);
+      setMediaType(product.mediaType || 'none');
     }
   }, [product]);
 
@@ -69,11 +73,55 @@ const UpdateProduct = ({ setOpen, productId }) => {
       const reader = new FileReader();
       reader.onload = () => {
         if (reader.readyState === 2) {
-          setImages((old) => [...old, { url: reader.result }]); // Changed to ensure images are objects with `url` property
+          setImages((old) => [...old, { url: reader.result }]);
         }
       };
-      reader.readAsDataURL(file); // Ensure this reads as Data URL
+      reader.readAsDataURL(file);
     });
+  };
+
+  const handleAddSize = () => {
+    setSizes([
+      ...sizes,
+      { name: '', grossPrice: '', price: '', stock: '', description: '' },
+    ]);
+  };
+
+  const handleSizeChange = (index, field, value) => {
+    const newSizes = sizes.map((size, i) => {
+      if (i === index) {
+        return { ...size, [field]: value };
+      }
+      return size;
+    });
+    setSizes(newSizes);
+  };
+
+  const handleDeleteSize = (index) => {
+    const newSizes = sizes.filter((_, i) => i !== index);
+    setSizes(newSizes);
+  };
+
+  const handleAddEngraving = () => {
+    setEngravings([
+      ...engravings,
+      { type: '', grossPrice: '', price: '', stock: '', description: '' },
+    ]);
+  };
+
+  const handleEngravingChange = (index, field, value) => {
+    const newEngravings = engravings.map((engraving, i) => {
+      if (i === index) {
+        return { ...engraving, [field]: value };
+      }
+      return engraving;
+    });
+    setEngravings(newEngravings);
+  };
+
+  const handleDeleteEngraving = (index) => {
+    const newEngravings = engravings.filter((_, i) => i !== index);
+    setEngravings(newEngravings);
   };
 
   const handleSubmit = (e) => {
@@ -89,66 +137,14 @@ const UpdateProduct = ({ setOpen, productId }) => {
       discountPrice,
       stock,
       adminId: admin._id,
-      images: images.map((img) => img.url), // Map to extract base64 strings
+      images: images.map((img) => img.url),
       instructions,
-      dropdowns,
+      sizes,
+      engravings,
+      mediaType,
     };
 
-    console.log('Updated Product Data:', updatedProduct); // Add this line to debug
-
     dispatch(updateProduct(updatedProduct));
-  };
-
-  // Handlers for Dropdowns
-  const handleAddDropdown = () => {
-    setDropdowns([...dropdowns, { name: '', options: [] }]);
-  };
-  const handleAddOption = (index) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === index) {
-        return { ...dropdown, options: [...dropdown.options, ''] };
-      }
-      return dropdown;
-    });
-    setDropdowns(newDropdowns);
-  };
-  const handleDropdownChange = (index, value) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === index) {
-        return { ...dropdown, name: value };
-      }
-      return dropdown;
-    });
-    setDropdowns(newDropdowns);
-  };
-  const handleOptionChange = (dropdownIndex, optionIndex, value) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === dropdownIndex) {
-        const newOptions = dropdown.options.map((option, j) => {
-          if (j === optionIndex) {
-            return value;
-          }
-          return option;
-        });
-        return { ...dropdown, options: newOptions };
-      }
-      return dropdown;
-    });
-    setDropdowns(newDropdowns);
-  };
-  const handleDeleteDropdown = (index) => {
-    const newDropdowns = dropdowns.filter((_, i) => i !== index);
-    setDropdowns(newDropdowns);
-  };
-  const handleDeleteOption = (dropdownIndex, optionIndex) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === dropdownIndex) {
-        const newOptions = dropdown.options.filter((_, j) => j !== optionIndex);
-        return { ...dropdown, options: newOptions };
-      }
-      return dropdown;
-    });
-    setDropdowns(newDropdowns);
   };
 
   return (
@@ -180,7 +176,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product name..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Description <span className="text-red-500">*</span>
@@ -196,7 +191,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product description..."
             ></textarea>
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Category <span className="text-red-500">*</span>
@@ -215,7 +209,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
                 ))}
             </select>
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Tags <span className="text-red-500">*</span>
@@ -229,7 +222,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product tags..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Gross Price <span className="text-red-500">*</span>
@@ -243,7 +235,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product gross price..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Selling Price <span className="text-red-500">*</span>
@@ -257,7 +248,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product selling price..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Price (With Discount)
@@ -285,7 +275,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your product stock..."
             />
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Upload Images <span className="text-red-500">*</span>
@@ -316,7 +305,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
                 ))}
             </div>
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Instruction For Personalization{' '}
@@ -332,81 +320,167 @@ const UpdateProduct = ({ setOpen, productId }) => {
               placeholder="Enter your personalization instructions..."
             ></textarea>
           </div>
-
-          <div className="space-y-4">
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Sizes
+            </label>
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
               type="button"
-              onClick={handleAddDropdown}
+              onClick={handleAddSize}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
             >
-              <FaPlus className="mr-2" /> Add Dropdown For Product
-              Personalization
+              <FaPlus className="mr-2" /> Add Size
             </button>
-            <div className="space-y-4">
-              {dropdowns.map((dropdown, dropdownIndex) => (
-                <div
-                  key={dropdownIndex}
-                  className="border p-4 rounded-lg shadow-md"
+            {sizes.map((size, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Size name"
+                  value={size.name}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'name', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Size gross price"
+                  value={size.grossPrice}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'grossPrice', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Size price"
+                  value={size.price}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Size stock"
+                  value={size.stock}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'stock', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Size description"
+                  value={size.description}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'description', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteSize(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
                 >
-                  <div className="flex items-center mb-2">
-                    <input
-                      className="text-black flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-green-200"
-                      placeholder={`Dropdown Name ${dropdownIndex + 1}`}
-                      value={dropdown.name}
-                      onChange={(e) =>
-                        handleDropdownChange(dropdownIndex, e.target.value)
-                      }
-                      required
-                    />
-                    <button
-                      className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                      type="button"
-                      onClick={() => handleDeleteDropdown(dropdownIndex)}
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
-                  <div className="space-y-2">
-                    {dropdown.options.map((option, optionIndex) => (
-                      <div key={optionIndex} className="flex items-center">
-                        <input
-                          className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          type="text"
-                          placeholder={`Option ${optionIndex + 1}`}
-                          value={option}
-                          onChange={(e) =>
-                            handleOptionChange(
-                              dropdownIndex,
-                              optionIndex,
-                              e.target.value
-                            )
-                          }
-                          required
-                        />
-                        <button
-                          className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                          type="button"
-                          onClick={() =>
-                            handleDeleteOption(dropdownIndex, optionIndex)
-                          }
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    className="mt-2 bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-lg flex items-center"
-                    type="button"
-                    onClick={() => handleAddOption(dropdownIndex)}
-                  >
-                    <FaPlus className="mr-2" /> Add Option
-                  </button>
-                </div>
-              ))}
-            </div>
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
           </div>
-
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Engravings
+            </label>
+            <button
+              type="button"
+              onClick={handleAddEngraving}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Engraving
+            </button>
+            {engravings.map((engraving, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Engraving type"
+                  value={engraving.type}
+                  onChange={(e) =>
+                    handleEngravingChange(index, 'type', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Engraving gross price"
+                  value={engraving.grossPrice}
+                  onChange={(e) =>
+                    handleEngravingChange(index, 'grossPrice', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Engraving price"
+                  value={engraving.price}
+                  onChange={(e) =>
+                    handleEngravingChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Engraving stock"
+                  value={engraving.stock}
+                  onChange={(e) =>
+                    handleEngravingChange(index, 'stock', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Engraving description"
+                  value={engraving.description}
+                  onChange={(e) =>
+                    handleEngravingChange(index, 'description', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteEngraving(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Media Type
+            </label>
+            <select
+              value={mediaType}
+              onChange={(e) => setMediaType(e.target.value)}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="none">None</option>
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
           <div>
             <input
               type="submit"

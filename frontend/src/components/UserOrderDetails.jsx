@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react";
-import styles from "../styles/style";
-import { BsFillBagFill } from "react-icons/bs";
-import { Link, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { server } from "../server";
-import { getAllOrdersOfUser } from "../redux/action/order";
-import { RxCross1 } from "react-icons/rx";
-import { AiFillStar, AiOutlinePlusCircle, AiOutlineStar } from "react-icons/ai";
-import axios from "axios";
-import { toast } from "react-toastify";
+import React, { useEffect, useState } from 'react';
+import styles from '../styles/style';
+import { BsFillBagFill } from 'react-icons/bs';
+import { Link, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { server } from '../server';
+import { getAllOrdersOfUser } from '../redux/action/order';
+import { RxCross1 } from 'react-icons/rx';
+import { AiFillStar, AiOutlinePlusCircle, AiOutlineStar } from 'react-icons/ai';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const UserOrderDetails = () => {
   const { orders } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.user);
   const [open, setOpen] = useState(false);
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [rating, setRating] = useState(1);
   const [isAnonymous, setIsAnonymous] = useState(false);
@@ -46,8 +46,8 @@ const UserOrderDetails = () => {
   };
 
   const data = orders && orders.find((item) => item._id === id);
+  console.log("data in user order details compoent: ", data);
 
-  console.log(id);
   const reviewHandler = async (e) => {
     await axios
       .put(
@@ -69,7 +69,7 @@ const UserOrderDetails = () => {
         toast.success(res.data.message);
         dispatch(getAllOrdersOfUser(user._id));
 
-        setComment("");
+        setComment('');
         setRating(null);
         setIsAnonymous(false);
         setOpen(false);
@@ -82,7 +82,7 @@ const UserOrderDetails = () => {
   const refundHandler = async () => {
     await axios
       .put(`${server}/order/order-refund/${id}`, {
-        status: "Processing Refund",
+        status: 'Processing Refund',
       })
       .then((res) => {
         toast.success(res.data.message);
@@ -122,7 +122,7 @@ const UserOrderDetails = () => {
       <br />
       {data &&
         data?.cart.map((item, index) => (
-          <div className="w-full flex items-start mb-5">
+          <div className="w-full flex items-start mb-5" key={index}>
             <img
               src={`${item.images[0]?.url}`}
               alt=""
@@ -131,15 +131,26 @@ const UserOrderDetails = () => {
             <div className="w-full">
               <h5 className="pl-3 text-[18px]">{item.name}</h5>
               <h5 className="pl-3 text-[15px] text-[#534723]">
-                {item.discountPrice > 0
-                  ? `₱ ${item.discountPrice}`
-                  : `₱ ${item.originalPrice}`}
+                ₱ {item.price}
               </h5>
               <h5 className="pl-3 text-[15px] text-[#534723]">
                 Quantity: {item.qty}
               </h5>
+              {item.size && (
+                <h5 className="pl-3 text-[15px] text-[#534723]">
+                  Size: {item.size.name}
+                </h5>
+              )}
+              {item.engraving && (
+                <h5 className="pl-3 text-[15px] text-[#534723]">
+                  Engraving: {item.engraving.type}
+                </h5>
+              )}
+              <h5 className="pl-3 text-[15px] text-[#534723]">
+                Sub Total: ₱ {item.subTotal.toFixed(2)}
+              </h5>
             </div>
-            {data?.status === "Delivered" && !item.isReviewed ? (
+            {data?.status === 'Delivered' && !item.isReviewed ? (
               <div
                 className={`${styles.button} !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 font-[600] text-[15px] text-[#fff4d7]`}
                 onClick={() => {
@@ -183,12 +194,23 @@ const UserOrderDetails = () => {
               <div>
                 <div className="pl-3 text-[18px]">{selectedItem.name}</div>
                 <h4 className="pl-3 text-[15px] text-[#534723]">
-                  {selectedItem.discountPrice > 0
-                    ? `₱ ${selectedItem.discountPrice}`
-                    : `₱ ${selectedItem.originalPrice}`}
+                  ₱ {selectedItem.price}
                 </h4>
                 <h5 className="pl-3 text-[15px] text-[#534723]">
                   Quantity: {selectedItem.qty}
+                </h5>
+                {selectedItem.size && (
+                  <h5 className="pl-3 text-[15px] text-[#534723]">
+                    Size: {selectedItem.size.name}
+                  </h5>
+                )}
+                {selectedItem.engraving && (
+                  <h5 className="pl-3 text-[15px] text-[#534723]">
+                    Engraving: {selectedItem.engraving.type}
+                  </h5>
+                )}
+                <h5 className="pl-3 text-[15px] text-[#534723]">
+                  Sub Total: ₱ {selectedItem.subTotal.toFixed(2)}
                 </h5>
               </div>
             </div>
@@ -224,8 +246,7 @@ const UserOrderDetails = () => {
             <br />
             <div className="w-full ml-3">
               <label className="block text-[20px] font-[500] text-[#171203]">
-                {" "}
-                Write a Comment{" "}
+                Write a Comment{' '}
                 <span className="ml-1 font-[400] text-[16px] text-[#534723]">
                   (optional)
                 </span>
@@ -309,7 +330,7 @@ const UserOrderDetails = () => {
           <h4 className="pt-3 text-[20px] font-[600]">Shipping Address</h4>
           <h4 className="pt-3 text-[20px]">
             {data?.shippingAddress.address1 +
-              " " +
+              ' ' +
               data?.shippingAddress.address2}
           </h4>
           <h4 className="pt-3 text-[20px]">{data?.shippingAddress.country}</h4>
@@ -323,11 +344,18 @@ const UserOrderDetails = () => {
           </h4>
           {cartInfo(data)}
         </div>
+
+        <div className="w-full 800px:w-[40%] mr-5">
+          <h4 className="pt-3 text-[20px] font-[600]">
+            Orders Custom Design
+            {orderCustomDesign(data.cart)}
+          </h4>
+        </div>
         <div className="w-full 800px:w-[40%] ">
           <h4 className="pt-3 text-[20px] font-[600]">Payment Information</h4>
           <h4>
-            Status:{" "}
-            {data?.paymentInfo?.status ? data?.paymentInfo?.status : "Not Paid"}
+            Status:{' '}
+            {data?.paymentInfo?.status ? data?.paymentInfo?.status : 'Not Paid'}
           </h4>
         </div>
       </div>
@@ -341,7 +369,7 @@ const UserOrderDetails = () => {
             Send Message
           </div>
         </Link>
-        {data?.status === "Delivered" ? (
+        {data?.status === 'Delivered' ? (
           <div
             className={`${styles.button}!w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 font-[600] text-[18px] text-[#fff4d7]`}
             onClick={refundHandler}
@@ -358,15 +386,40 @@ const UserOrderDetails = () => {
   );
 };
 
+const orderCustomDesign = (data) => {
+  console.log("order custom design ", data);
+
+  return (
+    <>
+      {data.map((item, index) => (
+        <div key={index} className="bg-gray-100 rounded p-4 mb-4">
+          <a
+            key={index}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+          >
+            <img
+              src={item.url}
+              alt={`Image ${index + 1}`}
+              className="w-full h-full border-solid"
+            />
+          </a>
+        </div>
+      ))}
+    </>
+  );
+};
+
 const cartInfo = (datas) => {
-  console.log("data in cart info", datas);
+  console.log('data in cart info', datas);
   const data = Object.entries(datas);
-  console.log("Datas : ", data);
   return (
     <div>
       {data.map((item, index) => {
         // Check if the item contains a cart array
-        if (item[0] === "cart") {
+        if (item[0] === 'cart') {
           return (
             <div key={index}>
               {item[1].map((cartItem, cartIndex) => (
@@ -377,6 +430,16 @@ const cartInfo = (datas) => {
                   <h2>
                     Customer Note: <br /> {cartItem.response}
                   </h2>
+                  {cartItem.size && (
+                    <h2>
+                      Size: <br /> {cartItem.size.name}
+                    </h2>
+                  )}
+                  {cartItem.engraving && (
+                    <h2>
+                      Engraving: <br /> {cartItem.engraving.type}
+                    </h2>
+                  )}
                   <h2>Selected Options:</h2>
                   {cartItem.options ? (
                     <ul>

@@ -212,6 +212,7 @@ const DashboardMessages = () => {
           All Messages
         </h3>
       </div>
+
       {!open && (
         <>
           {/* <h1 className="text-center text-[30px] py-3 font-Poppins">

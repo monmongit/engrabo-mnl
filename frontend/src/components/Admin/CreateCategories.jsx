@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { RxCross1 } from 'react-icons/rx';
-import { createCategory } from '../../redux/action/category'; // Adjust the import path as necessary
+import { createCategory } from '../../redux/action/category';
 import { AiOutlinePlusCircle } from 'react-icons/ai';
 
 const CreateCategory = ({ setOpen }) => {
@@ -34,17 +34,27 @@ const CreateCategory = ({ setOpen }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newForm = new FormData();
-    newForm.append('title', title);
-    if (image) {
-      newForm.append('image', image);
-    }
-    // newForm.append('image', image);
-    newForm.append('adminId', admin._id);
 
-    dispatch(createCategory(newForm));
+    const base64Image = await convertToBase64(image);
+
+    const categoryData = {
+      title,
+      image: base64Image,
+      adminId: admin._id,
+    };
+
+    dispatch(createCategory(categoryData));
+  };
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
   };
 
   return (
@@ -88,7 +98,6 @@ const CreateCategory = ({ setOpen }) => {
             required
           />
           <div className="w-full flex items-center flex-wrap">
-            {/* This label is associated with the input having id="upload", making it clickable */}
             <label htmlFor="upload" className="cursor-pointer">
               <AiOutlinePlusCircle size={30} className="mt-3" color="#555" />
             </label>

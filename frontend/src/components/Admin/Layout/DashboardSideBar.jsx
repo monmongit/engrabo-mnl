@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { AiOutlineGift, AiOutlineLogout } from "react-icons/ai";
 import { FiPackage, FiShoppingBag } from "react-icons/fi";
@@ -15,6 +16,7 @@ import { toast } from "react-toastify";
 import { FaRegUser } from "react-icons/fa";
 import { useMediaQuery } from "react-responsive";
 
+
 const DashboardSideBar = ({ active }) => {
   const navigate = useNavigate();
 
@@ -31,8 +33,10 @@ const DashboardSideBar = ({ active }) => {
       });
   };
 
+
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showMore, setShowMore] = useState(false);
+
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
