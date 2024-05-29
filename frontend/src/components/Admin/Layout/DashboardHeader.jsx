@@ -1,11 +1,11 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import EngraboLogo from '../../../assets/Logo/engrabo-logo.png';
-import { AiOutlineGift } from 'react-icons/ai';
-import { MdOutlineLocalOffer } from 'react-icons/md';
-import { FiPackage, FiShoppingBag } from 'react-icons/fi';
-import { BiMessageSquareDetail } from 'react-icons/bi';
+import React from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import EngraboLogo from "../../../assets/Logo/engrabo-logo.png";
+import { AiOutlineGift } from "react-icons/ai";
+import { MdOutlineLocalOffer } from "react-icons/md";
+import { FiPackage, FiShoppingBag } from "react-icons/fi";
+import { BiMessageSquareDetail } from "react-icons/bi";
 
 const DashboardHeader = () => {
   const { admin } = useSelector((state) => state.admin);
@@ -15,7 +15,6 @@ const DashboardHeader = () => {
       <div>
         <Link to="/dashboard">
           <img src={EngraboLogo} alt="" className="w-[120px] h-[60px]" />
-        
         </Link>
       </div>
 
@@ -23,7 +22,7 @@ const DashboardHeader = () => {
       <div className="flex items-center">
         <div className="flex items-center mr-4">
           {/* Coupon */}
-          <Link to="/dashboard/coupons" className="800px:block hidden">
+          <Link to="/dashboard-coupons" className="800px:block hidden">
             <AiOutlineGift
               color="#fff4d7"
               size={30}
