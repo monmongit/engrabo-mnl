@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -39,8 +40,8 @@ const CreateProduct = ({ setOpen }) => {
       toast.error(error);
     }
     if (success) {
-      toast.success('Product created successfully');
-      navigate('/dashboard-products');
+      toast.success("Product created successfully");
+      navigate("/dashboard-products");
       window.location.reload();
     }
   }, [dispatch, error, success, navigate]);
@@ -104,7 +105,7 @@ const CreateProduct = ({ setOpen }) => {
     e.preventDefault();
     const newForm = new FormData();
     images.forEach((image) => {
-      newForm.set('images', image);
+      newForm.set("images", image);
     });
 
     const defaultSize = sizes[0];
@@ -119,6 +120,7 @@ const CreateProduct = ({ setOpen }) => {
         ? defaultEngraving.description
         : description
     );
+
     newForm.append('details', details);
     newForm.append('category', category);
     newForm.append('tags', tags);
@@ -353,7 +355,7 @@ const CreateProduct = ({ setOpen }) => {
                 <AiOutlinePlusCircle
                   size={30}
                   className="mt-3 text-gray-600 hover:text-gray-800 cursor-pointer"
-                />{' '}
+                />{" "}
               </label>
               {images &&
                 images.map((i) => (
@@ -368,7 +370,7 @@ const CreateProduct = ({ setOpen }) => {
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Instruction For Personalization{' '}
+              Instruction For Personalization{" "}
               <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -399,7 +401,7 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size name"
                   value={size.name}
                   onChange={(e) =>
-                    handleSizeChange(index, 'name', e.target.value)
+                    handleSizeChange(index, "name", e.target.value)
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -409,7 +411,7 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size gross price"
                   value={size.grossPrice}
                   onChange={(e) =>
-                    handleSizeChange(index, 'grossPrice', e.target.value)
+                    handleSizeChange(index, "grossPrice", e.target.value)     
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -419,7 +421,7 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size price"
                   value={size.price}
                   onChange={(e) =>
-                    handleSizeChange(index, 'price', e.target.value)
+                    handleSizeChange(index, "price", e.target.value)
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -429,7 +431,7 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size stock"
                   value={size.stock}
                   onChange={(e) =>
-                    handleSizeChange(index, 'stock', e.target.value)
+                    handleSizeChange(index, "stock", e.target.value)                 
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -439,7 +441,8 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size description"
                   value={size.description}
                   onChange={(e) =>
-                    handleSizeChange(index, 'description', e.target.value)
+                    handleSizeChange(index, "description", e.target.value)
+               
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -472,7 +475,8 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Engraving type"
                   value={engraving.type}
                   onChange={(e) =>
-                    handleEngravingChange(index, 'type', e.target.value)
+                    handleEngravingChange(index, "type", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -482,7 +486,8 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Engraving gross price"
                   value={engraving.grossPrice}
                   onChange={(e) =>
-                    handleEngravingChange(index, 'grossPrice', e.target.value)
+                    handleEngravingChange(index, "grossPrice", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -492,7 +497,9 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Engraving price"
                   value={engraving.price}
                   onChange={(e) =>
-                    handleEngravingChange(index, 'price', e.target.value)
+
+                    handleEngravingChange(index, "price", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -502,7 +509,8 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Engraving stock"
                   value={engraving.stock}
                   onChange={(e) =>
-                    handleEngravingChange(index, 'stock', e.target.value)
+                    handleEngravingChange(index, "stock", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -512,7 +520,8 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Engraving description"
                   value={engraving.description}
                   onChange={(e) =>
-                    handleEngravingChange(index, 'description', e.target.value)
+                    handleEngravingChange(index, "description", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
