@@ -312,12 +312,9 @@ router.put(
         stock: req.body.stock,
         images,
         instructions: req.body.instructions,
-        dropdowns: req.body.dropdowns,
         sizes: req.body.sizes,
-        colors: req.body.colors,
+        engravings: req.body.engravings,
         mediaType: req.body.mediaType,
-        imageOptions: req.body.imageOptions,
-        textOptions: req.body.textOptions,
       };
 
       const updatedProduct = await Product.findByIdAndUpdate(

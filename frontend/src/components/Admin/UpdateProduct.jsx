@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { updateProduct, getProductDetails } from "../../redux/action/product";
-import { toast } from "react-toastify";
-import { RxCross1 } from "react-icons/rx";
-import { getAllCategories } from "../../redux/action/category";
-import { AiOutlinePlusCircle } from "react-icons/ai";
-import { FaPlus, FaTrash } from "react-icons/fa";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { updateProduct, getProductDetails } from '../../redux/action/product';
+import { toast } from 'react-toastify';
+import { RxCross1 } from 'react-icons/rx';
+import { getAllCategories } from '../../redux/action/category';
+import { AiOutlinePlusCircle } from 'react-icons/ai';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const UpdateProduct = ({ setOpen, productId }) => {
   const { admin } = useSelector((state) => state.admin);
@@ -17,25 +17,18 @@ const UpdateProduct = ({ setOpen, productId }) => {
   const dispatch = useDispatch();
 
   const [images, setImages] = useState([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [tags, setTags] = useState("");
-  const [grossPrice, setGrossPrice] = useState("");
-  const [originalPrice, setOriginalPrice] = useState("");
-  const [discountPrice, setDiscountPrice] = useState("");
-  const [stock, setStock] = useState("");
-  const [instructions, setInstructions] = useState("");
-  const [dropdowns, setDropdowns] = useState([]);
-  const [packaging, setPackaging] = useState([]);
-
-  const [sizes, setSizes] = useState([]); // Add state for sizes
-  const [colors, setColors] = useState(''); // Add state for colors
-  const [mediaType, setMediaType] = useState('none'); // Add state for media type
-  const [personalization, setPersonalization] = useState('');
-  const [imageOptions, setImageOptions] = useState([]); // Add state for image options
-  const [textOptions, setTextOptions] = useState([]); // Add s
-
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+  const [tags, setTags] = useState('');
+  const [grossPrice, setGrossPrice] = useState('');
+  const [originalPrice, setOriginalPrice] = useState('');
+  const [discountPrice, setDiscountPrice] = useState('');
+  const [stock, setStock] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [sizes, setSizes] = useState([]);
+  const [engravings, setEngravings] = useState([]);
+  const [mediaType, setMediaType] = useState('none');
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -45,21 +38,18 @@ const UpdateProduct = ({ setOpen, productId }) => {
   useEffect(() => {
     if (product) {
       setImages(product.images || []);
-      setName(product.name || "");
-      setDescription(product.description || "");
-      setCategory(product.category || "");
-      setTags(product.tags || "");
-      setGrossPrice(product.grossPrice || "");
-      setOriginalPrice(product.originalPrice || "");
-      setDiscountPrice(product.discountPrice || "");
-      setStock(product.stock || "");
-      setInstructions(product.instructions || "");
-      setDropdowns(product.dropdowns || []);
+      setName(product.name || '');
+      setDescription(product.description || '');
+      setCategory(product.category || '');
+      setTags(product.tags || '');
+      setGrossPrice(product.grossPrice || '');
+      setOriginalPrice(product.originalPrice || '');
+      setDiscountPrice(product.discountPrice || '');
+      setStock(product.stock || '');
+      setInstructions(product.instructions || '');
       setSizes(product.sizes || []);
-      setPackaging(product.packaging || []);
-      setMediaType(product.mediaType || 'none')
-      setImageOptions(product.imageOptions || [])
-      setTextOptions(product.textOptions || [])  
+      setEngravings(product.engravings || []);
+      setMediaType(product.mediaType || 'none');
     }
   }, [product]);
 
@@ -68,8 +58,8 @@ const UpdateProduct = ({ setOpen, productId }) => {
       toast.error(error);
     }
     if (success) {
-      toast.success("Product updated successfully");
-      navigate("/dashboard-products");
+      toast.success('Product updated successfully');
+      navigate('/dashboard-products');
       setOpen(false);
       window.location.reload();
     }
@@ -83,17 +73,20 @@ const UpdateProduct = ({ setOpen, productId }) => {
       const reader = new FileReader();
       reader.onload = () => {
         if (reader.readyState === 2) {
-          setImages((old) => [...old, { url: reader.result }]); // Changed to ensure images are objects with `url` property
+          setImages((old) => [...old, { url: reader.result }]);
         }
       };
-      reader.readAsDataURL(file); // Ensure this reads as Data URL
+      reader.readAsDataURL(file);
     });
   };
 
-  // handlers to add sizes
   const handleAddSize = () => {
-    setSizes([...sizes, { name: '', price: '' }]);
+    setSizes([
+      ...sizes,
+      { name: '', grossPrice: '', price: '', stock: '', description: '' },
+    ]);
   };
+
   const handleSizeChange = (index, field, value) => {
     const newSizes = sizes.map((size, i) => {
       if (i === index) {
@@ -103,116 +96,32 @@ const UpdateProduct = ({ setOpen, productId }) => {
     });
     setSizes(newSizes);
   };
+
   const handleDeleteSize = (index) => {
     const newSizes = sizes.filter((_, i) => i !== index);
     setSizes(newSizes);
   };
 
-  const handleAddImageOption = () => {
-    setImageOptions([
-      ...imageOptions,
-      { name: '', price: '', description: '' },
+  const handleAddEngraving = () => {
+    setEngravings([
+      ...engravings,
+      { type: '', grossPrice: '', price: '', stock: '', description: '' },
     ]);
   };
-  const handleImageOptionChange = (index, field, value) => {
-    const newImageOptions = imageOptions.map((option, i) => {
+
+  const handleEngravingChange = (index, field, value) => {
+    const newEngravings = engravings.map((engraving, i) => {
       if (i === index) {
-        return { ...option, [field]: value };
+        return { ...engraving, [field]: value };
       }
-      return option;
+      return engraving;
     });
-    setImageOptions(newImageOptions);
-  };
-  const handleDeleteImageOption = (index) => {
-    const newImageOptions = imageOptions.filter((_, i) => i !== index);
-    setImageOptions(newImageOptions);
+    setEngravings(newEngravings);
   };
 
-  const handleAddTextOption = () => {
-    setTextOptions([...textOptions, { name: '', price: '', description: '' }]);
-  };
-  const handleTextOptionChange = (index, field, value) => {
-    const newTextOptions = textOptions.map((option, i) => {
-      if (i === index) {
-        return { ...option, [field]: value };
-      }
-      return option;
-    });
-    setTextOptions(newTextOptions);
-  };
-  const handleDeleteTextOption = (index) => {
-    const newTextOptions = textOptions.filter((_, i) => i !== index);
-    setTextOptions(newTextOptions);
-  };
-
-  // handlers for adding packaging
-  const handleAddPackaging = () => {
-    setPackaging([...packaging, { name: "", price: "" }]);
-  };
-  const handlePackagingChange = (index, field, value) => {
-    const newPackaging = packaging.map((pack, i) => {
-      if (i === index) {
-        return { ...pack, [field]: value };
-      }
-      return pack;
-    });
-    setPackaging(newPackaging);
-  };
-  const handleDeletePackaging = (index) => {
-    const newPackaging = packaging.filter((_, i) => i !== index);
-    setPackaging(newPackaging);
-  };
-
-  // Handlers for Dropdowns
-  const handleAddDropdown = () => {
-    setDropdowns([...dropdowns, { name: "", options: [] }]);
-  };
-  const handleAddOption = (index) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === index) {
-        return { ...dropdown, options: [...dropdown.options, ""] };
-      }
-      return dropdown;
-    });
-    setDropdowns(newDropdowns);
-  };
-  const handleDropdownChange = (index, value) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === index) {
-        return { ...dropdown, name: value };
-      }
-      return dropdown;
-    });
-    setDropdowns(newDropdowns);
-  };
-  const handleOptionChange = (dropdownIndex, optionIndex, value) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === dropdownIndex) {
-        const newOptions = dropdown.options.map((option, j) => {
-          if (j === optionIndex) {
-            return value;
-          }
-          return option;
-        });
-        return { ...dropdown, options: newOptions };
-      }
-      return dropdown;
-    });
-    setDropdowns(newDropdowns);
-  };
-  const handleDeleteDropdown = (index) => {
-    const newDropdowns = dropdowns.filter((_, i) => i !== index);
-    setDropdowns(newDropdowns);
-  };
-  const handleDeleteOption = (dropdownIndex, optionIndex) => {
-    const newDropdowns = dropdowns.map((dropdown, i) => {
-      if (i === dropdownIndex) {
-        const newOptions = dropdown.options.filter((_, j) => j !== optionIndex);
-        return { ...dropdown, options: newOptions };
-      }
-      return dropdown;
-    });
-    setDropdowns(newDropdowns);
+  const handleDeleteEngraving = (index) => {
+    const newEngravings = engravings.filter((_, i) => i !== index);
+    setEngravings(newEngravings);
   };
 
   const handleSubmit = (e) => {
@@ -228,19 +137,12 @@ const UpdateProduct = ({ setOpen, productId }) => {
       discountPrice,
       stock,
       adminId: admin._id,
-      images: images.map((img) => img.url), // Map to extract base64 strings
+      images: images.map((img) => img.url),
       instructions,
-      dropdowns,
       sizes,
-      packaging,
-      colors: colors.split(','),
+      engravings,
       mediaType,
-      dropdowns,
-      imageOptions,
-      textOptions,
     };
-
-    console.log("Updated Product Data:", updatedProduct); // Add this line to debug
 
     dispatch(updateProduct(updatedProduct));
   };
@@ -326,7 +228,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
             </label>
             <input
               type="number"
-              name="price"
+              name="grossPrice"
               value={grossPrice}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setGrossPrice(e.target.value)}
@@ -339,7 +241,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
             </label>
             <input
               type="number"
-              name="price"
+              name="originalPrice"
               value={originalPrice}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setOriginalPrice(e.target.value)}
@@ -352,7 +254,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
             </label>
             <input
               type="number"
-              name="price"
+              name="discountPrice"
               value={discountPrice}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setDiscountPrice(e.target.value)}
@@ -360,7 +262,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
             />
           </div>
 
-          {/* Product Stock */}
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Product Stock <span className="text-red-500">*</span>
@@ -412,39 +313,12 @@ const UpdateProduct = ({ setOpen, productId }) => {
             <textarea
               cols="30"
               rows="8"
-              name="description"
+              name="instructions"
               value={instructions}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="Enter your personalization instructions..."
             ></textarea>
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-800 mb-2">
-              Colors (comma separated)
-            </label>
-            <input
-              type="text"
-              value={colors}
-              onChange={(e) => setColors(e.target.value)}
-              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter colors separated by commas"
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-800 mb-2">
-              Media Type
-            </label>
-            <select
-              value={mediaType}
-              onChange={(e) => setMediaType(e.target.value)}
-              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="none">None</option>
-              <option value="text">Text</option>
-              <option value="image">Image</option>
-              <option value="both">Both</option>
-            </select>
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
@@ -471,10 +345,30 @@ const UpdateProduct = ({ setOpen, productId }) => {
                 />
                 <input
                   type="number"
+                  placeholder="Size gross price"
+                  value={size.grossPrice}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'grossPrice', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
                   placeholder="Size price"
                   value={size.price}
                   onChange={(e) =>
                     handleSizeChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Size stock"
+                  value={size.stock}
+                  onChange={(e) =>
+                    handleSizeChange(index, 'stock', e.target.value)
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -501,54 +395,70 @@ const UpdateProduct = ({ setOpen, productId }) => {
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Image Options
+              Engravings
             </label>
             <button
               type="button"
-              onClick={handleAddImageOption}
+              onClick={handleAddEngraving}
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
             >
-              <FaPlus className="mr-2" /> Add Image Option
+              <FaPlus className="mr-2" /> Add Engraving
             </button>
-            {imageOptions.map((option, index) => (
+            {engravings.map((engraving, index) => (
               <div key={index} className="mt-2 flex flex-wrap">
                 <input
                   type="text"
-                  placeholder="Option name"
-                  value={option.name}
+                  placeholder="Engraving type"
+                  value={engraving.type}
                   onChange={(e) =>
-                    handleImageOptionChange(index, 'name', e.target.value)
+                    handleEngravingChange(index, 'type', e.target.value)
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
                 <input
                   type="number"
-                  placeholder="Option price"
-                  value={option.price}
+                  placeholder="Engraving gross price"
+                  value={engraving.grossPrice}
                   onChange={(e) =>
-                    handleImageOptionChange(index, 'price', e.target.value)
+                    handleEngravingChange(index, 'grossPrice', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Engraving price"
+                  value={engraving.price}
+                  onChange={(e) =>
+                    handleEngravingChange(index, 'price', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Engraving stock"
+                  value={engraving.stock}
+                  onChange={(e) =>
+                    handleEngravingChange(index, 'stock', e.target.value)
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
                 <input
                   type="text"
-                  placeholder="Option description"
-                  value={option.description}
+                  placeholder="Engraving description"
+                  value={engraving.description}
                   onChange={(e) =>
-                    handleImageOptionChange(
-                      index,
-                      'description',
-                      e.target.value
-                    )
+                    handleEngravingChange(index, 'description', e.target.value)
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
                 <button
                   type="button"
-                  onClick={() => handleDeleteImageOption(index)}
+                  onClick={() => handleDeleteEngraving(index)}
                   className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
                 >
                   <FaTrash />
@@ -558,56 +468,18 @@ const UpdateProduct = ({ setOpen, productId }) => {
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Text Options
+              Media Type
             </label>
-            <button
-              type="button"
-              onClick={handleAddTextOption}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            <select
+              value={mediaType}
+              onChange={(e) => setMediaType(e.target.value)}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <FaPlus className="mr-2" /> Add Text Option
-            </button>
-            {textOptions.map((option, index) => (
-              <div key={index} className="mt-2 flex flex-wrap">
-                <input
-                  type="text"
-                  placeholder="Option name"
-                  value={option.name}
-                  onChange={(e) =>
-                    handleTextOptionChange(index, 'name', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Option price"
-                  value={option.price}
-                  onChange={(e) =>
-                    handleTextOptionChange(index, 'price', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Option description"
-                  value={option.description}
-                  onChange={(e) =>
-                    handleTextOptionChange(index, 'description', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => handleDeleteTextOption(index)}
-                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            ))}
+              <option value="none">None</option>
+              <option value="text">Text</option>
+              <option value="image">Image</option>
+              <option value="both">Both</option>
+            </select>
           </div>
           <div>
             <input
