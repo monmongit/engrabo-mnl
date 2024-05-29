@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   AiFillHeart,
   AiOutlineEye,
   AiOutlineHeart,
   AiOutlineShoppingCart,
-  AiFillStar,
-} from "react-icons/ai";
-import { Link } from "react-router-dom";
-import styles from "../../../styles/style";
-import ProductDetailsCard from "../ProductDetailsCard/ProductDetailsCard";
-import { FaRegEdit } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
+} from 'react-icons/ai';
+import { Link } from 'react-router-dom';
+import ProductDetailsCard from '../ProductDetailsCard/ProductDetailsCard';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   addToWishlist,
   removeFromWishlist,
-} from "../../../redux/action/wishlist";
-import { toast } from "react-toastify";
-import { addTocart } from "../../../redux/action/cart";
-import Ratings from "../../Products/Ratings";
+} from '../../../redux/action/wishlist';
+import { toast } from 'react-toastify';
+import { addTocart } from '../../../redux/action/cart';
+import Ratings from '../../Products/Ratings';
 
 const ProductCard = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -25,6 +22,8 @@ const ProductCard = ({ data, isEvent }) => {
 
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedEngraving, setSelectedEngraving] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -48,20 +47,64 @@ const ProductCard = ({ data, isEvent }) => {
   };
 
   const addToCartHandler = (id) => {
-    const isItemExists = cart && cart.find((i) => i._id === id);
+    let isItemExists = cart && cart.find((i) => i._id === id);
+
+    if (selectedSize) {
+      isItemExists = cart.find(
+        (i) => i._id === id && i.size && i.size.name === selectedSize.name
+      );
+    } else if (selectedEngraving) {
+      isItemExists = cart.find(
+        (i) =>
+          i._id === id &&
+          i.engraving &&
+          i.engraving.type === selectedEngraving.type
+      );
+    }
+
     if (isItemExists) {
-      toast.error(`${data.name} already in cart!`);
+      toast.error(
+        `${data.name} with the selected option is already in the cart!`
+      );
     } else {
-      if (data.stock < 1) {
+      const stock =
+        selectedSize?.stock ?? selectedEngraving?.stock ?? data?.stock;
+      const price = selectedSize
+        ? selectedSize.price
+        : selectedEngraving
+        ? selectedEngraving.price
+        : data.discountPrice > 0
+        ? data.discountPrice
+        : data.originalPrice;
+
+      if (stock < 1) {
         toast.error(
           `${data.name} stock is limited! Please contact us to reserve your order!`
         );
       } else {
-        const cartData = { ...data, qty: 1 };
+        const cartData = {
+          ...data,
+          stock: stock,
+          size: selectedSize, // Add selected size to cart data
+          engraving: selectedEngraving, // Add selected engraving to cart data
+          price: price,
+          qty: 1, // default quantity
+          subTotal: price * 1, // Calculate subtotal
+        };
         dispatch(addTocart(cartData));
         toast.success(`${data.name} added to cart successfully!`);
       }
     }
+  };
+
+  const handleSizeChange = (size) => {
+    setSelectedSize(size);
+    setSelectedEngraving(null); // Reset engraving if size is selected
+  };
+
+  const handleEngravingChange = (engraving) => {
+    setSelectedEngraving(engraving);
+    setSelectedSize(null); // Reset size if engraving is selected
   };
 
   return (
@@ -95,21 +138,28 @@ const ProductCard = ({ data, isEvent }) => {
           >
             <h2 className="font-bold text-lg mb-2">
               {data.name.length > 40
-                ? data.name.slice(0, 40) + "..."
+                ? data.name.slice(0, 40) + '...'
                 : data.name}
             </h2>
           </Link>
           <div className="flex gap-1">
             <span className="text-xl font-semibold">
-              ₱{data.discountPrice ? data.discountPrice : data.originalPrice}
+              ₱
+              {selectedSize
+                ? selectedSize.price
+                : selectedEngraving
+                ? selectedEngraving.price
+                : data.discountPrice
+                ? data.discountPrice
+                : data.originalPrice}
             </span>
-            {data.discountPrice && (
+            {data.discountPrice && !selectedSize && !selectedEngraving && (
               <div className="flex items-center gap-2">
                 <span className="text-sm line-through opacity-75">
                   ₱{data.originalPrice}
                 </span>
                 <span className="font bold text-sm p-1 bg-yellow-300">
-                  Save{" "}
+                  Save{' '}
                   {Math.round(
                     (1 - data.discountPrice / data.originalPrice) * 100
                   )}
@@ -122,15 +172,62 @@ const ProductCard = ({ data, isEvent }) => {
           <div className="flex items-center mt-2 gap-1">
             <Ratings rating={data?.ratings} />
             <p className="font-bold text-xs text-gray-700">
-              {data.ratings ? data?.ratings : "0.0"}
+              {data.ratings ? data?.ratings : '0.0'}
             </p>
           </div>
 
           <p className="text-sm text-gray-600 mt-2 mb-2">
             {data.description.length > 40
-              ? data.description.slice(0, 40) + "..."
+              ? data.description.slice(0, 40) + '...'
               : data.description}
           </p>
+
+          {/* Sizes */}
+          {data.sizes && data.sizes.length > 0 && (
+            <div className="mt-4">
+              <label className="block font-medium text-[#534723]">Sizes:</label>
+              <div className="flex space-x-2">
+                {data.sizes.map((size, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSizeChange(size)}
+                    className={`px-4 py-2 border rounded-md ${
+                      selectedSize && selectedSize.name === size.name
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-white text-gray-700'
+                    }`}
+                  >
+                    {size.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Engraving Options */}
+          {data.engravings && data.engravings.length > 0 && (
+            <div className="mt-4">
+              <label className="block font-medium text-[#534723]">
+                Engraving Options:
+              </label>
+              <div className="flex space-x-2">
+                {data.engravings.map((engraving, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleEngravingChange(engraving)}
+                    className={`px-4 py-2 border rounded-md ${
+                      selectedEngraving &&
+                      selectedEngraving.type === engraving.type
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-white text-gray-700'
+                    }`}
+                  >
+                    {engraving.type}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* buttons */}
@@ -168,83 +265,5 @@ const ProductCard = ({ data, isEvent }) => {
     </>
   );
 };
-
-// const ProductCard2 = () => {
-//   return (
-//     // card
-//     <div className="w-60 p-2 bg-white rounded-xl transform transition-all hover:translate-y-2 duration-300 shadow-lg hover:shadow-2xl mt-4 mb-4 lg:mt-0">
-//       <Link
-//         to={`${
-//           isEvent === true
-//             ? `/product/${data._id}?isEvent=true`
-//             : `/product/${data._id}`
-//         }`}
-//       >
-//         <div class="w-full h-40 overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75">
-//           <img
-//             src="https://pbs.twimg.com/media/FsjFOdeacAU05Rj.jpg:large"
-//             alt="Front of men's Basic Tee in black."
-//             class="w-full h-full object-cover object-center"
-//           />
-//         </div>
-//       </Link>
-
-//       <Link
-//         to={`${
-//           isEvent === true
-//             ? `/product/${data._id}?isEvent=true`
-//             : `/product/${data._id}`
-//         }`}
-//       >
-//         {/* product information */}
-//         <div className="p-2">
-//           {/* name and price */}
-//           <h2 className="font-bold text-lg mb-2">
-//             {data.name.length > 40 ? data.name.slice(0, 40) + "..." : data.name}
-//           </h2>
-//           <span className="text-xl font-semibold">
-//             ₱{data.discountPrice ? data.discountPrice : data.originalPrice}
-//           </span>
-
-//           <div className="flex items-center gap-2">
-//             <span className="text-sm line-through opacity-75">
-//               {" "}
-//               {data.discountPrice ? "₱ " + data.originalPrice : null}
-//             </span>
-//             <span className="font bold text-sm p-2 bg-yellow-300">
-//               {data.discountPrice ? "discounted" : ""}
-//             </span>
-//           </div>
-
-//           <div className="flex items-center mt-2 gap-1">
-//             {/* <AiFillStar className="w-5" /> */}
-//             <Ratings rating={data?.ratings} />
-//             <p className="font-bold text-xs text-gray-700">Ratings</p>
-//           </div>
-
-//           <p className="text-sm text-gray-600 mt-2 mb-2">
-//             {data.description.length > 40
-//               ? data.description.slice(0, 40) + "..."
-//               : data.description}
-//           </p>
-//         </div>
-//       </Link>
-
-//       {/* buttons */}
-//       <div className="flex items-center justify-center gap-2 mb-3">
-//         <button className="px-3 py-1 rounded-lg bg-gray-300 hover:bg-blue-400">
-//           <AiOutlineEye className="w-6" />
-//         </button>
-//         <button className="px-3 py-1 rounded-lg bg-gray-300 hover:bg-blue-400">
-//           <AiOutlineHeart className="w-6" />
-//         </button>
-//         <button className=" flex items-center gap-2 px-3 py-1 rounded-lg bg-gray-300 hover:bg-blue-400">
-//           <AiOutlineShoppingCart />
-//           {/* <p className="">cart</p>  */}
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
 
 export default ProductCard;

@@ -455,8 +455,6 @@ const cartInfo = (data = []) => {
     );
   }
 
-  console.log('checkout: ', data);
-
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8 mr-5">
       <br />
@@ -470,6 +468,14 @@ const cartInfo = (data = []) => {
           <div key={index} className="bg-gray-100 rounded p-4 mb-4">
             <h3 className="text-lg font-bold mb-2">{item.name}</h3>
             <p className="text-gray-700 mb-2">Response: {item.response}</p>
+            {item.size && (
+              <p className="text-gray-700 mb-2">Size: {item.size.name}</p>
+            )}
+            {item.engraving && (
+              <p className="text-gray-700 mb-2">
+                Engraving: {item.engraving.type}
+              </p>
+            )}
             {item.options && (
               <ul>
                 {Object.entries(item.options).map(([key, value]) => (

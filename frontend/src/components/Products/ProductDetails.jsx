@@ -29,8 +29,7 @@ const ProductDetails = ({ data }) => {
   const [insResponse, setInsResponse] = useState('');
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedSize, setSelectedSize] = useState(null);
-  const [selectedImageOption, setSelectedImageOption] = useState(null);
-  const [selectedTextOption, setSelectedTextOption] = useState(null);
+  const [selectedEngraving, setSelectedEngraving] = useState(null);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
@@ -53,7 +52,9 @@ const ProductDetails = ({ data }) => {
   };
 
   const incrementCount = () => {
-    if (data?.stock <= count) {
+    const stock =
+      selectedSize?.stock ?? selectedEngraving?.stock ?? data?.stock;
+    if (stock <= count) {
       toast.error(
         `${data?.name} stock is limited! Please contact us to reserve your order!`
       );
@@ -111,19 +112,12 @@ const ProductDetails = ({ data }) => {
       isItemExists = cart.find(
         (i) => i._id === id && i.size && i.size.name === selectedSize.name
       );
-    } else if (selectedImageOption) {
+    } else if (selectedEngraving) {
       isItemExists = cart.find(
         (i) =>
           i._id === id &&
-          i.imageOption &&
-          i.imageOption.name === selectedImageOption.name
-      );
-    } else if (selectedTextOption) {
-      isItemExists = cart.find(
-        (i) =>
-          i._id === id &&
-          i.textOption &&
-          i.textOption.name === selectedTextOption.name
+          i.engraving &&
+          i.engraving.type === selectedEngraving.type
       );
     }
 
@@ -132,7 +126,9 @@ const ProductDetails = ({ data }) => {
         `${data.name} with the selected option is already in the cart!`
       );
     } else {
-      if (data.stock < 1) {
+      const stock =
+        selectedSize?.stock ?? selectedEngraving?.stock ?? data?.stock;
+      if (stock < 1) {
         toast.error(
           `${data.name} stock is limited! Please contact us to reserve your order!`
         );
@@ -140,17 +136,15 @@ const ProductDetails = ({ data }) => {
         const cartData = {
           ...data,
           qty: count,
+          stock: stock,
           response: insResponse,
           options: selectedOptions,
           size: selectedSize, // Add selected size to cart data
-          imageOption: selectedImageOption, // Add selected image option to cart data
-          textOption: selectedTextOption, // Add selected text option to cart data
+          engraving: selectedEngraving, // Add selected engraving to cart data
           price: selectedSize
             ? selectedSize.price
-            : selectedImageOption
-            ? selectedImageOption.price
-            : selectedTextOption
-            ? selectedTextOption.price
+            : selectedEngraving
+            ? selectedEngraving.price
             : data.discountPrice > 0
             ? data.discountPrice
             : data.originalPrice,
@@ -170,20 +164,12 @@ const ProductDetails = ({ data }) => {
 
   const handleSizeChange = (size) => {
     setSelectedSize(size);
-    setSelectedImageOption(null);
-    setSelectedTextOption(null);
+    setSelectedEngraving(null); // Reset engraving if size is selected
   };
 
-  const handleImageOptionChange = (option) => {
-    setSelectedImageOption(option);
-    setSelectedSize(null);
-    setSelectedTextOption(null);
-  };
-
-  const handleTextOptionChange = (option) => {
-    setSelectedTextOption(option);
-    setSelectedSize(null);
-    setSelectedImageOption(null);
+  const handleEngravingChange = (engraving) => {
+    setSelectedEngraving(engraving);
+    setSelectedSize(null); // Reset size if engraving is selected
   };
 
   const totalReviewsLength =
@@ -245,10 +231,8 @@ const ProductDetails = ({ data }) => {
               <p className="text-justify text-[#534723]">
                 {selectedSize
                   ? selectedSize.description
-                  : selectedImageOption
-                  ? selectedImageOption.description
-                  : selectedTextOption
-                  ? selectedTextOption.description
+                  : selectedEngraving
+                  ? selectedEngraving.description
                   : data.description}
               </p>
 
@@ -259,18 +243,15 @@ const ProductDetails = ({ data }) => {
                     ₱
                     {selectedSize
                       ? selectedSize.price
-                      : selectedImageOption
-                      ? selectedImageOption.price
-                      : selectedTextOption
-                      ? selectedTextOption.price
+                      : selectedEngraving
+                      ? selectedEngraving.price
                       : data.discountPrice > 0
                       ? data.discountPrice
                       : data.originalPrice}
                   </h5>
                   {data.discountPrice > 0 &&
                     !selectedSize &&
-                    !selectedImageOption &&
-                    !selectedTextOption && (
+                    !selectedEngraving && (
                       <h4
                         className={`${styles.price} text-xl line-through text-gray-500`}
                       >
@@ -282,7 +263,10 @@ const ProductDetails = ({ data }) => {
               <div className="flex justify-between items-center">
                 {/* Products Stock */}
                 <h4 className="font-[400] text-[#534723] font-Roboto">
-                  Stocks: {data.stock}
+                  Stocks:{' '}
+                  {selectedSize?.stock ??
+                    selectedEngraving?.stock ??
+                    data.stock}
                 </h4>
                 {/* Sold of Product */}
                 <span className="font-[400] text-[17px] text-[#b19b56]">
@@ -376,71 +360,26 @@ const ProductDetails = ({ data }) => {
                 </div>
               )}
 
-              {/* Image Options */}
-              {data.imageOptions && data.imageOptions.length > 0 && (
+              {/* Engraving Options */}
+              {data.engravings && data.engravings.length > 0 && (
                 <div className="mt-4">
                   <label className="block font-medium text-[#534723]">
-                    Image Options:
+                    Engraving Options:
                   </label>
                   <div className="flex space-x-2">
-                    {data.imageOptions.map((option, index) => (
+                    {data.engravings.map((engraving, index) => (
                       <button
                         key={index}
-                        onClick={() => handleImageOptionChange(option)}
+                        onClick={() => handleEngravingChange(engraving)}
                         className={`px-4 py-2 border rounded-md ${
-                          selectedImageOption &&
-                          selectedImageOption.name === option.name
+                          selectedEngraving &&
+                          selectedEngraving.type === engraving.type
                             ? 'bg-blue-500 text-white'
                             : 'bg-white text-gray-700'
                         }`}
                       >
-                        {option.name}
+                        {engraving.type}
                       </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Text Options */}
-              {data.textOptions && data.textOptions.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Text Options:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.textOptions.map((option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleTextOptionChange(option)}
-                        className={`px-4 py-2 border rounded-md ${
-                          selectedTextOption &&
-                          selectedTextOption.name === option.name
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
-                        }`}
-                      >
-                        {option.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Colors */}
-              {data.colors && data.colors.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Colors:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.colors.map((color, index) => (
-                      <span
-                        key={index}
-                        className="px-4 py-2 border rounded-md"
-                        style={{ backgroundColor: color }}
-                      >
-                        {color}
-                      </span>
                     ))}
                   </div>
                 </div>

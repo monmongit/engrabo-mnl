@@ -11,7 +11,6 @@ import { toast } from 'react-toastify';
 const OrderDetails = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
-  const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const [status, setStatus] = useState('');
   const navigate = useNavigate();
@@ -24,7 +23,6 @@ const OrderDetails = () => {
 
   const data = orders && orders.find((item) => item._id === id);
   console.log('orders information: ', data);
-  console.log('Cart: ', cart);
 
   const orderUpdateHandler = async (e) => {
     await axios
@@ -104,12 +102,23 @@ const OrderDetails = () => {
             <div className="w-full">
               <h5 className="pl-3 text-[18px]">{item.name}</h5>
               <h5 className="pl-3 text-[15px] text-[#534723]">
-                {item.discountPrice > 0
-                  ? `₱ ${item.discountPrice}`
-                  : `₱ ${item.originalPrice}`}
+                ₱ {item.price}
               </h5>
               <h5 className="pl-3 text-[15px] text-[#534723]">
                 Quantity: {item.qty}
+              </h5>
+              {item.size && (
+                <h5 className="pl-3 text-[15px] text-[#534723]">
+                  Size: {item.size.name}
+                </h5>
+              )}
+              {item.engraving && (
+                <h5 className="pl-3 text-[15px] text-[#534723]">
+                  Engraving: {item.engraving.type}
+                </h5>
+              )}
+              <h5 className="pl-3 text-[15px] text-[#534723]">
+                Sub Total: ₱ {item.subTotal.toFixed(2)}
               </h5>
             </div>
           </div>
@@ -246,6 +255,19 @@ const cartInfo = (datas) => {
                   </strong>
                   <h2>
                     Customer Note: <br /> {cartItem.response}
+                  </h2>
+                  {cartItem.size && (
+                    <h2>
+                      Size: <br /> {cartItem.size.name}
+                    </h2>
+                  )}
+                  {cartItem.engraving && (
+                    <h2>
+                      Engraving: <br /> {cartItem.engraving.type}
+                    </h2>
+                  )}
+                  <h2>
+                    Sub Total: <br /> ₱ {cartItem.subTotal.toFixed(2)}
                   </h2>
                   <h2>Selected Options:</h2>
                   {cartItem.options ? (

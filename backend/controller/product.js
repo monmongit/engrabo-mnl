@@ -57,7 +57,6 @@ router.post(
     }
   })
 );
-
 // Get all Products
 router.get(
   '/get-all-products-admin/:id',
