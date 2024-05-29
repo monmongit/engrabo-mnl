@@ -240,7 +240,7 @@ const ProductDetails = ({ data }) => {
                     {data.name}
                   </h2>
                 </h1>
-                <p className="text-justify text-[#534723]">
+                <p className="text-[#534723] text-justify text-[17px] leading-8 pb-10 whitespace-pre-line">
                   {selectedSize
                     ? selectedSize.description
                     : selectedEngraving
@@ -576,7 +576,7 @@ const ProductDetailsInfo = ({
 
       {active === 1 && (
         <p className="text-[#534723] text-justify py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
-          {data.description}
+          {data.details}
         </p>
       )}
 

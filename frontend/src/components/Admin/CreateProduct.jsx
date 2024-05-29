@@ -18,6 +18,7 @@ const CreateProduct = ({ setOpen }) => {
   const [images, setImages] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [details, setDetails] = useState('');
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [grossPrice, setGrossPrice] = useState('');
@@ -118,6 +119,7 @@ const CreateProduct = ({ setOpen }) => {
         ? defaultEngraving.description
         : description
     );
+    newForm.append('details', details);
     newForm.append('category', category);
     newForm.append('tags', tags);
     newForm.append(
@@ -159,6 +161,7 @@ const CreateProduct = ({ setOpen }) => {
           : defaultEngraving
           ? defaultEngraving.description
           : description,
+        details,
         category,
         tags,
         grossPrice: defaultSize
@@ -230,6 +233,23 @@ const CreateProduct = ({ setOpen }) => {
               disabled={sizes.length > 0 || engravings.length > 0}
             ></textarea>
           </div>
+
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Details <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              cols="30"
+              required
+              rows="8"
+              name="details"
+              value={details}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={(e) => setDetails(e.target.value)}
+              placeholder="Enter your product details..."
+            ></textarea>
+          </div>
+
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Category <span className="text-red-500">*</span>

@@ -304,6 +304,7 @@ router.put(
       const updatedProductData = {
         name: req.body.name,
         description: req.body.description,
+        details: req.body.details,
         category: req.body.category,
         tags: req.body.tags,
         grossPrice: req.body.grossPrice,
