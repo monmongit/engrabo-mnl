@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
-import Button from "@mui/material/Button";
-import { DataGrid } from "@mui/x-data-grid";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import Loader from "../Layout/Loader";
-import { AiOutlineArrowRight, AiOutlineSearch } from "react-icons/ai";
-import { getAllOrdersOfAdmin } from "../../redux/action/order";
+import Button from '@mui/material/Button';
+import { DataGrid } from '@mui/x-data-grid';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import Loader from '../Layout/Loader';
+import { AiOutlineArrowRight, AiOutlineSearch } from 'react-icons/ai';
+import { getAllOrdersOfAdmin } from '../../redux/action/order';
+
 
 const AllOrders = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+
 
   useEffect(() => {
     dispatch(getAllOrdersOfAdmin(admin._id));
@@ -26,11 +29,14 @@ const AllOrders = () => {
     setStatusFilter(e.target.value);
   };
 
-  const filteredOrders = orders.filter((item) => {
-    const matchesSearch = item._id.includes(searchTerm);
-    const matchesStatus = statusFilter === "" || item.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+
+  const filteredOrders =
+    orders &&
+    orders.filter((item) => {
+      const matchesSearch = item._id.includes(searchTerm);
+      const matchesStatus = statusFilter === '' || item.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -75,12 +81,17 @@ const AllOrders = () => {
     },
   ];
 
-  const rows = filteredOrders.map((item) => ({
-    id: item._id,
-    itemsQty: item.cart.length,
-    total: "₱ " + item.totalPrice,
-    status: item.status,
-  }));
+  const row = [];
+
+  filteredOrders &&
+    filteredOrders.forEach((item) => {
+      row.push({
+        id: item._id,
+        itemsQty: item.cart.length,
+        total: '₱ ' + item.totalPrice,
+        status: item.status,
+      });
+    });
 
   return (
     <>

@@ -3,8 +3,6 @@ import DashboardHeader from '../../components/Admin/Layout/DashboardHeader';
 import DashboardSideBar from '../../components/Admin/Layout/DashboardSideBar';
 import AllUsers from './../../components/Admin/AllUsers';
 
-
-
 const AdminAllUsers = () => {
   return (
     <div>
@@ -12,7 +10,7 @@ const AdminAllUsers = () => {
         <DashboardHeader />
         <div className="flex justify-between w-full">
           <div className="w-[80px] 800px:w-[330px]">
-            <DashboardSideBar active={9} />
+            <DashboardSideBar active={12} />
           </div>
           <div className="w-full justify-center flex">
             <AllUsers />

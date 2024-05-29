@@ -78,7 +78,29 @@ const DashboardHero = () => {
           createdAt.getMonth() === parseInt(monthIndex)
         );
       })
-      .reduce((acc, product) => acc + product.stock * product.grossPrice, 0);
+      .reduce((acc, product) => {
+        let productExpense = 0;
+        if (
+          (product.sizes && product.sizes.length > 0) ||
+          (product.engravings && product.engravings.length > 0)
+        ) {
+          const sizeExpenses = product.sizes.reduce(
+            (sizeAcc, size) =>
+              sizeAcc + (size.stock || 0) * (size.grossPrice || 0),
+            0
+          );
+          const engravingExpenses = product.engravings.reduce(
+            (engravingAcc, engraving) =>
+              engravingAcc +
+              (engraving.stock || 0) * (engraving.grossPrice || 0),
+            0
+          );
+          productExpense = sizeExpenses + engravingExpenses;
+        } else {
+          productExpense = (product.stock || 0) * (product.grossPrice || 0);
+        }
+        return acc + productExpense;
+      }, 0);
 
     const ordersCount = orders.filter((order) => {
       const paidAt = new Date(order.paidAt);
@@ -198,7 +220,7 @@ const DashboardHero = () => {
       tooltip: {
         y: {
           formatter: function (val) {
-            return "₱" + val.toFixed(2);
+            return '₱' + (val ? val.toFixed(2) : '0.00');
           },
         },
       },
@@ -245,7 +267,7 @@ const DashboardHero = () => {
     ).getDate();
     const categories = [];
     for (let i = 1; i <= daysInMonth; i++) {
-      categories.push(`${year}-${parseInt(monthIndex) + 1}-${i}`);
+      categories.push(`${i}`);
     }
     return categories;
   };
@@ -281,7 +303,29 @@ const DashboardHero = () => {
             createdAt.getDate() === i
           );
         })
-        .reduce((acc, product) => acc + product.stock * product.grossPrice, 0);
+        .reduce((acc, product) => {
+          let productExpense = 0;
+          if (
+            (product.sizes && product.sizes.length > 0) ||
+            (product.engravings && product.engravings.length > 0)
+          ) {
+            const sizeExpenses = product.sizes.reduce(
+              (sizeAcc, size) =>
+                sizeAcc + (size.stock || 0) * (size.grossPrice || 0),
+              0
+            );
+            const engravingExpenses = product.engravings.reduce(
+              (engravingAcc, engraving) =>
+                engravingAcc +
+                (engraving.stock || 0) * (engraving.grossPrice || 0),
+              0
+            );
+            productExpense = sizeExpenses + engravingExpenses;
+          } else {
+            productExpense = (product.stock || 0) * (product.grossPrice || 0);
+          }
+          return acc + productExpense;
+        }, 0);
       expensesData.push(dayExpenses);
 
       const dayOrders = orders.filter((order) => {
@@ -724,8 +768,23 @@ const computeTotalExpenses = (products) => {
   if (!products || products.length === 0) {
     return 0;
   }
+
   const totalExpenses = products.reduce((total, product) => {
-    const productExpense = product.stock * product.grossPrice;
+    let productExpense = 0;
+    if (product.sizes && product.sizes.length > 0) {
+      productExpense = product.sizes.reduce(
+        (sizeAcc, size) => sizeAcc + (size.stock || 0) * (size.grossPrice || 0),
+        0
+      );
+    } else if (product.engravings && product.engravings.length > 0) {
+      productExpense = product.engravings.reduce(
+        (engravingAcc, engraving) =>
+          engravingAcc + (engraving.stock || 0) * (engraving.grossPrice || 0),
+        0
+      );
+    } else {
+      productExpense = (product.stock || 0) * (product.grossPrice || 0);
+    }
     return total + productExpense;
   }, 0);
 
@@ -834,7 +893,21 @@ const transactionChart = (orders, products) => {
     const month = createdAt.getMonth();
     const year = createdAt.getFullYear();
     const key = `${year}-${month}`;
-    const productExpenses = product.stock * product.grossPrice;
+    let productExpenses = 0;
+    if (product.sizes && product.sizes.length > 0) {
+      productExpenses = product.sizes.reduce(
+        (sizeAcc, size) => sizeAcc + (size.stock || 0) * (size.grossPrice || 0),
+        0
+      );
+    } else if (product.engravings && product.engravings.length > 0) {
+      productExpenses = product.engravings.reduce(
+        (engravingAcc, engraving) =>
+          engravingAcc + (engraving.stock || 0) * (engraving.grossPrice || 0),
+        0
+      );
+    } else {
+      productExpenses = (product.stock || 0) * (product.grossPrice || 0);
+    }
     if (!monthlyExpenses[key]) {
       monthlyExpenses[key] = {
         month: month,
@@ -855,7 +928,7 @@ const transactionChart = (orders, products) => {
     delivered_orders: item.delivered_orders,
     expenses: monthlyExpenses[`${item.year}-${item.month}`]
       ? monthlyExpenses[`${item.year}-${item.month}`].expenses.toFixed(2)
-      : 0,
+      : '0.00',
   }));
 
   return (
@@ -934,7 +1007,9 @@ const MyChartComponentSales = (formattedData) => {
     tooltip: {
       y: {
         formatter: function (val) {
-          return "₱" + val.toFixed(2);
+
+          return '₱' + (val ? val.toFixed(2) : '0.00');
+
         },
       },
     },
@@ -968,11 +1043,9 @@ const MyChartComponentSales = (formattedData) => {
 
 const MyChartComponentOrders = (formattedData) => {
   const categories = formattedData.map((item) => item.month);
-  const total_orders = formattedData.map((item) =>
-    item.orders.toLocaleString()
-  );
+  const total_orders = formattedData.map((item) => parseFloat(item.orders));
   const delivered_orders = formattedData.map((item) =>
-    item.delivered_orders.toLocaleString()
+    parseFloat(item.delivered_orders)
   );
 
   //RESPONSIVENESS OF TITLE CHART
