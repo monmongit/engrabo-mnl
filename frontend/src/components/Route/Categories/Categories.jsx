@@ -1,10 +1,23 @@
-import React from 'react';
-import { brandingData, categoriesData } from '../../../static/data';
-import styles from '../../../styles/style';
+import React, { useEffect } from 'react';
+import { brandingData } from '../../../static/data';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import styles from '../../../styles/style';
+import { getAllCategories } from '../../../redux/action/category';
 
 const Categories = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { categories, isLoading } = useSelector((state) => state.categories);
+
+  useEffect(() => {
+    dispatch(getAllCategories());
+  }, [dispatch]);
+
+  const handleSubmit = (category) => {
+    navigate(`/products?category=${category.title}`);
+  };
+
   return (
     <>
       <div className={`${styles.section} hidden sm:block`}>
@@ -32,30 +45,29 @@ const Categories = () => {
         className={`${styles.section} bg-white p-6 rounded-lg mb-12 mt-12`}
         id="categories"
       >
-        <div className="grid grid-cols-1 gap-[5px] md:grid-cols-2 md:gap-[10px] lg:grid-cols-4 lg:gap-[20px] xl:grid-cols-5 xl:gap-[30px]">
-          {categoriesData &&
-            categoriesData.map((i) => {
-              const handleSubmit = (i) => {
-                navigate(`/products?category=${i.title}`);
-              };
-              return (
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-[5px] md:grid-cols-2 md:gap-[10px] lg:grid-cols-4 lg:gap-[20px] xl:grid-cols-5 xl:gap-[30px]">
+            {categories &&
+              categories.map((category) => (
                 <div
                   className="w-full h-[100px] flex items-center justify-between cursor-pointer overflow-hidden"
-                  key={i.id}
-                  onClick={() => handleSubmit(i)}
+                  key={category._id}
+                  onClick={() => handleSubmit(category)}
                 >
                   <h5 className={`text-[17px] leading-[1.2] text-[#171203]`}>
-                    {i.title}
+                    {category.title}
                   </h5>
                   <img
-                    src={i.image_Url}
+                    src={category.images[0]?.url}
                     className="w-[120px] object-cover"
-                    alt=""
+                    alt={category.title}
                   />
                 </div>
-              );
-            })}
-        </div>
+              ))}
+          </div>
+        )}
       </div>
     </>
   );

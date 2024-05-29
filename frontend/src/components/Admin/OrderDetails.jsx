@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
-import styles from "../../styles/style";
-import { BsFillBagFill } from "react-icons/bs";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllOrdersOfAdmin } from "../../redux/action/order";
-import { server } from "../../server";
-import axios from "axios";
-import { toast } from "react-toastify";
+import React, { useEffect, useState } from 'react';
+import styles from '../../styles/style';
+import { BsFillBagFill } from 'react-icons/bs';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllOrdersOfAdmin } from '../../redux/action/order';
+import { server } from '../../server';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const OrderDetails = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
-  const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState('');
   const navigate = useNavigate();
 
   const { id } = useParams();
@@ -23,8 +22,7 @@ const OrderDetails = () => {
   }, [dispatch, admin._id]);
 
   const data = orders && orders.find((item) => item._id === id);
-  console.log("orders information: ", data);
-  console.log("Cart: ", cart);
+  console.log('orders information: ', data);
 
   const orderUpdateHandler = async (e) => {
     await axios
@@ -38,8 +36,8 @@ const OrderDetails = () => {
         }
       )
       .then((res) => {
-        toast.success("Order Status Update!");
-        navigate("/dashboard-orders");
+        toast.success('Order Status Update!');
+        navigate('/dashboard-orders');
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -58,13 +56,14 @@ const OrderDetails = () => {
         }
       )
       .then((res) => {
-        toast.success("Order Status Update!");
+        toast.success('Order Status Update!');
         dispatch(getAllOrdersOfAdmin(admin._id));
       })
       .catch((error) => {
         toast.error(error.response.data.message);
       });
   };
+
   return (
     <div className={`py-4 min-h-screen ${styles.section}`}>
       <div className="w-full flex items-center justify-between">
@@ -94,7 +93,7 @@ const OrderDetails = () => {
       <br />
       {data &&
         data?.cart.map((item, index) => (
-          <div className="w-full flex items-start mb-5">
+          <div className="w-full flex items-start mb-5" key={index}>
             <img
               src={`${item.images[0]?.url}`}
               alt=""
@@ -103,12 +102,23 @@ const OrderDetails = () => {
             <div className="w-full">
               <h5 className="pl-3 text-[18px]">{item.name}</h5>
               <h5 className="pl-3 text-[15px] text-[#534723]">
-                {item.discountPrice > 0
-                  ? `₱ ${item.discountPrice}`
-                  : `₱ ${item.originalPrice}`}
+                ₱ {item.price}
               </h5>
               <h5 className="pl-3 text-[15px] text-[#534723]">
                 Quantity: {item.qty}
+              </h5>
+              {item.size && (
+                <h5 className="pl-3 text-[15px] text-[#534723]">
+                  Size: {item.size.name}
+                </h5>
+              )}
+              {item.engraving && (
+                <h5 className="pl-3 text-[15px] text-[#534723]">
+                  Engraving: {item.engraving.type}
+                </h5>
+              )}
+              <h5 className="pl-3 text-[15px] text-[#534723]">
+                Sub Total: ₱ {item.subTotal.toFixed(2)}
               </h5>
             </div>
           </div>
@@ -128,7 +138,7 @@ const OrderDetails = () => {
           <h4 className="pt-3 text-[20px] font-[600]">Shipping Address</h4>
           <h4 className="pt-3 ">
             {data?.shippingAddress.address1 +
-              " " +
+              ' ' +
               data?.shippingAddress.address2}
           </h4>
           <h4 className="pt-3">{data?.shippingAddress.country}</h4>
@@ -144,43 +154,47 @@ const OrderDetails = () => {
           </h4>
           {cartInfo(data)}
         </div>
-        {/* <div> */}
-        {/* <h4 className="pt-3 text-[20px] font-[600]">Order Notes Information</h4> */}
-        {/* {cartInfo2(cart)} */}
-        {/* </div> */}
+
+        <div className="w-full 800px:w-[40%] mr-5">
+          <h4 className="pt-3 text-[20px] font-[600]">
+            Orders Custom Design
+            {orderCustomDesign(data.cart)}
+          </h4>
+        </div>
 
         <div className="w-full 800px:w-[40%]">
           <h4 className="pt-3 text-[20px] font-[600]">Payment Information</h4>
-          Status:{" "}
-          {data?.paymentInfo?.status ? data?.paymentInfo?.status : "Not Paid"}
+          Status:{' '}
+          {data?.paymentInfo?.status ? data?.paymentInfo?.status : 'Not Paid'}
         </div>
       </div>
+
 
       <br />
 
       {/* Status of Order */}
       <h4 className="pt-3 text-[20px] font-[600]">Order Status:</h4>
-      {data?.status !== "Processing Refund" &&
-        data?.status !== "Refund Approved" && (
+      {data?.status !== 'Processing Refund' &&
+        data?.status !== 'Refund Approved' && (
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             className="mt-2 appearance-none block px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
           >
             {[
-              "Processing",
-              "Transferred to delivery partner",
-              "Shipping",
-              "On the way",
-              "Delivered",
+              'Processing',
+              'Transferred to delivery partner',
+              'Shipping',
+              'On the way',
+              'Delivered',
             ]
               .slice(
                 [
-                  "Processing",
-                  "Transferred to delivery partner",
-                  "Shipping",
-                  "On the way",
-                  "Delivered",
+                  'Processing',
+                  'Transferred to delivery partner',
+                  'Shipping',
+                  'On the way',
+                  'Delivered',
                 ].indexOf(data?.status)
               )
               .map((option, index) => (
@@ -191,16 +205,21 @@ const OrderDetails = () => {
           </select>
         )}
 
-      {data?.status === "Processing Refund" ||
-      data?.status === "Refund Approved" ? (
+      {(data?.status === 'Processing Refund' ||
+        data?.status === 'Refund Approved' ||
+        data?.status === 'Refund Successful') && (
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
           className="mt-2 appearance-none block px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
         >
-          {["Processing Refund", "Refund Approved"]
+          {['Processing Refund', 'Refund Approved', 'Refund Successful']
             .slice(
-              ["Processing Refund", "Refund Approved"].indexOf(data?.status)
+              [
+                'Processing Refund',
+                'Refund Approved',
+                'Refund Successful',
+              ].indexOf(data?.status)
             )
             .map((option, index) => (
               <option value={option} key={index}>
@@ -208,12 +227,12 @@ const OrderDetails = () => {
               </option>
             ))}
         </select>
-      ) : null}
+      )}
 
       <div
         className={`${styles.button}!w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 font-[600] text-[18px] text-[#fff4d7]`}
         onClick={
-          data?.status !== "Processing Refund"
+          data?.status !== 'Processing Refund'
             ? orderUpdateHandler
             : refundOrderUpdateHandler
         }
@@ -224,15 +243,46 @@ const OrderDetails = () => {
   );
 };
 
+const orderCustomDesign = (data) => {
+  console.log("order custom design ", data);
+
+  return (
+    <>
+      {data.map((item, index) => (
+        <div key={index} className="bg-gray-100 rounded p-4 mb-4">
+          <a
+            key={index}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+          >
+            <img
+              src={item.url}
+              alt={`Image ${index + 1}`}
+              className="w-full h-full border-solid"
+            />
+          </a>
+        </div>
+      ))}
+    </>
+  );
+};
+
+
+
 const cartInfo = (datas) => {
-  console.log("data in cart info", datas);
+  console.log('data in cart info', datas);
+  if (!datas || !datas.cart) {
+    return null;
+  }
   const data = Object.entries(datas);
-  console.log("Datas : ", data);
+  console.log('Datas : ', data);
   return (
     <div>
       {data.map((item, index) => {
         // Check if the item contains a cart array
-        if (item[0] === "cart") {
+        if (item[0] === 'cart') {
           return (
             <div key={index}>
               {item[1].map((cartItem, cartIndex) => (
@@ -242,6 +292,19 @@ const cartInfo = (datas) => {
                   </strong>
                   <h2>
                     Customer Note: <br /> {cartItem.response}
+                  </h2>
+                  {cartItem.size && (
+                    <h2>
+                      Size: <br /> {cartItem.size.name}
+                    </h2>
+                  )}
+                  {cartItem.engraving && (
+                    <h2>
+                      Engraving: <br /> {cartItem.engraving.type}
+                    </h2>
+                  )}
+                  <h2>
+                    Sub Total: <br /> ₱ {cartItem.subTotal.toFixed(2)}
                   </h2>
                   <h2>Selected Options:</h2>
                   {cartItem.options ? (
@@ -261,40 +324,7 @@ const cartInfo = (datas) => {
         return null;
       })}
     </div>
-    // <>div</>
   );
 };
-
-// const cartInfo2 = (data) => {
-//   console.log("checkout: ",data)
-//   const optionsArray = Object.entries(data);
-
-//   console.log("response: ", data.response)
-//   console.log("optionsArray: ", optionsArray );
-//   return (
-//     <div className="w-full bg-[#fff] rounded-md p-5 pb-8 mr-5">
-//       <br />
-//       <div className="flex justify-between mt-5">
-//         <h3 className="text-[16px] font-[400] text-[#b19b56]">
-//           Checkout Options and Notes:
-//         </h3>
-//       </div>
-//       <div className="mt-3">
-//         {/* Repeat this block for each option */}
-//         {data.map((item, index) => (
-//         <div key={index} className="bg-gray-100 rounded p-4 mb-4"> {/* Tailwind CSS classes for styling */}
-//           <h3 className="text-lg font-bold mb-2">{item.name}</h3> {/* Display product name */}
-//           <p className="text-gray-700 mb-2">Response: {item.response}</p>
-//           <ul>
-//             {Object.entries(item.options).map(([key, value]) => (
-//               <li key={key} className="text-gray-700">{key}: {value}</li>
-//             ))}
-//           </ul>
-//         </div>
-//       ))}
-//       </div>
-//     </div>
-//   );
-// };
 
 export default OrderDetails;

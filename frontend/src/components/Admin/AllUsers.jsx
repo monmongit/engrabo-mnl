@@ -1,42 +1,61 @@
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { DataGrid } from '@mui/x-data-grid';
-import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { AiOutlineDelete, AiOutlineSearch } from 'react-icons/ai';
 import Loader from '../Layout/Loader';
-import { AiOutlineArrowRight } from 'react-icons/ai';
-import { getAllUsers } from '../../redux/action/user';
+import { getAllUsers, deleteUser } from '../../redux/action/user';
+import { Link } from 'react-router-dom';
 
 const AllUsers = () => {
-  const {usersList, isLoading} = useSelector((state) => state.user);
+  const { usersList, isLoading } = useSelector((state) => state.user);
   const { admin } = useSelector((state) => state.admin);
-  console.log("id from component:", admin._id);
+  const dispatch = useDispatch();
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const dispatch = useDispatch()
-
-  useEffect(()=>{
-      dispatch(getAllUsers(admin._id));
+  useEffect(() => {
+    dispatch(getAllUsers(admin._id));
   }, [dispatch, admin._id]);
-  
-  console.log("list of users are: ", usersList);
+
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      dispatch(deleteUser(id));
+    }
+  };
+
+  const filteredUsers = usersList.filter((user) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   const columns = [
-  { field: 'id', headerName: 'User ID', minWidth: 150, flex: 0.7 },
-  { field: 'name', headerName: 'User Name', minWidth: 150, flex: 0.7 },
-  { field: 'email', headerName: 'User Email', minWidth: 130, flex: 0.8 },
-  {
-    field: 'phonenumber',
-    headerName: 'User Phone Number',
-    type: 'string',
-    minWidth: 150,
-    flex: 0.8,
-  },
+    { field: 'id', headerName: 'User ID', minWidth: 150, flex: 0.7 },
+    { field: 'name', headerName: 'User Name', minWidth: 150, flex: 0.7 },
+    { field: 'email', headerName: 'User Email', minWidth: 130, flex: 0.8 },
+    {
+      field: 'phonenumber',
+      headerName: 'User Phone Number',
+      type: 'string',
+      minWidth: 150,
+      flex: 0.8,
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      minWidth: 150,
+      flex: 0.5,
+      renderCell: (params) => (
+        <Button onClick={() => handleDelete(params.row.id)}>
+          <AiOutlineDelete size={20} />
+        </Button>
+      ),
+    },
   ];
 
-  const rows = usersList.map((user) => ({
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      phonenumber: user.phoneNumber,
+  const rows = filteredUsers.map((user) => ({
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    phonenumber: user.phoneNumber,
   }));
 
   return (
@@ -45,6 +64,21 @@ const AllUsers = () => {
         <Loader />
       ) : (
         <div className="w-full mx-8 pt-1 mt-10 bg-white">
+          <div className="w-full flex justify-end items-center mb-4">
+            <div className="relative w-[40%]">
+              <input
+                type="text"
+                placeholder="Search Users..."
+                className="h-[45px] pl-2 pr-10 w-full border-[#171203] border-[2px] rounded-md placeholder-[#9e8a4f]"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <AiOutlineSearch
+                size={30}
+                className="absolute right-2 top-1.5 cursor-pointer"
+              />
+            </div>
+          </div>
           <DataGrid
             rows={rows}
             columns={columns}
@@ -53,9 +87,8 @@ const AllUsers = () => {
             autoHeight
           />
         </div>
-      )} 
+      )}
     </>
-
   );
 };
 

@@ -4,11 +4,13 @@ import styles from '../../styles/style';
 
 const DropDown = ({ categoriesData, setDropDown }) => {
   const navigate = useNavigate();
-  const submitHande = (i) => {
+
+  const submitHandle = (i) => {
     navigate(`/products?category=${i.title}`);
     setDropDown(false);
     window.location.reload();
   };
+
   return (
     <div className="pb-4 w-[270px] bg-[#fff] absolute z-30 rounded-b-md shadow-sm">
       {categoriesData &&
@@ -16,10 +18,10 @@ const DropDown = ({ categoriesData, setDropDown }) => {
           <div
             key={index}
             className={`${styles.normalFlex}`}
-            onClick={() => submitHande(i)}
+            onClick={() => submitHandle(i)}
           >
             <img
-              src={i.image_Url}
+              src={i.images[0]?.url}
               style={{
                 width: '25px',
                 height: '25px',
