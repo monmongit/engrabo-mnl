@@ -20,6 +20,8 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import UserCreateDesign from '../UserCreateDesign';
 
+// import UserOrderOptions from './UserOrderOptions';
+
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
@@ -30,6 +32,9 @@ const ProductDetails = ({ data }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedEngraving, setSelectedEngraving] = useState(null);
+  const [drawingInfo, setDrawingInfo] = useState('');
+  const [open, setOpen] = useState(false);
+  const [urls, setUrls] = useState([]);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
@@ -198,7 +203,7 @@ const ProductDetails = ({ data }) => {
               <img
                 src={`${data && data.images[select]?.url}`}
                 alt=""
-                className=" h-[90%] w-[100%] rounded-md shadow-lg"
+                className=" shadow-lg w-full h-full aspect-square rounded-xl"
               />
 
               <div className="flex mt-4 space-x-2">
@@ -224,17 +229,25 @@ const ProductDetails = ({ data }) => {
 
             {/* Description of Product */}
             <div className="w-full md:w-1/2 pt-5 space-y-5">
-              {/* Image of Product Description */}
-              <h1 className={`${styles.productTitle} text-3xl font-bold`}>
-                {data.name}
-              </h1>
-              <p className="text-justify text-[#534723]">
-                {selectedSize
-                  ? selectedSize.description
-                  : selectedEngraving
-                  ? selectedEngraving.description
-                  : data.description}
-              </p>
+              <>
+                {/* Image of Product Description */}
+                <h1 className={`${styles.productTitle}`}>
+                  <span class="mb-0.5 inline-block text-gray-500 text-base">
+                    {data.category}
+                  </span>
+
+                  <h2 class="text-2xl font-bold text-gray-800 lg:text-3xl">
+                    {data.name}
+                  </h2>
+                </h1>
+                <p className="text-justify text-[#534723]">
+                  {selectedSize
+                    ? selectedSize.description
+                    : selectedEngraving
+                    ? selectedEngraving.description
+                    : data.description}
+                </p>
+              </>
 
               <div className="py-2 flex items-center justify-between">
                 {/* Price of Product */}
@@ -271,68 +284,6 @@ const ProductDetails = ({ data }) => {
                 {/* Sold of Product */}
                 <span className="font-[400] text-[17px] text-[#b19b56]">
                   {data?.sold_out} sold
-                </span>
-              </div>
-
-              <div className="flex items-center mt-6 justify-between">
-                {/* Add and Dec number of a Product */}
-                <div className="flex items-center space-x-2">
-                  <button
-                    className="bg-gradient-to-r from-[#534723] to-[#171203] text-white h-11 font-bold rounded px-4 py-2 shadow-lg hover:opacity-80 transition duration-300 ease-in-out"
-                    onClick={decrementCount}
-                  >
-                    -
-                  </button>
-                  <span className="bg-[#fff4d7] text-[#171203] font-medium px-4 py-[11px]">
-                    {count}
-                  </span>
-                  <button
-                    className="bg-gradient-to-r from-[#534723] to-[#171203] text-white h-11 font-bold rounded px-4 py-2 shadow-lg hover:opacity-80 transition duration-300 ease-in-out"
-                    onClick={incrementCount}
-                  >
-                    +
-                  </button>
-                </div>
-
-                {/* Heart of a Product */}
-                <div>
-                  {click ? (
-                    <AiFillHeart
-                      size={30}
-                      className="cursor-pointer"
-                      onClick={() => removeFromWishlistHandler(data)}
-                      color="#171203"
-                      title="Removed from wishlist"
-                    />
-                  ) : (
-                    <AiOutlineHeart
-                      size={30}
-                      className="cursor-pointer"
-                      onClick={() => addToWishlistHandler(data)}
-                      color="#171203"
-                      title="Added to wishlist"
-                    />
-                  )}
-                </div>
-              </div>
-
-              {/* Cart Button */}
-              <div
-                className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
-                onClick={() => addToCartHandler(data._id)}
-              >
-                <span className="flex items-center">
-                  Add to cart <AiOutlineShoppingCart className="ml-1" />
-                </span>
-              </div>
-
-              {/* Create Design Button */}
-              <div
-                className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center justify-center bg-[#171203] text-white cursor-pointer hover:opacity-95 transition duration-300 ease-in-out`}
-                onClick={() => createDesignHandler(data._id)}
-              >
-                <span className="flex items-center">
-                  Create Design <AiOutlineFontSize className="ml-1" />
                 </span>
               </div>
 
@@ -382,6 +333,86 @@ const ProductDetails = ({ data }) => {
                       </button>
                     ))}
                   </div>
+                </div>
+              )}
+
+              <div className="flex items-center mt-6 justify-between">
+                {/* Add and Dec number of a Product */}
+                <div className="flex items-center space-x-2">
+                  <button
+                    className="bg-gradient-to-r from-[#534723] to-[#171203] text-white h-11 font-bold rounded px-4 py-2 shadow-lg hover:opacity-80 transition duration-300 ease-in-out"
+                    onClick={decrementCount}
+                  >
+                    -
+                  </button>
+                  <span className="bg-[#fff4d7] text-[#171203] font-medium px-4 py-[11px]">
+                    {count}
+                  </span>
+                  <button
+                    className="bg-gradient-to-r from-[#534723] to-[#171203] text-white h-11 font-bold rounded px-4 py-2 shadow-lg hover:opacity-80 transition duration-300 ease-in-out"
+                    onClick={incrementCount}
+                  >
+                    +
+                  </button>
+                </div>
+
+                {/* Heart of a Product */}
+                <div>
+                  {click ? (
+                    <AiFillHeart
+                      size={30}
+                      className="cursor-pointer"
+                      onClick={() => removeFromWishlistHandler(data)}
+                      color="#171203"
+                      title="Removed from wishlist"
+                    />
+                  ) : (
+                    <AiOutlineHeart
+                      size={30}
+                      className="cursor-pointer"
+                      onClick={() => addToWishlistHandler(data)}
+                      color="#171203"
+                      title="Added to wishlist"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Cart Button */}
+              <div
+                className="flex items-center justify-center bg-gradient-to-r from-blue-400 to-blue-600 text-white font-semibold py-3 px-8 md:px-16 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-800 transition duration-300 ease-in-out mt-4 md:mt-0"
+                onClick={() => addToCartHandler(data._id)}
+              >
+                <span className="flex items-center">
+                  Add to cart <AiOutlineShoppingCart className="ml-1" />
+                </span>
+              </div>
+
+              {/* Create Design Button */}
+              {data.mediaType !== 'none' && (
+                <div
+                  className="flex items-center justify-center bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-3 px-8 md:px-16 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-green-600 hover:to-green-800 transition duration-300 ease-in-out mt-4 md:mt-0"
+                  onClick={() => setOpen(true)}
+                >
+                  <span className="flex items-center">
+                    Create Your Own Design
+                    <AiOutlineFontSize className="ml-1" />
+                  </span>
+                </div>
+              )}
+
+              {/* pops us the drawing page */}
+              {open && (
+                <div className="fixed inset-0 z-50 flex justify-center items-center">
+                  {/* <UserOrderOptions setOpen={setOpen} /> */}
+                  {
+                    <UserCreateDesign
+                      data={data}
+                      setDrawingInfo={setDrawingInfo}
+                      setOpen={setOpen}
+                      setUrls={setUrls}
+                    />
+                  }
                 </div>
               )}
 
@@ -463,7 +494,6 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
-          {data.mediaType !== 'none' && <UserCreateDesign data={data} />}
           <ProductDetailsInfo
             data={data}
             products={products}
