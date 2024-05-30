@@ -8,15 +8,20 @@ import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 import "../../styles/toastDesign.css";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState("");
+  const [backdropOpen, setBackdropOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setBackdropOpen(true);
 
     await axios
       .post(
@@ -34,6 +39,9 @@ const Login = () => {
       })
       .catch((err) => {
         toast.error(err.response.data.message);
+      })
+      .finally(() => {
+        setBackdropOpen(false);
       });
   };
 
@@ -148,6 +156,15 @@ const Login = () => {
               </Link>
             </div>
           </form>
+          <Backdrop
+            sx={{
+              color: "#fff",
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+            }}
+            open={backdropOpen}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </div>
     </div>
