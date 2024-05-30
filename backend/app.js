@@ -9,7 +9,7 @@ app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://engrabo-mnl-frnt.vercel.app",
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
