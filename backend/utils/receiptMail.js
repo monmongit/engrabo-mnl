@@ -25,6 +25,7 @@ const receiptMail = async (latestOrder) => {
         cid: "footer",
       },
     ];
+
     const createAt = latestOrder?.createAt;
     const formattedCreateAt = createAt
       ? moment(createAt).format("YYYY-MM-DD HH:mm")
@@ -39,10 +40,10 @@ const receiptMail = async (latestOrder) => {
             <td style="padding: 10px;">
                 <img src="${item.images[0]?.url}" alt="" style="width: 100px; height: 100px; border-radius: 5px;"  />
             </td>
-            <td style="padding: 10px;">${item.description}</td>
-            <td style="padding: 10px;">${item.originalPrice}</td>
-            <td style="padding: 10px;">${item.qty}</td>
-            <td style="padding: 10px;">${latestOrder.totalPrice}</td>
+            <td style="padding: 10px; font-size: 12px; font-weight: bold;">${item.description}</td>
+            <td style="padding: 10px; font-size: 12px; font-weight: bold;">₱${item.originalPrice}</td>
+            <td style="padding: 10px; font-size: 12px; font-weight: bold;">x${item.qty}</td>
+            <td style="padding: 10px; font-size: 12px; font-weight: bold;">₱${item.subTotal}</td>
         </tr>`
         )
         .join("") +
@@ -51,9 +52,9 @@ const receiptMail = async (latestOrder) => {
         </tr>
         <tr>
           <td style="padding: 10px;" colspan="1"></td>  <!-- Empty cell to align Total Payment under the second column -->
-          <td style="padding: 10px; font-weight: bold;" colspan="2">Total Payment:</td>
+          <td style="padding: 10px; font-weight: bold; margin-bottom: 20px;" colspan="2">Total Payment:</td>
           <td style="padding: 10px; font-weight: bold;" colspan="1"></td>  <!-- Empty cell to align Total Payment under the second column -->
-          <td style="padding: 10px; font-weight: bold;">${latestOrder.totalPrice}</td>
+          <td style="padding: 10px; font-weight: bold;">₱${latestOrder.totalPrice}</td>
         </tr>`;
 
     const mailOptions = {
@@ -67,9 +68,9 @@ const receiptMail = async (latestOrder) => {
   
           <h1 style="font-weight: bold; margin-bottom: 20px; text-align: center;">Thanks for shopping with us!</h1>
       <hr style="margin-bottom: 40px;">
-      <p style="margin-bottom: 30px; font-size: 15px; text-align: center;">
-      Hi <div style="display: inline-block; color: #B88E61; font-weight: bold; text-align: center;">${latestOrder?.user?.name}</div>,
-    </p>
+      <p style="margin-bottom: 30px; font-size: 18px; text-align: center;">
+      Hi <span style="color: #B88E61; font-size: 18px;">${latestOrder?.user?.name}</span>,
+      </p>
           <p style="margin-bottom: 10px; font-size: 15px; font-weight: bold;  text-align: center;">Your order [${latestOrder?._id}] has been submitted and is now processing.</p>
           <p style="margin-bottom: 40px; font-size: 15px; font-weight: bold;  text-align: center;">Please see your order summary and details below.</p>
           <!-- Table starts here -->
@@ -114,11 +115,11 @@ const receiptMail = async (latestOrder) => {
                 <th colspan="5" style="text-align: left; background-color: #F5F5F5; padding: 20px; font-size: 15px;">Order Details</th>
             </tr>
             <tr>
-                <th style="padding: 10px; font-size: 12px; font-weight: bold;">Product</th>
-                <th style="padding: 10px; font-size: 12px; font-weight: bold;">Product Details</th>
-                <th style="padding: 10px; font-size: 12px; font-weight: bold;">Price</th>
-                <th style="padding: 10px; font-size: 12px; font-weight: bold;">Quantity</th>
-                <th style="padding: 10px; font-size: 12px; font-weight: bold;">Total</th>
+            <th style="padding: 10px; font-size: 12px; font-weight: bold; text-align: left;">Product</th>
+            <th style="padding: 10px; font-size: 12px; font-weight: bold; text-align: left;">Product Details</th>
+            <th style="padding: 10px; font-size: 12px; font-weight: bold; text-align: left;">Price</th>
+            <th style="padding: 10px; font-size: 12px; font-weight: bold; text-align: left;">Quantity</th>
+            <th style="padding: 10px; font-size: 12px; font-weight: bold; text-align: left;">Total</th>
             </tr>
         </thead>
         <tbody>
@@ -128,8 +129,9 @@ const receiptMail = async (latestOrder) => {
         </tbody>
       </table>
 
-          <img src="cid:footer" alt="Footer" style="position: absolute; bottom: 0; right: 0; left: 0; margin: 0; max-width: 100%; height: auto;" />
       </div>
+      <img src="cid:footer" alt="Footer" style="position: absolute; bottom: 0; right: 0; left: 0; margin: 0; max-width: 100%; height: auto; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; margin-top: -2px;" />
+
   </div>
         `,
       attachments: attachments, // Add the attachments to the mailOptions object

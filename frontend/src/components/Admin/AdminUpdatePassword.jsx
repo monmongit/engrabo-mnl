@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { server } from '../../server';
+import React, { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { server } from "../../server";
 
-import Homebackground from '../../assets/Logo/home-background.jpg';
+import Homebackground from "../../assets/Logo/home-background.jpg";
 
 const AdminUpdatePassword = () => {
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const passwordChangeHandler = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      toast.error('New passwords do not match!');
+      toast.error("New passwords do not match!");
       return;
     }
 
@@ -29,10 +29,10 @@ const AdminUpdatePassword = () => {
         }
       );
 
-      toast.success('Password updated successfully!');
-      setOldPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
+      toast.success("Password updated successfully!");
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -41,11 +41,17 @@ const AdminUpdatePassword = () => {
   return (
     <div className="w-full flex flex-col justify-center sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className=" text-[25px] text-center font-[600] text-[#171203]">
+        <h2
+          className=" text-[25px] text-center font-[600] text-[#171203]"
+          style={{ marginTop: "50px" }}
+        >
           Admin Change Password
         </h2>
       </div>
-      <div className="flex flex-col mt-6 sm:mx-auto sm:flex-row sm:max-w-screen-xl">
+      <div
+        className="flex flex-col mt-6 sm:mx-auto sm:flex-row sm:max-w-screen-xl"
+        style={{ borderRadius: "10px" }}
+      >
         <div className="w-full sm:w-auto hidden sm:block ">
           <img
             src={Homebackground}
@@ -54,7 +60,10 @@ const AdminUpdatePassword = () => {
             style={{ width: 448, height: 376 }}
           />
         </div>
-        <div className="bg-white py-8 px-4 shadow sm:rounded lg:px-10 sm:w-full sm:max-w-md sm:ml-auto">
+        <div
+          className="bg-white py-8 px-4 shadow sm:rounded lg:px-10 sm:w-full sm:max-w-md sm:ml-auto"
+          style={{ borderRadius: "10px", marginBottom: "30px" }}
+        >
           <form className="w-full space-y-6" onSubmit={passwordChangeHandler}>
             <div>
               <label

@@ -10,7 +10,12 @@ export const cartReducer = createReducer(initialState, (builder) => {
   builder
     .addCase('addToCart', (state, action) => {
       const item = action.payload;
-      const existingItem = state.cart.find((i) => i._id === item._id);
+      const existingItem = state.cart.find(
+        (i) =>
+          i._id === item._id &&
+          (!item.size || i.size?.name === item.size?.name) &&
+          (!item.engraving || i.engraving?.type === item.engraving?.type)
+      );
       if (existingItem) {
         state.cart = state.cart.map((i) =>
           i._id === existingItem._id ? item : i

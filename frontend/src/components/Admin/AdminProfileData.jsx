@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
-import styles from '../../styles/style';
-import ProductCard from '../Route/ProductCard/ProductCard';
-import Ratings from '../Products/Ratings';
-import { getAllProductsAdmin } from '../../redux/action/product';
-import { getAllEventsAdmin } from '../../redux/action/event';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import styles from "../../styles/style";
+import ProductCard from "../Route/ProductCard/ProductCard";
+import Ratings from "../Products/Ratings";
+import { getAllProductsAdmin } from "../../redux/action/product";
+import { getAllEventsAdmin } from "../../redux/action/event";
 
 const AdminProfileData = ({ isOwner }) => {
   const { products } = useSelector((state) => state.products);
@@ -23,50 +23,122 @@ const AdminProfileData = ({ isOwner }) => {
   const allReviews =
     products && products.map((product) => product.reviews).flat();
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className="w-full">
-      <div className="flex w-full items-center justify-between">
-        <div className="w-full flex">
-          <div className="flex items-center" onClick={() => setActive(1)}>
-            <h5
-              className={`font-[600] text-[20px] ${
-                active === 1 ? 'text-red-500' : 'text-[#333]'
-              } cursor-pointer pr-[20px]`}
+      <div className="flex flex-col lg:flex-row justify-between items-center">
+        <div
+          className="flex flex-wrap justify-center lg:justify-start w-full lg:w-auto mb-4 lg:mb-0"
+          style={{ marginTop: "20px" }}
+        >
+          <div>
+            <button
+              className={`font-semibold text-lg ${
+                active === 1
+                  ? "text-red-500"
+                  : "text-gray-700 hover:text-red-500"
+              } focus:outline-none mb-2 lg:mb-0`}
+              onClick={() => setActive(1)}
             >
-              Shop Products
-            </h5>
+              <div className="mt-2 p-4 bg-primary rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+                <p
+                  className={`text-center text-xl ${
+                    active === 1 ? "text-red-500" : "text-gray-600"
+                  }`}
+                >
+                  Shop Products
+                </p>
+              </div>
+            </button>
+            {isMobile && (
+              <div className="relative">
+                <hr
+                  className="absolute left-0 right-0 border-b border-gray-300 shadow"
+                  style={{ width: "calc(100% - 2rem)", margin: "0 1rem" }}
+                />
+              </div>
+            )}
           </div>
-          <div className="flex items-center" onClick={() => setActive(2)}>
-            <h5
-              className={`font-[600] text-[20px] ${
-                active === 2 ? 'text-red-500' : 'text-[#333]'
-              } cursor-pointer pr-[20px]`}
+          <div>
+            <button
+              className={`font-semibold text-lg ${
+                active === 2
+                  ? "text-red-500"
+                  : "text-gray-700 hover:text-red-500"
+              } focus:outline-none mb-2 lg:mb-0`}
+              onClick={() => setActive(2)}
             >
-              Running Events
-            </h5>
+              <div className="mt-2 p-4 bg-primary rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+                <p
+                  className={`text-center text-xl ${
+                    active === 2 ? "text-red-500" : "text-gray-600"
+                  }`}
+                >
+                  Running Events
+                </p>
+              </div>
+            </button>
+            {isMobile && (
+              <div className="relative">
+                <hr
+                  className="absolute left-0 right-0 border-b border-gray-300 shadow"
+                  style={{ width: "calc(100% - 2rem)", margin: "0 1rem" }}
+                />
+              </div>
+            )}
           </div>
-
-          <div className="flex items-center" onClick={() => setActive(3)}>
-            <h5
-              className={`font-[600] text-[20px] ${
-                active === 3 ? 'text-red-500' : 'text-[#333]'
-              } cursor-pointer pr-[20px]`}
-            >
-              Shop Reviews
-            </h5>
-          </div>
-        </div>
-        <div>
-          {isOwner && (
+          <div>
             <div>
-              <Link to="/dashboard">
-                <div className={`${styles.button} !rounded-[4px] h-[42px]`}>
-                  <span className="text-[#fff]">Go Dashboard</span>
+              <button
+                className={`font-semibold text-lg ${
+                  active === 3
+                    ? "text-red-500"
+                    : "text-gray-700 hover:text-red-500"
+                } focus:outline-none mb-2 lg:mb-0`}
+                onClick={() => setActive(3)}
+              >
+                <div className="mt-2 p-4 bg-primary rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+                  <p
+                    className={`text-center text-xl ${
+                      active === 3 ? "text-red-500" : "text-gray-600"
+                    }`}
+                  >
+                    Shop Reviews
+                  </p>
                 </div>
-              </Link>
+              </button>
+              {isMobile && (
+                <div className="relative">
+                  <hr
+                    className="absolute left-0 right-0 border-b border-gray-300 shadow"
+                    style={{ width: "calc(100% - 2rem)", margin: "0 1rem" }}
+                  />
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
+        {isOwner && (
+          <div className="relative">
+            <Link to="/dashboard">
+              <div className="mt-4 p-4 bg-[#171203] rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+                <h3 className="text-center font-[800] text-white">
+                  Go to Dashboard
+                </h3>
+              </div>
+            </Link>
+            {isMobile && (
+              <div className="absolute left-0 right-0 bottom-0 h-3 bg-black shadow-md"></div>
+            )}
+          </div>
+        )}
       </div>
 
       <br />

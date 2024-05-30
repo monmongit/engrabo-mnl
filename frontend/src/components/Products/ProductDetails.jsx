@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import styles from "../../styles/style";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styles from '../../styles/style';
 import {
   AiFillHeart,
   AiOutlineClose,
@@ -8,6 +8,7 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineFontSize,
+<<<<<<< HEAD
 } from "react-icons/ai";
 import { server } from "../../server";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +21,21 @@ import axios from "axios";
 import Modal from "react-modal";
 import UserCreateDesign from "../UserCreateDesign";
 import CreateProduct from "../Admin/CreateProduct";
+=======
+} from 'react-icons/ai';
+import { server } from '../../server';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllProductsAdmin } from '../../redux/action/product';
+import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
+import { toast } from 'react-toastify';
+import { addTocart } from '../../redux/action/cart';
+import Ratings from './Ratings';
+import axios from 'axios';
+import Modal from 'react-modal';
+import UserCreateDesign from '../UserCreateDesign';
+
+// import UserOrderOptions from './UserOrderOptions';
+>>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -27,24 +43,18 @@ const ProductDetails = ({ data }) => {
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
 
-  const [insResponse, setInsResponse] = useState("");
-  const [selectedImageOption, setSelectedImageOption] = useState(null);
-  const [selectedTextOption, setSelectedTextOption] = useState(null);
+  const [insResponse, setInsResponse] = useState('');
+  const [selectedOptions, setSelectedOptions] = useState({});
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedEngraving, setSelectedEngraving] = useState(null);
+  const [drawingInfo, setDrawingInfo] = useState('');
+  const [open, setOpen] = useState(false);
+  const [urls, setUrls] = useState([]);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // section for options
-  const [selectedSize, setSelectedSize] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState({});
-  const [selectedColor, setSelectedColor] = useState("");
-  const [drawingInfo, setDrawingInfo] = useState("");
-  const [open, setOpen] = useState(false);
-  const [urls, setUrls] = useState([]);
-
-  console.log("return urls from other component", urls)
 
   useEffect(() => {
     if (data && data.admin) {
@@ -57,16 +67,14 @@ const ProductDetails = ({ data }) => {
     }
   }, [dispatch, data, wishlist]);
 
-  const handleColorClick = (color) => {
-    setSelectedColor(color === selectedColor ? null : color);
-  };
-
   const createDesignHandler = () => {
     return <></>;
   };
 
   const incrementCount = () => {
-    if (data?.stock <= count) {
+    const stock =
+      selectedSize?.stock ?? selectedEngraving?.stock ?? data?.stock;
+    if (stock <= count) {
       toast.error(
         `${data?.name} stock is limited! Please contact us to reserve your order!`
       );
@@ -77,7 +85,7 @@ const ProductDetails = ({ data }) => {
 
   const decrementCount = () => {
     if (count <= 1) {
-      toast.error("You cannot order less than 1 item.");
+      toast.error('You cannot order less than 1 item.');
       return;
     }
     setCount(count - 1);
@@ -101,7 +109,7 @@ const ProductDetails = ({ data }) => {
           toast.error(error.response.data.message);
         });
     } else {
-      toast.error("Please login to make a conversation");
+      toast.error('Please login to make a conversation');
     }
   };
 
@@ -124,19 +132,12 @@ const ProductDetails = ({ data }) => {
       isItemExists = cart.find(
         (i) => i._id === id && i.size && i.size.name === selectedSize.name
       );
-    } else if (selectedImageOption) {
+    } else if (selectedEngraving) {
       isItemExists = cart.find(
         (i) =>
           i._id === id &&
-          i.imageOption &&
-          i.imageOption.name === selectedImageOption.name
-      );
-    } else if (selectedTextOption) {
-      isItemExists = cart.find(
-        (i) =>
-          i._id === id &&
-          i.textOption &&
-          i.textOption.name === selectedTextOption.name
+          i.engraving &&
+          i.engraving.type === selectedEngraving.type
       );
     }
 
@@ -145,7 +146,9 @@ const ProductDetails = ({ data }) => {
         `${data.name} with the selected option is already in the cart!`
       );
     } else {
-      if (data.stock < 1) {
+      const stock =
+        selectedSize?.stock ?? selectedEngraving?.stock ?? data?.stock;
+      if (stock < 1) {
         toast.error(
           `${data.name} stock is limited! Please contact us to reserve your order!`
         );
@@ -153,21 +156,18 @@ const ProductDetails = ({ data }) => {
         const cartData = {
           ...data,
           qty: count,
+          stock: stock,
           response: insResponse,
           options: selectedOptions,
           size: selectedSize, // Add selected size to cart data
-          imageOption: selectedImageOption, // Add selected image option to cart data
-          textOption: selectedTextOption, // Add selected text option to cart data
+          engraving: selectedEngraving, // Add selected engraving to cart data
           price: selectedSize
             ? selectedSize.price
-            : selectedImageOption
-            ? selectedImageOption.price
-            : selectedTextOption
-            ? selectedTextOption.price
+            : selectedEngraving
+            ? selectedEngraving.price
             : data.discountPrice > 0
             ? data.discountPrice
             : data.originalPrice,
-          url: urls
         };
         dispatch(addTocart(cartData));
         toast.success(`${data.name} added to cart successfully!`);
@@ -184,20 +184,12 @@ const ProductDetails = ({ data }) => {
 
   const handleSizeChange = (size) => {
     setSelectedSize(size);
-    setSelectedImageOption(null);
-    setSelectedTextOption(null);
+    setSelectedEngraving(null); // Reset engraving if size is selected
   };
 
-  const handleImageOptionChange = (option) => {
-    setSelectedImageOption(option);
-    setSelectedSize(null);
-    setSelectedTextOption(null);
-  };
-
-  const handleTextOptionChange = (option) => {
-    setSelectedTextOption(option);
-    setSelectedSize(null);
-    setSelectedImageOption(null);
+  const handleEngravingChange = (engraving) => {
+    setSelectedEngraving(engraving);
+    setSelectedSize(null); // Reset size if engraving is selected
   };
 
   const totalReviewsLength =
@@ -219,7 +211,6 @@ const ProductDetails = ({ data }) => {
     <div className="bg-[#fff4d7] min-h-screen py-10">
       {data ? (
         <div className={`${styles.section} w-[90%] md:w-[80%] mx-auto`}>
-          {/* IMAGE AND DESCRIPTION */}
           <div className="py-5 flex flex-col md:flex-row gap-10">
             {/* Images of Product */}
             <div className="w-full md:w-1/2 flex flex-col items-center">
@@ -237,7 +228,7 @@ const ProductDetails = ({ data }) => {
                     <div
                       key={index}
                       className={`cursor-pointer p-1 rounded-md ${
-                        select === index ? "border-2 border-gray-500" : ""
+                        select === index ? 'border-2 border-gray-500' : ''
                       }`}
                       onClick={() => setSelect(index)}
                     >
@@ -251,10 +242,10 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
 
-            {/* description */}
+            {/* Description of Product */}
             <div className="w-full md:w-1/2 pt-5 space-y-5">
-              {/* Image of Product Description */}
               <>
+                {/* Image of Product Description */}
                 <h1 className={`${styles.productTitle}`}>
                   <span class="mb-0.5 inline-block text-gray-500 text-base">
                     {data.category}
@@ -264,35 +255,31 @@ const ProductDetails = ({ data }) => {
                     {data.name}
                   </h2>
                 </h1>
-                <p className="text-justify text-[#534723]">
+                <p className="text-[#534723] text-justify text-[17px] leading-8 pb-10 whitespace-pre-line">
                   {selectedSize
                     ? selectedSize.description
-                    : selectedImageOption
-                    ? selectedImageOption.description
-                    : selectedTextOption
-                    ? selectedTextOption.description
+                    : selectedEngraving
+                    ? selectedEngraving.description
                     : data.description}
                 </p>
               </>
+
               <div className="py-2 flex items-center justify-between">
                 {/* Price of Product */}
                 <div className="flex items-center space-x-2">
-                  <h5 className={`text-xl font-bold text-gray-800 md:text-2xl`}>
+                  <h5 className={`${styles.productDiscountPrice} text-2xl`}>
                     ₱
                     {selectedSize
                       ? selectedSize.price
-                      : selectedImageOption
-                      ? selectedImageOption.price
-                      : selectedTextOption
-                      ? selectedTextOption.price
+                      : selectedEngraving
+                      ? selectedEngraving.price
                       : data.discountPrice > 0
                       ? data.discountPrice
                       : data.originalPrice}
                   </h5>
                   {data.discountPrice > 0 &&
                     !selectedSize &&
-                    !selectedImageOption &&
-                    !selectedTextOption && (
+                    !selectedEngraving && (
                       <h4
                         className={`${styles.price} text-xl line-through text-gray-500`}
                       >
@@ -301,36 +288,21 @@ const ProductDetails = ({ data }) => {
                     )}
                 </div>
               </div>
+              <div className="flex justify-between items-center">
+                {/* Products Stock */}
+                <h4 className="font-[400] text-[#534723] font-Roboto">
+                  Stocks:{' '}
+                  {selectedSize?.stock ??
+                    selectedEngraving?.stock ??
+                    data.stock}
+                </h4>
+                {/* Sold of Product */}
+                <span className="font-[400] text-[17px] text-[#b19b56]">
+                  {data?.sold_out} sold
+                </span>
+              </div>
 
-              {/* Colors */}
-              {data.colors && data.colors.length > 0 && (
-                <div className="mb-4 md:mb-6">
-                  {data.colors && data.colors.length > 0 && (
-                    <>
-                      <span className="mb-3 inline-block text-sm font-semibold text-gray-500 md:text-base">
-                        Color
-                      </span>
-                      <div className="flex flex-wrap gap-2">
-                        {data.colors.map((color, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            className={`h-8 w-8 rounded-full border transition duration-100 ring-2 ring-offset-1 ${
-                              selectedColor === color
-                                ? "ring-gray-800"
-                                : "ring-transparent hover:ring-gray-200"
-                            }`}
-                            style={{ backgroundColor: color }}
-                            onClick={() => setSelectedColor(color)}
-                          ></button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-
-              {/* SIZES */}
+              {/* Sizes */}
               {data.sizes && data.sizes.length > 0 && (
                 <div className="mt-4">
                   <label className="block font-medium text-[#534723]">
@@ -343,8 +315,8 @@ const ProductDetails = ({ data }) => {
                         onClick={() => handleSizeChange(size)}
                         className={`px-4 py-2 border rounded-md ${
                           selectedSize && selectedSize.name === size.name
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-gray-700"
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-700'
                         }`}
                       >
                         {size.name}
@@ -354,16 +326,30 @@ const ProductDetails = ({ data }) => {
                 </div>
               )}
 
-              <div className="flex justify-between items-center">
-                {/* Products Stock */}
-                <h4 className="font-[400] text-[#534723] font-Roboto">
-                  Stocks: {data.stock}
-                </h4>
-                {/* Sold of Product */}
-                <span className="font-[400] text-[17px] text-[#b19b56]">
-                  {data?.sold_out} sold
-                </span>
-              </div>
+              {/* Engraving Options */}
+              {data.engravings && data.engravings.length > 0 && (
+                <div className="mt-4">
+                  <label className="block font-medium text-[#534723]">
+                    Engraving Options:
+                  </label>
+                  <div className="flex space-x-2">
+                    {data.engravings.map((engraving, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleEngravingChange(engraving)}
+                        className={`px-4 py-2 border rounded-md ${
+                          selectedEngraving &&
+                          selectedEngraving.type === engraving.type
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-700'
+                        }`}
+                      >
+                        {engraving.type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center mt-6 justify-between">
                 {/* Add and Dec number of a Product */}
@@ -418,14 +404,15 @@ const ProductDetails = ({ data }) => {
               </div>
 
               {/* Create Design Button */}
-              {data.mediaType !== "none" && (
-                <div className="flex items-center justify-center bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-3 px-8 md:px-16 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-green-600 hover:to-green-800 transition duration-300 ease-in-out mt-4 md:mt-0">
-                  <button onClick={() => setOpen(true)}>
-                    <span className="flex items-center">
-                      Create Your Own Design
-                      <AiOutlineFontSize className="ml-1" />
-                    </span>
-                  </button>
+              {data.mediaType !== 'none' && (
+                <div
+                  className="flex items-center justify-center bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-3 px-8 md:px-16 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-green-600 hover:to-green-800 transition duration-300 ease-in-out mt-4 md:mt-0"
+                  onClick={() => setOpen(true)}
+                >
+                  <span className="flex items-center">
+                    Create Your Own Design
+                    <AiOutlineFontSize className="ml-1" />
+                  </span>
                 </div>
               )}
 
@@ -444,59 +431,7 @@ const ProductDetails = ({ data }) => {
                 </div>
               )}
 
-              {/* THIS WILL BE IN A MODAL  */}
-
-              {/* Image Options */}
-              {data.imageOptions && data.imageOptions.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Image Options:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.imageOptions.map((option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleImageOptionChange(option)}
-                        className={`px-4 py-2 border rounded-md ${
-                          selectedImageOption &&
-                          selectedImageOption.name === option.name
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-gray-700"
-                        }`}
-                      >
-                        {option.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Text Options */}
-              {data.textOptions && data.textOptions.length > 0 && (
-                <div className="mt-4">
-                  <label className="block font-medium text-[#534723]">
-                    Text Options:
-                  </label>
-                  <div className="flex space-x-2">
-                    {data.textOptions.map((option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleTextOptionChange(option)}
-                        className={`px-4 py-2 border rounded-md ${
-                          selectedTextOption &&
-                          selectedTextOption.name === option.name
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-gray-700"
-                        }`}
-                      >
-                        {option.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/*DROP */}
+              {/* Dropdown options */}
               {data.dropdowns &&
                 data.dropdowns.map((dropdown, index) => (
                   <div key={index} className="mt-4">
@@ -520,28 +455,25 @@ const ProductDetails = ({ data }) => {
                   </div>
                 ))}
 
-              {/* INSTRUCTIONS */}
+              {/* Instructions */}
               <div className="mt-6">
+                <p className="text-lg font-semibold text-[#534723]">
+                  Instructions for Personalised Product
+                </p>
                 <span className="font-[200] text-[17px] text-[#b19b56]">
-                  {data?.instructions && (
-                    <>
-                      <p className=" font- text-[#534723]">
-                        Instruction For Personalization
-                      </p>
-                      {data?.instructions}
-                    </>
-                  )}
+                  {data?.instructions}
                 </span>
               </div>
 
-              {/* CUSTOMER/ RESPONSE OR NOTE */}
+              {/* Customer response to instructions */}
               {data?.instructions && (
                 <div className="mt-4">
                   <label className="block font-medium text-[#534723]">
-                    Customer Response Notes
+                    Response To Instructions
                   </label>
                   <textarea
                     className="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    value={insResponse}
                     onChange={(e) => setInsResponse(e.target.value)}
                   />
                 </div>
@@ -577,8 +509,6 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
-
-          {/* DETAILS AND REVIEWS */}
           <ProductDetailsInfo
             data={data}
             products={products}
@@ -602,13 +532,13 @@ const ProductDetailsInfo = ({
   const [selectedImage, setSelectedImage] = useState(null);
 
   const maskName = (name) => {
-    const parts = name.split(" ");
+    const parts = name.split(' ');
     return parts
       .map((part, index) => {
-        if (index === 0) return part.slice(0, 2) + "*****";
-        return "*****";
+        if (index === 0) return part.slice(0, 2) + '*****';
+        return '*****';
       })
-      .join(" ");
+      .join(' ');
   };
 
   const openModal = (image) => {
@@ -627,7 +557,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
             }
             onClick={() => setActive(1)}
           >
@@ -638,7 +568,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
             }
             onClick={() => setActive(2)}
           >
@@ -649,7 +579,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
+              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
             }
             onClick={() => setActive(3)}
           >
@@ -661,7 +591,7 @@ const ProductDetailsInfo = ({
 
       {active === 1 && (
         <p className="text-[#534723] text-justify py-2 text-[18px] leading-8 pb-10 whitespace-pre-line">
-          {data.description}
+          {data.details}
         </p>
       )}
 
@@ -733,18 +663,18 @@ const ProductDetailsInfo = ({
               <h5 className="font-[600] text-[#171203]">
                 Joined on:
                 <span className="font-[500] text-[#534723]">
-                  {" "}
+                  {' '}
                   14 March, 2023
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Products:{" "}
+                Total Products:{' '}
                 <span className="font-[500]">
                   {products && products.length}
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Reviews:{" "}
+                Total Reviews:{' '}
                 <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">
@@ -780,8 +710,5 @@ const ProductDetailsInfo = ({
     </div>
   );
 };
-
-
-
 
 export default ProductDetails;

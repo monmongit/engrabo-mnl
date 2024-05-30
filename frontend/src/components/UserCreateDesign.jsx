@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Stage,
   Layer,
@@ -13,99 +13,100 @@ import {
   Star,
   RegularPolygon,
   Path,
-} from "react-konva";
-import { RxCross1 } from "react-icons/rx";
+} from 'react-konva';
+import { RxCross1 } from 'react-icons/rx';
 
-import WebFont from "webfontloader";
-import axios from "axios";
-import { server } from "../server";
+import WebFont from 'webfontloader';
+import axios from 'axios';
+import { server } from '../server';
+import { toast } from 'react-toastify';
 
 // Add the font families you want to use
 const fontFamilies = [
-  "Arial",
-  "Times New Roman",
-  "Courier New",
-  "Georgia",
-  "Verdana",
-  "Tahoma",
-  "Trebuchet MS",
-  "Impact",
-  "Comic Sans MS",
-  "Lucida Console",
-  "Lucida Sans Unicode",
-  "Palatino Linotype",
-  "Garamond",
-  "Bookman",
-  "Arial Black",
-  "Narrow",
-  "Roboto",
-  "Open Sans",
-  "Lato",
-  "Montserrat",
-  "Oswald",
-  "Raleway",
-  "Pacifico",
-  "Playfair Display",
-  "Merriweather",
-  "Fjalla One",
-  "Ubuntu",
-  "PT Sans",
-  "Droid Sans",
-  "Lobster",
-  "Bitter",
-  "Anton",
-  "Dancing Script",
-  "Maven Pro",
-  "Indie Flower",
-  "Bangers",
-  "Cabin",
-  "Cinzel",
-  "Comfortaa",
-  "Cormorant Garamond",
-  "Courgette",
-  "Dosis",
-  "Exo",
-  "Fira Sans",
-  "Frank Ruhl Libre",
-  "Gloria Hallelujah",
-  "Great Vibes",
-  "Josefin Sans",
-  "Kalam",
-  "Karla",
-  "Lobster Two",
-  "Merriweather Sans",
-  "Muli",
-  "Nunito",
-  "Oxygen",
-  "Patua One",
-  "Quicksand",
-  "Righteous",
-  "Russo One",
-  "Satisfy",
-  "Shadows Into Light",
-  "Signika",
-  "Source Code Pro",
-  "Spectral",
-  "Titillium Web",
-  "Yanone Kaffeesatz",
-  "Zilla Slab",
-  "Mountains of Christmas",
-  "Mr De Haviland",
-  "Over the Rainbow",
-  "Licorice",
-  "Bilbo Swash Caps",
-  "Comforter Brush",
-  "Hachi Maru Pop",
-  "Smooch",
-  "Edu TAS Beginner",
-  "Sevillana",
-  "Dancing Script",
-  "Jersey",
-  "Jacquard",
-  "Bodoni Moda",
-  "Sacramento",
-  "Rubik Bubbles",
-  "Bad Script",
+  'Arial',
+  'Times New Roman',
+  'Courier New',
+  'Georgia',
+  'Verdana',
+  'Tahoma',
+  'Trebuchet MS',
+  'Impact',
+  'Comic Sans MS',
+  'Lucida Console',
+  'Lucida Sans Unicode',
+  'Palatino Linotype',
+  'Garamond',
+  'Bookman',
+  'Arial Black',
+  'Narrow',
+  'Roboto',
+  'Open Sans',
+  'Lato',
+  'Montserrat',
+  'Oswald',
+  'Raleway',
+  'Pacifico',
+  'Playfair Display',
+  'Merriweather',
+  'Fjalla One',
+  'Ubuntu',
+  'PT Sans',
+  'Droid Sans',
+  'Lobster',
+  'Bitter',
+  'Anton',
+  'Dancing Script',
+  'Maven Pro',
+  'Indie Flower',
+  'Bangers',
+  'Cabin',
+  'Cinzel',
+  'Comfortaa',
+  'Cormorant Garamond',
+  'Courgette',
+  'Dosis',
+  'Exo',
+  'Fira Sans',
+  'Frank Ruhl Libre',
+  'Gloria Hallelujah',
+  'Great Vibes',
+  'Josefin Sans',
+  'Kalam',
+  'Karla',
+  'Lobster Two',
+  'Merriweather Sans',
+  'Muli',
+  'Nunito',
+  'Oxygen',
+  'Patua One',
+  'Quicksand',
+  'Righteous',
+  'Russo One',
+  'Satisfy',
+  'Shadows Into Light',
+  'Signika',
+  'Source Code Pro',
+  'Spectral',
+  'Titillium Web',
+  'Yanone Kaffeesatz',
+  'Zilla Slab',
+  'Mountains of Christmas',
+  'Mr De Haviland',
+  'Over the Rainbow',
+  'Licorice',
+  'Bilbo Swash Caps',
+  'Comforter Brush',
+  'Hachi Maru Pop',
+  'Smooch',
+  'Edu TAS Beginner',
+  'Sevillana',
+  'Dancing Script',
+  'Jersey',
+  'Jacquard',
+  'Bodoni Moda',
+  'Sacramento',
+  'Rubik Bubbles',
+  'Bad Script',
   // Add more fonts here if needed
 ];
 
@@ -127,18 +128,22 @@ const drawHeartPath = (x1, y1, x2, y2) => {
 };
 
 const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
+<<<<<<< HEAD
   const [tool, setTool] = useState("select");
+=======
+  const [tool, setTool] = useState('select');
+>>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [image, setImage] = useState(null);
-  const [imageURL, setImageURL] = useState("");
+  const [imageURL, setImageURL] = useState('');
   const stageRef = useRef(null);
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
   const [texts, setTexts] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [fontFamily, setFontFamily] = useState("Arial");
-  const [fontStyle, setFontStyle] = useState("normal");
-  const [textDecoration, setTextDecoration] = useState("");
+  const [fontFamily, setFontFamily] = useState('Arial');
+  const [fontStyle, setFontStyle] = useState('normal');
+  const [textDecoration, setTextDecoration] = useState('');
   const [fontSize, setFontSize] = useState(20);
   const [shapes, setShapes] = useState([]);
   const [pages, setPages] = useState([
@@ -148,14 +153,18 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   const transformerRef = useRef(null);
   const fileInputRef = useRef(null);
   const [tempShape, setTempShape] = useState(null);
-  const [saveMessage, setSaveMessage] = useState("");
+  const [saveMessage, setSaveMessage] = useState('');
 
   const { cart } = useSelector((state) => state.cart);
 
   // UI of canvas
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isToolCollapsed, setIsToolCollapsed] = useState(true);
+<<<<<<< HEAD
   const [selectedTools, setTools] = useState("");
+=======
+  const [selectedTools, setTools] = useState('');
+>>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -165,7 +174,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const getButtonClass = (tool) => {
-    return selectedTools === tool ? "bg-blue-500" : "bg-gray-500";
+    return selectedTools === tool ? 'bg-blue-500' : 'bg-gray-500';
   };
 
   useEffect(() => {
@@ -175,7 +184,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
         setImage(img);
       };
       img.onerror = () => {
-        console.error("Failed to load image");
+        console.error('Failed to load image');
       };
       img.src = imageURL;
     }
@@ -206,7 +215,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
 
   const saveCurrentPage = () => {
     const stage = stageRef.current.getStage();
-    const imageNode = stage.findOne("#uploadedImage");
+    const imageNode = stage.findOne('#uploadedImage');
     const currentPage = {
       id: currentPageIndex,
       lines: [...lines],
@@ -240,19 +249,19 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const handleMouseDown = (e) => {
-    if (tool === "pen" || tool === "eraser") {
+    if (tool === 'pen' || tool === 'eraser') {
       setIsDrawing(true);
       const pos = e.target.getStage().getPointerPosition();
       setLines([...lines, { tool, points: [pos.x, pos.y] }]);
     } else if (
       [
-        "rectangle",
-        "circle",
-        "line",
-        "arrow",
-        "star",
-        "polygon",
-        "heart",
+        'rectangle',
+        'circle',
+        'line',
+        'arrow',
+        'star',
+        'polygon',
+        'heart',
       ].includes(tool)
     ) {
       const pos = e.target.getStage().getPointerPosition();
@@ -267,20 +276,20 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
 
-    if (tool === "pen" || tool === "eraser") {
+    if (tool === 'pen' || tool === 'eraser') {
       let lastLine = lines[lines.length - 1];
       lastLine.points = lastLine.points.concat([point.x, point.y]);
       lines.splice(lines.length - 1, 1, lastLine);
       setLines(lines.concat());
     } else if (
       [
-        "rectangle",
-        "circle",
-        "line",
-        "arrow",
-        "star",
-        "polygon",
-        "heart",
+        'rectangle',
+        'circle',
+        'line',
+        'arrow',
+        'star',
+        'polygon',
+        'heart',
       ].includes(tool)
     ) {
       let lastShape = shapes[shapes.length - 1];
@@ -313,7 +322,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
         fontSize,
       },
     ]);
-    setText("");
+    setText('');
   };
 
   const handleTextDblClick = (e) => {
@@ -336,9 +345,9 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
     setTexts([]);
     setShapes([]);
     setImage(null);
-    setImageURL("");
+    setImageURL('');
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
     }
   };
 
@@ -357,17 +366,17 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
     const stage = stageRef.current.getStage();
 
     if (!stage) {
-      console.error("Stage not found");
+      console.error('Stage not found');
       return;
     }
 
     const container = stage.container();
-    container.style.backgroundColor = "white";
+    container.style.backgroundColor = 'white';
 
     try {
-      const dataURL = stage.toDataURL({ mimeType: "image/png" });
+      const dataURL = stage.toDataURL({ mimeType: 'image/png' });
 
-      const link = document.createElement("a");
+      const link = document.createElement('a');
       link.download = `canvas_page_${index + 1}.png`;
       link.href = dataURL;
 
@@ -376,7 +385,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
 
       document.body.removeChild(link);
     } catch (error) {
-      console.error("Error exporting canvas:", error);
+      console.error('Error exporting canvas:', error);
     }
   };
 
@@ -397,28 +406,28 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   const saveToCartDesignAll = async (index) => {
     try {
       const stage = stageRef.current.getStage();
-      const dataURL = stage.toDataURL({ mimeType: "image/png", quality: 1 });
+      const dataURL = stage.toDataURL({ mimeType: 'image/png', quality: 1 });
 
-      console.log("data url: ", dataURL);
+      console.log('data url: ', dataURL);
 
       const response = await fetch(`${server}/custom/create-custom`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ canvasDataURL: dataURL }),
       });
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error('Network response was not ok');
       }
 
       const data = await response.json();
-      console.log("secure url: ", data.secureURL);
+      console.log('secure url: ', data.secureURL);
 
       return data.secureURL; // Return secureURL instead of data
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Error:', error);
     }
   };
 
@@ -431,11 +440,16 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
       urls.push(url); // Push the URL to the array
     }
     setUrls(urls); // Return the array of URLs
+<<<<<<< HEAD
+=======
+    toast.success('Panget ng design mo HAHAHAHA! Design???');
+    setOpen(false);
+>>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
   };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    console.log("uploaded file: ", file);
+    console.log('uploaded file: ', file);
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -470,7 +484,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const toggleItalic = () => {
-    const newFontStyle = fontStyle === "italic" ? "normal" : "italic";
+    const newFontStyle = fontStyle === 'italic' ? 'normal' : 'italic';
     setFontStyle(newFontStyle);
     setTexts(
       texts.map((textItem) =>
@@ -482,7 +496,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const toggleUnderline = () => {
-    const newTextDecoration = textDecoration === "underline" ? "" : "underline";
+    const newTextDecoration = textDecoration === 'underline' ? '' : 'underline';
     setTextDecoration(newTextDecoration);
     setTexts(
       texts.map((textItem) =>
@@ -530,8 +544,8 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
 
   const handleSaveDesign = () => {
     saveCurrentPage();
-    setSaveMessage("Your design is now saved.");
-    setTimeout(() => setSaveMessage(""), 3000); // Hide message after 3 seconds
+    setSaveMessage('Your design is now saved.');
+    setTimeout(() => setSaveMessage(''), 3000); // Hide message after 3 seconds
   };
 
   const saveMultipleImage = async () => {};
@@ -555,65 +569,68 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
               onClick={toggleToolsCollapse}
               className="bg-gradient-to-r from-gray-800 to-gray-700 text-white px-4 py-2 rounded mb-2"
             >
-              {isToolCollapsed ? "Show Tools" : "Hide Tools"}
+              {isToolCollapsed ? 'Show Tools' : 'Hide Tools'}
             </button>
 
             <div
               className={`transition-all duration-300 overflow-y-auto z-10 ${
-                isToolCollapsed ? "max-h-0" : "max-h-40"
+                isToolCollapsed ? 'max-h-0' : 'max-h-40'
               }`}
             >
-              <div className="grid grid-cols-1 mb-2 space-y-2">
-                <button
-                  onClick={() => setTool("text")}
-                  className={`${getButtonClass(
-                    "text"
-                  )} bg-gray-700 text-white px-4 py-2 rounded`}
-                >
-                  Text
-                </button>
-                {tool === "text" && (
-                  <input
-                    type="text"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="Type text and click on canvas"
-                    className="border border-gray-300 px-4 py-2 rounded"
-                  />
-                )}
-              </div>
+              {(data.mediaType === 'both' || data.mediaType === 'text') && (
+                <div className="grid grid-cols-1 mb-2 space-y-2">
+                  <button
+                    onClick={() => setTool('text')}
+                    className={`${getButtonClass(
+                      'text'
+                    )} bg-gray-700 text-white px-4 py-2 rounded`}
+                  >
+                    Text
+                  </button>
+                  {tool === 'text' && (
+                    <input
+                      type="text"
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      placeholder="Type text and click on canvas"
+                      className="border border-gray-300 px-4 py-2 rounded"
+                    />
+                  )}
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <button
-                  onClick={() => setTool("select")}
+                  onClick={() => setTool('select')}
                   className={`${getButtonClass(
-                    "select"
+                    'select'
                   )} bg-gray-700 text-white px-4 py-2 rounded`}
                 >
                   Select
                 </button>
                 <button
-                  onClick={() => setTool("pen")}
+                  onClick={() => setTool('pen')}
                   className={`${getButtonClass(
-                    "pen"
+                    'pen'
                   )} bg-gray-700 text-white px-4 py-2 rounded`}
                 >
                   Draw
                 </button>
                 <button
-                  onClick={() => setTool("eraser")}
+                  onClick={() => setTool('eraser')}
                   className={`${getButtonClass(
-                    "eraser"
+                    'eraser'
                   )} bg-gray-700 text-white px-4 py-2 rounded`}
                 >
                   Erase
                 </button>
-
                 <button
                   onClick={handleClear}
                   className="bg-gray-700 text-white px-4 py-2 rounded"
                 >
                   Clear
                 </button>
+<<<<<<< HEAD
                 <button
                   className="bg-white border border-gray-300 px-4 py-2 rounded w-50%"
                   style={{ position: "relative", overflow: "hidden" }}
@@ -627,6 +644,25 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                 </button>
+=======
+
+                {(data.mediaType === 'both' || data.mediaType === 'image') && (
+                  <button
+                    className="bg-white border border-gray-300 px-4 py-2 rounded w-50%"
+                    style={{ position: 'relative', overflow: 'hidden' }}
+                  >
+                    Upload
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                  </button>
+                )}
+
+>>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
                 <button
                   onClick={handleExport}
                   className="bg-purple-700 text-white px-4 py-2 rounded"
@@ -643,70 +679,70 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
               onClick={toggleCollapse}
               className="bg-gray-700 text-white px-4 py-2 rounded mb-2"
             >
-              {isCollapsed ? "Show Shapes" : "Hide Shapes"}
+              {isCollapsed ? 'Show Shapes' : 'Hide Shapes'}
             </button>
 
             <div className="overflow-y-auto max-h-20">
-              {" "}
+              {' '}
               {/* Added overflow-y-auto and max-h-80 */}
               <div
                 className={`transition-all duration-300 ${
-                  isCollapsed ? "max-h-0 overflow-hidden" : "max-h-full"
+                  isCollapsed ? 'max-h-0 overflow-hidden' : 'max-h-full'
                 }`}
               >
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <button
-                    onClick={() => setTool("rectangle")}
+                    onClick={() => setTool('rectangle')}
                     className={`${getButtonClass(
-                      "rectangle"
+                      'rectangle'
                     )} text-white px-4 py-2 rounded`}
                   >
                     Rectangle
                   </button>
                   <button
-                    onClick={() => setTool("circle")}
+                    onClick={() => setTool('circle')}
                     className={`${getButtonClass(
-                      "circle"
+                      'circle'
                     )} text-white px-4 py-2 rounded`}
                   >
                     Circle
                   </button>
                   <button
-                    onClick={() => setTool("line")}
+                    onClick={() => setTool('line')}
                     className={`${getButtonClass(
-                      "line"
+                      'line'
                     )} text-white px-4 py-2 rounded`}
                   >
                     Line
                   </button>
                   <button
-                    onClick={() => setTool("arrow")}
+                    onClick={() => setTool('arrow')}
                     className={`${getButtonClass(
-                      "arrow"
+                      'arrow'
                     )} text-white px-4 py-2 rounded`}
                   >
                     Arrow
                   </button>
                   <button
-                    onClick={() => setTool("star")}
+                    onClick={() => setTool('star')}
                     className={`${getButtonClass(
-                      "star"
+                      'star'
                     )} text-white px-4 py-2 rounded`}
                   >
                     Star
                   </button>
                   <button
-                    onClick={() => setTool("polygon")}
+                    onClick={() => setTool('polygon')}
                     className={`${getButtonClass(
-                      "polygon"
+                      'polygon'
                     )} text-white px-4 py-2 rounded`}
                   >
                     Polygon
                   </button>
                   <button
-                    onClick={() => setTool("heart")}
+                    onClick={() => setTool('heart')}
                     className={`${getButtonClass(
-                      "heart"
+                      'heart'
                     )} text-white px-4 py-2 rounded`}
                   >
                     Heart
@@ -739,19 +775,19 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
               </button>
             </div>
             <div className="overflow-y-auto max-h-40">
-              {" "}
+              {' '}
               {/* Added overflow-y-auto and max-h-80 */}
               <div className="grid grid-cols-2 gap-2 mt-4">
                 {pages.map((page, index) => (
                   <div key={index} className="flex flex-col space-y-2">
-                    {" "}
+                    {' '}
                     {/* Changed flex direction to column */}
                     <button
                       onClick={() => selectPage(index)}
                       className={`${
                         currentPageIndex === index
-                          ? "bg-yellow-500"
-                          : "bg-gray-300"
+                          ? 'bg-yellow-500'
+                          : 'bg-gray-300'
                       } text-white px-4 py-2 rounded`}
                     >
                       Page {index + 1}
@@ -800,7 +836,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     value={fontSize}
                     onChange={handleFontSizeChange}
                     className="border border-gray-300 px-2 py-1 rounded"
-                    style={{ width: "60px" }}
+                    style={{ width: '60px' }}
                   />
                 </label>
                 <button
@@ -835,7 +871,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
             <Stage
               width={830}
               height={500}
-              onMouseDown={tool === "text" ? handleTextAdd : handleMouseDown}
+              onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
               onMousemove={handleMouseMove}
               onMouseup={handleMouseUp}
               ref={stageRef}
@@ -848,17 +884,17 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     key={i}
                     id={`line${i}`}
                     points={line.points}
-                    stroke={line.tool === "pen" ? "black" : "white"}
+                    stroke={line.tool === 'pen' ? 'black' : 'white'}
                     strokeWidth={5}
                     tension={0.5}
                     lineCap="round"
                     globalCompositeOperation={
-                      line.tool === "eraser" ? "destination-out" : "source-over"
+                      line.tool === 'eraser' ? 'destination-out' : 'source-over'
                     }
                   />
                 ))}
                 {shapes.map((shape, i) => {
-                  if (shape.tool === "rectangle") {
+                  if (shape.tool === 'rectangle') {
                     return (
                       <Rect
                         key={i}
@@ -872,7 +908,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         onClick={handleSelect}
                       />
                     );
-                  } else if (shape.tool === "circle") {
+                  } else if (shape.tool === 'circle') {
                     const radius = Math.sqrt(
                       Math.pow(shape.points[2] - shape.points[0], 2) +
                         Math.pow(shape.points[3] - shape.points[1], 2)
@@ -889,7 +925,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         onClick={handleSelect}
                       />
                     );
-                  } else if (shape.tool === "line") {
+                  } else if (shape.tool === 'line') {
                     return (
                       <Line
                         key={i}
@@ -902,7 +938,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         onClick={handleSelect}
                       />
                     );
-                  } else if (shape.tool === "arrow") {
+                  } else if (shape.tool === 'arrow') {
                     return (
                       <Arrow
                         key={i}
@@ -915,7 +951,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         onClick={handleSelect}
                       />
                     );
-                  } else if (shape.tool === "star") {
+                  } else if (shape.tool === 'star') {
                     return (
                       <Star
                         key={i}
@@ -930,7 +966,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         onClick={handleSelect}
                       />
                     );
-                  } else if (shape.tool === "polygon") {
+                  } else if (shape.tool === 'polygon') {
                     return (
                       <RegularPolygon
                         key={i}
@@ -947,7 +983,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         onClick={handleSelect}
                       />
                     );
-                  } else if (shape.tool === "heart") {
+                  } else if (shape.tool === 'heart') {
                     return (
                       <Path
                         key={i}
@@ -966,7 +1002,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                   }
                   return null;
                 })}
-                {tempShape && ["line", "arrow"].includes(tempShape.tool) && (
+                {tempShape && ['line', 'arrow'].includes(tempShape.tool) && (
                   <Line
                     points={tempShape.points}
                     stroke="gray"
@@ -975,7 +1011,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     dash={[4, 4]}
                   />
                 )}
-                {tempShape && tempShape.tool === "rectangle" && (
+                {tempShape && tempShape.tool === 'rectangle' && (
                   <Rect
                     x={tempShape.points[0]}
                     y={tempShape.points[1]}
@@ -985,7 +1021,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     dash={[4, 4]}
                   />
                 )}
-                {tempShape && tempShape.tool === "circle" && (
+                {tempShape && tempShape.tool === 'circle' && (
                   <Circle
                     x={tempShape.points[0]}
                     y={tempShape.points[1]}
@@ -997,7 +1033,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     dash={[4, 4]}
                   />
                 )}
-                {tempShape && tempShape.tool === "heart" && (
+                {tempShape && tempShape.tool === 'heart' && (
                   <Path
                     data={drawHeartPath(
                       tempShape.points[0],

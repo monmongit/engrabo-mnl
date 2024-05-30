@@ -1,10 +1,30 @@
 const mongoose = require('mongoose');
 
+const optionSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  grossPrice: { type: Number, required: true },
+  price: { type: Number, required: true },
+  stock: { type: Number, required: true },
+  description: { type: String, required: true },
+});
+
+const engravingSchema = new mongoose.Schema({
+  type: { type: String, required: true }, // text or image
+  grossPrice: { type: Number, required: true },
+  price: { type: Number, required: true },
+  stock: { type: Number, required: true },
+  description: { type: String, required: true },
+});
+
 const productSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'Please enter your product name'] },
   description: {
     type: String,
     required: [true, 'Please enter your product description'],
+  },
+  details: {
+    type: String,
+    required: [true, 'Please enter your product details'],
   },
   category: {
     type: String,
@@ -28,7 +48,9 @@ const productSchema = new mongoose.Schema({
     },
   ],
   instructions: { type: String },
-  dropdowns: [{ name: String, options: [String] }],
+  sizes: [optionSchema],
+  engravings: [engravingSchema],
+  ratings: { type: Number },
   reviews: [
     {
       user: { type: Object },
@@ -40,20 +62,15 @@ const productSchema = new mongoose.Schema({
       createdAt: { type: Date, default: Date.now },
     },
   ],
-  ratings: { type: Number },
   adminId: { type: String, required: true },
   admin: { type: Object, required: true },
   sold_out: { type: Number, default: 0 },
   createAt: { type: Date, default: Date.now },
-  sizes: [{ name: String, price: Number, description: String }], // Add sizes field
-  colors: [String], // Add colors field
   mediaType: {
     type: String,
     enum: ['none', 'text', 'image', 'both'],
     default: 'none',
-  }, // Add mediaType field
-  imageOptions: [{ name: String, price: Number, description: String }], // Add imageOptions field
-  textOptions: [{ name: String, price: Number, description: String }], // Add textOptions field
+  },
 });
 
 module.exports = mongoose.model('Product', productSchema);

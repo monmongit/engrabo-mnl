@@ -1,31 +1,33 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductsAdmin, deleteProduct } from '../../redux/action/product';
-import { getAllCategories, deleteCategory } from '../../redux/action/category';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsAdmin, deleteProduct } from "../../redux/action/product";
+import { getAllCategories, deleteCategory } from "../../redux/action/category";
+import { useNavigate } from "react-router-dom";
+import { makeStyles } from "@mui/styles";
+
 import {
   AiOutlineDelete,
   AiOutlineEye,
   AiOutlineEdit,
   AiOutlineSearch,
-} from 'react-icons/ai';
-import Button from '@mui/material/Button';
-import Loader from '../Layout/Loader';
-import { DataGrid } from '@mui/x-data-grid';
-import { toast } from 'react-toastify';
-import CreateProduct from './CreateProduct';
-import UpdateProduct from './UpdateProduct';
-import CreateCategory from './CreateCategories';
-import styles from '../../styles/style';
-import { VscNewFile } from 'react-icons/vsc';
+} from "react-icons/ai";
+import Button from "@mui/material/Button";
+import Loader from "../Layout/Loader";
+import { DataGrid, GridOverlay } from "@mui/x-data-grid";
+import { toast } from "react-toastify";
+import CreateProduct from "./CreateProduct";
+import UpdateProduct from "./UpdateProduct";
+import CreateCategory from "./CreateCategories";
+import styles from "../../styles/style";
+import { VscNewFile } from "react-icons/vsc";
 
 const AllProducts = () => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editProductId, setEditProductId] = useState(null);
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState('Product');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState("Product");
   const { products, isLoading: loadingProducts } = useSelector(
     (state) => state.products
   );
@@ -36,9 +38,9 @@ const AllProducts = () => {
   const { admin } = useSelector((state) => state.admin);
 
   const fetchData = useCallback(() => {
-    if (viewMode === 'Product') {
+    if (viewMode === "Product") {
       dispatch(getAllProductsAdmin(admin._id));
-    } else if (viewMode === 'Category') {
+    } else if (viewMode === "Category") {
       dispatch(getAllCategories(admin._id));
     }
   }, [viewMode, dispatch, admin._id]);
@@ -54,13 +56,13 @@ const AllProducts = () => {
 
   useEffect(() => {
     const newPath =
-      viewMode === 'Product' ? '/dashboard-products' : '/dashboard-categories';
-    window.history.pushState({}, '', newPath);
+      viewMode === "Product" ? "/dashboard-products" : "/dashboard-categories";
+    window.history.pushState({}, "", newPath);
     fetchData();
   }, [viewMode, fetchData]);
 
   const handleDelete = async (id) => {
-    if (viewMode === 'Product') {
+    if (viewMode === "Product") {
       await dispatch(deleteProduct(id));
     } else {
       await dispatch(deleteCategory(id));
@@ -82,76 +84,107 @@ const AllProducts = () => {
   );
 
   const columns = [
-    { field: 'id', headerName: `${viewMode} ID`, minWidth: 150, flex: 0.5 },
-    { field: 'name', headerName: 'Name', minWidth: 180, flex: 1 },
-    ...(viewMode === 'Product'
+    { field: "id", headerName: `${viewMode} ID`, minWidth: 150, flex: 0.5 },
+    {
+      field: "name",
+      headerName: <span className="header-name">Name</span>,
+      minWidth: 180,
+      flex: 1,
+    },
+    ...(viewMode === "Product"
       ? [
           {
-            field: 'grossprice',
-            headerName: 'Gross Price',
+            field: "grossprice",
+
+            headerName: <span className="header-name">Gross Price</span>,
             minWidth: 100,
             flex: 0.5,
           },
           {
-            field: 'price',
-            headerName: 'Selling Price',
+            field: "price",
+            headerName: <span className="header-name">Selling Price</span>,
             minWidth: 100,
             flex: 0.5,
           },
           {
-            field: 'discount',
-            headerName: 'Discounted Price',
+            field: "discount",
+            headerName: <span className="header-name">Discounted Price</span>,
             minWidth: 100,
             flex: 0.5,
           },
-          { field: 'stock', headerName: 'Stock', minWidth: 50, flex: 0.5 },
+          {
+            field: "stock",
+            headerName: <span className="header-name">Stock</span>,
+            minWidth: 50,
+            flex: 0.5,
+          },
         ]
       : []),
-    ...(viewMode === 'Product'
+
+    viewMode === "Product"
       ? [
           {
-            field: 'Preview',
-            headerName: 'Preview',
+            field: "Preview",
+            headerName: "Preview",
             minWidth: 100,
             flex: 0.3,
+            renderHeader: () => <div className="header-cell">Preview</div>,
             renderCell: (params) => (
               <Button
+                variant="contained"
+                color="primary"
+                style={{ marginRight: "8px" }}
                 onClick={() =>
                   navigate(`/${viewMode.toLowerCase()}/${params.row.id}`)
                 }
               >
                 <AiOutlineEye size={20} />
+                View
               </Button>
             ),
           },
           {
-            field: 'Edit',
-            headerName: 'Edit',
+            field: "Edit",
+            headerName: "Edit",
             minWidth: 100,
             flex: 0.3,
+            renderHeader: () => <div className="header-cell">Edit</div>,
             renderCell: (params) => (
-              <Button onClick={() => handleEdit(params.row.id)}>
+              <Button
+                variant="contained"
+                color="secondary"
+                style={{ marginRight: "8px" }}
+                onClick={() => handleEdit(params.row.id)}
+              >
                 <AiOutlineEdit size={20} />
+                Edit
               </Button>
             ),
           },
         ]
-      : []),
+      : [],
     {
-      field: 'Delete',
-      headerName: 'Delete',
-      minWidth: 100,
+      field: "Delete",
+      headerName: "Delete",
+      minWidth: 130,
       flex: 0.3,
+      renderHeader: () => <div className="header-cell">Delete</div>,
       renderCell: (params) => (
-        <Button onClick={() => handleDelete(params.row.id)}>
+        <Button
+          variant="contained"
+          color="error"
+          style={{ marginRight: "10px" }} // Add margin to the right
+          onClick={() => handleDelete(params.row.id)}
+        >
           <AiOutlineDelete size={20} />
+          Delete
         </Button>
       ),
     },
   ];
 
   const rows =
-    viewMode === 'Product'
+    viewMode === "Product"
       ? filteredProducts.map((item) => ({
           id: item._id,
           name: item.name,
@@ -160,7 +193,7 @@ const AllProducts = () => {
           discount:
             item.discountPrice !== null
               ? `₱ ${item.discountPrice}`
-              : 'No Discount',
+              : "No Discount",
           stock: item.stock,
           sold: item?.sold_out,
         }))
@@ -170,7 +203,7 @@ const AllProducts = () => {
         }));
 
   const isLoading =
-    viewMode === 'Product' ? loadingProducts : loadingCategories;
+    viewMode === "Product" ? loadingProducts : loadingCategories;
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -178,60 +211,89 @@ const AllProducts = () => {
 
   return (
     <>
-      <div className="w-full mx-8 pt-1 mt-10 bg-white">
-        <div className="w-full flex justify-end items-center mb-4">
-          <select
-            className="h-[45px] border-[2px] border-[#171203] rounded-md mr-[425px]"
-            value={viewMode}
-            onChange={handleViewModeChange}
-          >
-            <option value="Product">Products</option>
-            <option value="Category">Categories</option>
-          </select>
-          <div className="relative mr-3 w-[40%]">
-            <input
-              type="text"
-              placeholder={`Search ${viewMode}s...`}
-              className="h-[45px] pl-2 pr-10 w-full border-[#171203] border-[2px] rounded-md placeholder-[#9e8a4f]"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-            <AiOutlineSearch
-              size={30}
-              className="absolute right-2 top-1.5 cursor-pointer"
-            />
+      <div
+        className="w-full sm:px-8 pt-1 mt-10 bg-white overflow-x-auto"
+        style={{ marginBottom: "100px", borderRadius: "10px" }}
+      >
+        <div className="mx-4">
+          <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-4 mt-2">
+            <div className="w-full sm:w-52 mb-3 sm:mb-0">
+              {" "}
+              {/* Adjust width here */}
+              <select
+                className="h-10 sm:h-[45px] border-2 border-solid border-[#ff9800] rounded-md p-2 shadow-md bg-white text-black mr-0 sm:mr-8 mb-3 sm:mb-0 mt-0 transition ease-in-out duration-300 focus:border-[#ff9800] focus:outline-none hover:border-[#ff9800] hover:ring-[#ff9800] hover:ring-2"
+                value={viewMode}
+                onChange={handleViewModeChange}
+              >
+                <option className="text-black" value="Product">
+                  Products
+                </option>
+                <option className="text-black" value="Category">
+                  Categories
+                </option>
+              </select>
+            </div>
+            <div className="relative w-full sm:w-[40%] mb-3 sm:mb-0">
+              <input
+                type="text"
+                placeholder={`Search ${viewMode}s...`}
+                className="h-10 sm:h-[45px] pl-4 pr-10 w-full  border-2 border-solid border-[#ff9800] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:border-[#ff9800] focus:outline-none hover:border-[#ff9800] hover:ring-[#ff9800] hover:ring-2"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+              <AiOutlineSearch
+                size={30}
+                className="absolute right-3 top-1.5 text-[#9e8a4f] cursor-pointer"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row">
+              {" "}
+              {/* Wrap buttons in a flex container */}
+              <div
+                className={`${styles.button} w-max h-10 px-4 rounded-md mb-3 ml-2 bg-[#ff9800] hover:bg-[#e68900] text-white flex items-center justify-center transition ease-in-out duration-300 cursor-pointer`}
+                onClick={() => setOpen(true)}
+              >
+                <span className="text-white flex items-center justify-center">
+                  <VscNewFile size={20} className="mr-2" />
+                  Create {viewMode}
+                </span>
+              </div>
+            </div>
           </div>
-          <div
-            className={`${styles.button} !w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3`}
-            onClick={() => setOpen(true)}
-          >
-            <span className="text-white flex items-center justify-center">
-              <VscNewFile size={20} className="mr-2" />
-              Create {viewMode}
-            </span>
-          </div>
-        </div>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={10}
-          disableSelectionOnClick
-          autoHeight
-        />
-        {open && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            {viewMode === 'Product' ? (
-              <CreateProduct setOpen={setOpen} />
-            ) : (
-              <CreateCategory setOpen={setOpen} />
+          <div className="w-full overflow-x-auto mb-10">
+            {" "}
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={12}
+              disableSelectionOnClick
+              autoHeight
+              className="data-grid MuiDataGrid-root MuiDataGrid-autoHeight MuiDataGrid-root--densityStandard MuiDataGrid-withBorderColor rounded-lg shadow-md border border-gray-300 divide-y divide-gray-300"
+            />
+            {open && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                {viewMode === "Product" ? (
+                  <CreateProduct setOpen={setOpen} />
+                ) : (
+                  <CreateCategory setOpen={setOpen} />
+                )}
+              </div>
+            )}
+            {editOpen && viewMode === "Product" && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <UpdateProduct
+                  setOpen={setEditOpen}
+                  productId={editProductId}
+                />
+              </div>
             )}
           </div>
-        )}
-        {editOpen && viewMode === 'Product' && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <UpdateProduct setOpen={setEditOpen} productId={editProductId} />
-          </div>
-        )}
+          {editOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <UpdateProduct setOpen={setEditOpen} productId={editProductId} />
+            </div>
+          )}
+        </div>
       </div>
     </>
   );

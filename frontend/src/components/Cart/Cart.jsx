@@ -1,3 +1,4 @@
+// Cart.js
 import React, { useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import styles from '../../styles/style';
@@ -11,7 +12,6 @@ import { toast } from 'react-toastify';
 const Cart = ({ setOpenCart }) => {
   const { cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  console.log('cart details: ', cart);
 
   const removeFromCartHandler = (data) => {
     dispatch(removeFromCart(data));
@@ -25,8 +25,8 @@ const Cart = ({ setOpenCart }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-100 ">
-      <div className="fixed top-0 right-0 h-[100vh] w-[70%] 800px:w-[25%] bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm !overflow-y-scroll hide-scrollbar">
+    <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10 ">
+      <div className="fixed top-0 right-0 h-[100vh] w-[70%] 800px:w-[25%] bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm overflow-y-scroll hide-scrollbar">
         {cart && cart.length === 0 ? (
           <div className="w-full h-screen flex items-center justify-center">
             <div className="flex w-full justify-end pt-5 pr-5 fixed top-3 right-3">
@@ -103,18 +103,30 @@ const Cart = ({ setOpenCart }) => {
 
 const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
   const [value, setValue] = useState(data?.qty || 1);
+  const [requestOrder, setRequestOrder] = useState(data?.requestOrder || false);
 
   const increment = () => {
-    if (data.stock <= value) {
-      toast.error(
-        `${data.name} stock is limited! Please contact us to reserve your order!`
-      );
+    if (!requestOrder && data.stock <= value) {
+      if (data.bundle && data.bundle.stock >= value + 1) {
+        if (
+          window.confirm(
+            'The stock is limited. Do you want to reserve the product instead?'
+          )
+        ) {
+          setRequestOrder(true);
+        } else {
+          toast.error(`${data.name} stock is limited!`);
+        }
+      } else {
+        toast.error(`${data.name} stock is limited!`);
+      }
     } else {
       setValue((prevValue) => prevValue + 1);
       const updateCartData = {
         ...data,
         qty: value + 1,
         subTotal: (value + 1) * data.price,
+        requestOrder,
       };
       quantityChangeHandler(updateCartData);
     }
@@ -127,6 +139,7 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
         ...data,
         qty: value - 1,
         subTotal: (value - 1) * data.price,
+        requestOrder,
       };
       quantityChangeHandler(updateCartData);
     }
@@ -138,10 +151,10 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
     <div className="border-b p-4 border-[#d8c68f]">
       <div className="w-full flex items-center">
         <div>
-          {/* Button Add and Minus Product */}
           <div
             className={`bg-gradient-to-r from-[#534723] to-[#171203] hover:opacity-80 transition duration-300 ease-in-out rounded-full w-[25px] h-[25px] ${styles.normalFlex} justify-center cursor-pointer`}
-            onClick={increment}
+            onClick={requestOrder ? null : increment}
+            style={requestOrder ? { cursor: 'not-allowed', opacity: 0.5 } : {}}
           >
             <HiPlus size={18} color="#fff" />
           </div>
@@ -154,16 +167,14 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
           </div>
         </div>
 
-        {/* Image Product */}
         {data?.images && data.images[0] && (
           <img
             src={data.images[0].url}
             alt={data.name || 'Product Image'}
-            className="w-[130px] h-min ml-2 rounded-[5px]"
+            className="w-[120px] h-[120px] ml-2 rounded-[5px]"
           />
         )}
 
-        {/* Price and Details of Product */}
         <div className="pl-[10px] w-[50%]">
           <h1 className="text-[15px] flex-grow">
             {data.name && data.name.length > 15
@@ -173,27 +184,22 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
           <h4 className="font-[600] text-[17px] text-[#171203]">
             ₱ {data.price}
           </h4>
-          {data.size && data.size.name && (
-            <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
-              Size: {data.size.name}
-            </h4>
-          )}
-          {data.imageOption && data.imageOption.name && (
-            <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
-              Image Option: {data.imageOption.name}
-            </h4>
-          )}
-          {data.textOption && data.textOption.name && (
-            <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
-              Text Option: {data.textOption.name}
-            </h4>
-          )}
           <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
             Stocks: {data.stock}
           </h4>
           <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
             Sub Total: ₱ {subTotal.toFixed(2)}
           </h4>
+          {data.size && (
+            <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
+              Size: {data.size.name}
+            </h4>
+          )}
+          {data.engraving && (
+            <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
+              Engraving: {data.engraving.type}
+            </h4>
+          )}
           <br />
         </div>
         <RxCross1
