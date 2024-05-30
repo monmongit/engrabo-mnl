@@ -973,7 +973,7 @@ const Address = () => {
         </div>
       )}
       <div className="flex w-full items-center justify-between">
-        <h1 className="text-[25px] font-[600] text-[#171203] pb-2">
+        <h1 className=" grid content-center place-item-center text-[25px] font-[600] text-[#171203] pb-2">
           My Addresses
         </h1>
         <div
@@ -985,51 +985,39 @@ const Address = () => {
       </div>
       <br />
 
-      {user &&
-        user.addresses.map((item, index) => (
-          <div key={index}>
-            <div className="w-full min-h-screen flex flex-col items-center">
-              <div
-                className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
-                style={{ width: isMobile ? "100%" : "50%" }}
-              >
+      <div className="grid gap-4 lg:grid-cols-2 grid-cols-1 p-4">
+        {user &&
+          user.addresses.map((item, index) => (
+            <div
+              key={index}
+              className="bg-gray-200 w-full p-4 rounded-lg shadow-md"
+            >
+              <div className="bg-white rounded-lg p-4 shadow-md transition duration-300 ease-in-out hover:shadow-lg mb-4">
                 <div className="flex items-center w-full mb-2">
-                  <h6 className="text-[20px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
+                  <p className="text-lg font-bold text-center w-full font-poppins">
                     {item.addressType}
-                  </h6>
+                  </p>
                 </div>
               </div>
-              <div
-                className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
-                style={{ width: isMobile ? "100%" : "50%" }}
-              >
-                {" "}
+              <div className="bg-white rounded-lg p-4 shadow-md transition duration-300 ease-in-out hover:shadow-lg mb-4">
                 <div className="flex items-center w-full mb-2">
-                  <h6 className="text-[15px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
+                  <p className="text-base font-bold text-center w-full font-poppins">
                     {item.address1}
-                  </h6>
+                  </p>
                 </div>
               </div>
-              <div
-                className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
-                style={{ width: isMobile ? "100%" : "50%" }}
-              >
-                {" "}
+              <div className="bg-white rounded-lg p-4 shadow-md transition duration-300 ease-in-out hover:shadow-lg mb-4">
                 <div className="flex items-center w-full mb-2">
-                  <h6 className="text-[15px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
+                  <p className="text-base font-bold text-center w-full font-poppins">
                     {item.address2}
-                  </h6>
+                  </p>
                 </div>
               </div>
-              <div
-                className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
-                style={{ width: isMobile ? "100%" : "50%" }}
-              >
-                {" "}
+              <div className="bg-white rounded-lg p-4 shadow-md transition duration-300 ease-in-out hover:shadow-lg mb-4">
                 <div className="flex items-center w-full mb-2">
-                  <h6 className="text-[15px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
+                  <p className="text-base font-bold text-center w-full font-poppins">
                     +63 {user && user.phoneNumber}
-                  </h6>
+                  </p>
                 </div>
               </div>
               <div className="flex items-center justify-center w-full">
@@ -1042,8 +1030,8 @@ const Address = () => {
                 </button>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+      </div>
 
       {user && user.addresses.length === 0 && (
         <h5 className="text-center pt-20 text-[18px]">
