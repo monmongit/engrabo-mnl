@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import Header from "../components/Layout/Header";
 import Footer from "../components/Layout/Footer";
 import styles from "../styles/style";
 import team from "../assets/Logo/team.jpeg"
 
 const AboutPage = () => {
+   // go to the top of the page
+   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <>
       <div>

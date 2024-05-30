@@ -52,7 +52,7 @@ export const brandingData = [
   {
     id: 1,
     title: "Free Shipping",
-    Description: "From all orders over 100$",
+    Description: "From all orders over  ₱ 300 ",
     icon: (
       <svg
         width="36"

@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../components/Layout/Header";
 import Footer from "../components/Layout/Footer";
 import styles from "../styles/style";
 
 const FAQPage = () => {
+
+  // go to the top of the page
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <>
       <div>
@@ -85,7 +91,10 @@ const Faq = () => {
 
   return (
     <div className={`${styles.section} my-8`}>
-      <h2 className="text-3xl font-bold text-[#171203] mb-8">FAQ</h2>
+      <div className="mt-20 md:mt-2 lg:mt-2 mb-2">
+      <h2 className="text-3xl font-bold text-[#171203]">FAQ</h2>
+      </div>
+      
       <div className="mx-auto space-y-4">
         {faqData.map((item, index) => (
           <div key={index} className="border-b border-[#b19b56] pb-4">
