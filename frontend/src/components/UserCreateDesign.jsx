@@ -126,7 +126,7 @@ const drawHeartPath = (x1, y1, x2, y2) => {
   `;
 };
 
-const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls}) => {
+const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   const [tool, setTool] = useState("select");
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -156,9 +156,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls}) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isToolCollapsed, setIsToolCollapsed] = useState(true);
   const [selectedTools, setTools] = useState("");
-
- 
-
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -433,7 +430,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls}) => {
       const url = await saveToCartDesignAll(i); // Save the URL returned by saveToCartDesignAll
       urls.push(url); // Push the URL to the array
     }
-    setUrls(urls) ; // Return the array of URLs
+    setUrls(urls); // Return the array of URLs
   };
 
   const handleImageUpload = (event) => {
@@ -618,13 +615,17 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls}) => {
                   Clear
                 </button>
                 <button
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
                   className="bg-white border border-gray-300 px-4 py-2 rounded w-50%"
+                  style={{ position: "relative", overflow: "hidden" }}
                 >
                   Upload
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
                 </button>
                 <button
                   onClick={handleExport}
@@ -1048,6 +1049,5 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls}) => {
     </>
   );
 };
-
 
 export default UserCreateDesign;

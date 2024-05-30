@@ -367,27 +367,31 @@ const UserOrderDetails = () => {
 };
 
 const orderCustomDesign = (data) => {
-  console.log("order custom design ", data);
+  console.log("order custom design ", data[0].url);
 
   return (
     <>
-      {data.map((item, index) => (
-        <div key={index} className="bg-gray-100 rounded p-4 mb-4">
-          <a
-            key={index}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-          >
-            <img
-              src={item.url}
-              alt={`Image ${index + 1}`}
-              className="w-full h-full border-solid"
-            />
-          </a>
-        </div>
-      ))}
+      {data[0].url && data[0].url.length !== 0 && (
+        <>
+          {data.map((item, index) => (
+            <div key={index} className="bg-gray-100 rounded p-4 mb-4">
+              <a
+                key={index}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+              >
+                <img
+                  src={item.url}
+                  alt={`Image ${index + 1}`}
+                  className="w-full h-full border-solid"
+                />
+              </a>
+            </div>
+          ))}
+        </>
+      )}
     </>
   );
 };
@@ -408,18 +412,25 @@ const cartInfo = (datas) => {
                   <strong>
                     <h2>Item Ordered : {cartItem.name}</h2>
                   </strong>
-                  <h2>
-                    Customer Note: <br /> {cartItem.response}
-                  </h2>
-                  <h2>Selected Options:</h2>
-                  {cartItem.options ? (
-                    <ul>
-                      {Object.entries(cartItem.options).map(([key, value]) => (
-                        <li key={key}>{`${key}: ${value}`}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No options available.</p>
+
+                  {cartItem.response && (
+                    <>
+                      <h2>Customer Note: </h2> <br />
+                      {cartItem.response}
+                    </>
+                  )}
+
+                  {cartItem.options && (
+                    <>
+                      <h2>Selected Options:</h2>
+                      <ul>
+                        {Object.entries(cartItem.options).map(
+                          ([key, value]) => (
+                            <li key={key}>{`${key}: ${value}`}</li>
+                          )
+                        )}
+                      </ul>
+                    </>
                   )}
                 </div>
               ))}
