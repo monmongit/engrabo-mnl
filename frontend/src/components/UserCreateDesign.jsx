@@ -153,7 +153,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
 
   const { cart } = useSelector((state) => state.cart);
 
-  // UI of canvas
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isToolCollapsed, setIsToolCollapsed] = useState(true);
   const [selectedTools, setTools] = useState('');
@@ -241,6 +240,8 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const handleMouseDown = (e) => {
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
     if (tool === 'pen' || tool === 'eraser') {
       setIsDrawing(true);
       const pos = e.target.getStage().getPointerPosition();
@@ -265,6 +266,8 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
 
   const handleMouseMove = (e) => {
     if (!isDrawing) return;
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
 
@@ -293,12 +296,34 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e) => {
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
     setIsDrawing(false);
     setTempShape(null);
   };
 
+  const handleTouchStart = (e) => {
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
+    handleMouseDown(e);
+  };
+
+  const handleTouchMove = (e) => {
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
+    handleMouseMove(e);
+  };
+
+  const handleTouchEnd = (e) => {
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
+    handleMouseUp(e);
+  };
+
   const handleTextAdd = (e) => {
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
     const stage = stageRef.current.getStage();
     const pointer = stage.getPointerPosition();
     setTexts([
@@ -318,11 +343,15 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const handleTextDblClick = (e) => {
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
     const id = e.target.id();
     setSelectedId(id);
   };
 
   const handleTextChange = (e) => {
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
     const id = selectedId;
     const newText = e.target.text();
     setTexts(
@@ -344,6 +373,8 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const handleSelect = (e) => {
+    e.evt.preventDefault(); // Prevent the default touch behavior
+    e.evt.stopPropagation(); // Stop the touch event from propagating
     setSelectedId(e.target.id());
     const selectedText = texts.find((text) => text.id === e.target.id());
     if (selectedText) {
@@ -384,17 +415,11 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   const handleExportAll = async () => {
     for (let i = 0; i < pages.length; i++) {
       await loadPage(i);
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Give some time for the page to render
+      await new Promise((resolve) => setTimeout(resolve, 500));
       await handleExport(i);
     }
   };
 
-  /*
-    task for design upload 
-    - user should be able to upload single drawing 
-    - user should be able to upload multiple drawings
-    - user should be able to retrieve his drawing and put it in his cart
-  */
   const saveToCartDesignAll = async (index) => {
     try {
       const stage = stageRef.current.getStage();
@@ -417,22 +442,22 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
       const data = await response.json();
       console.log('secure url: ', data.secureURL);
 
-      return data.secureURL; // Return secureURL instead of data
+      return data.secureURL;
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
   const saveToCartDesign = async () => {
-    const urls = []; // Array to store the URLs
+    const urls = [];
     for (let i = 0; i < pages.length; i++) {
       await loadPage(i);
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Give some time for the page to render
-      const url = await saveToCartDesignAll(i); // Save the URL returned by saveToCartDesignAll
-      urls.push(url); // Push the URL to the array
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const url = await saveToCartDesignAll(i);
+      urls.push(url);
     }
-    setUrls(urls); // Return the array of URLs
-    toast.success('Panget ng design mo HAHAHAHA! Design???');
+    setUrls(urls);
+    toast.success('Design added to cart successfully!');
     setOpen(false);
   };
 
@@ -534,15 +559,12 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   const handleSaveDesign = () => {
     saveCurrentPage();
     setSaveMessage('Your design is now saved.');
-    setTimeout(() => setSaveMessage(''), 3000); // Hide message after 3 seconds
+    setTimeout(() => setSaveMessage(''), 3000);
   };
-
-  const saveMultipleImage = async () => {};
 
   return (
     <>
-      <div className="grid grid-cols-2 lg:grid-cols-3 p-4  bg-slate-500 rounded-md gap-2">
-        {/* TOOLS */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 p-4 bg-slate-500 rounded-md gap-2">
         <div className="flex flex-col border-solid">
           <span className="flex justify">
             <RxCross1
@@ -552,7 +574,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
             />
             Close
           </span>
-          {/* TEXT TOOlS */}
           <div className="flex flex-col">
             <button
               onClick={toggleToolsCollapse}
@@ -646,7 +667,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
             </div>
           </div>
 
-          {/* SHAPES */}
           <div className="flex flex-col">
             <button
               onClick={toggleCollapse}
@@ -656,8 +676,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
             </button>
 
             <div className="overflow-y-auto max-h-20">
-              {' '}
-              {/* Added overflow-y-auto and max-h-80 */}
               <div
                 className={`transition-all duration-300 ${
                   isCollapsed ? 'max-h-0 overflow-hidden' : 'max-h-full'
@@ -725,7 +743,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
             </div>
           </div>
 
-          {/* Page Tools */}
           <div className="p-4">
             <div className="flex">
               <button
@@ -748,13 +765,9 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
               </button>
             </div>
             <div className="overflow-y-auto max-h-40">
-              {' '}
-              {/* Added overflow-y-auto and max-h-80 */}
               <div className="grid grid-cols-2 gap-2 mt-4">
                 {pages.map((page, index) => (
                   <div key={index} className="flex flex-col space-y-2">
-                    {' '}
-                    {/* Changed flex direction to column */}
                     <button
                       onClick={() => selectPage(index)}
                       className={`${
@@ -828,9 +841,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
             )}
           </div>
 
-          {/* Add the design to the customer possible cart */}
           <button
-            // onClick={saveExportedImage}
             onClick={saveToCartDesign}
             className="bg-green-500 text-white px-4 py-2 rounded"
           >
@@ -838,15 +849,17 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
           </button>
         </div>
 
-        {/* canvas */}
         <div className="lg:col-span-2">
           <div className="h-full w-full">
             <Stage
-              width={830}
-              height={500}
+              width={window.innerWidth * 0.9}
+              height={window.innerHeight * 0.7}
               onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
               onMousemove={handleMouseMove}
               onMouseup={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
               ref={stageRef}
               className="bg-white border rounded border-black"
               onClick={handleSelect}
@@ -879,6 +892,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
+                        onTouchStart={handleSelect}
                       />
                     );
                   } else if (shape.tool === 'circle') {
@@ -896,6 +910,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
+                        onTouchStart={handleSelect}
                       />
                     );
                   } else if (shape.tool === 'line') {
@@ -909,6 +924,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         lineCap="round"
                         draggable
                         onClick={handleSelect}
+                        onTouchStart={handleSelect}
                       />
                     );
                   } else if (shape.tool === 'arrow') {
@@ -922,6 +938,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         lineCap="round"
                         draggable
                         onClick={handleSelect}
+                        onTouchStart={handleSelect}
                       />
                     );
                   } else if (shape.tool === 'star') {
@@ -937,6 +954,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
+                        onTouchStart={handleSelect}
                       />
                     );
                   } else if (shape.tool === 'polygon') {
@@ -954,6 +972,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
+                        onTouchStart={handleSelect}
                       />
                     );
                   } else if (shape.tool === 'heart') {
@@ -970,6 +989,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
+                        onTouchStart={handleSelect}
                       />
                     );
                   }
@@ -1031,7 +1051,9 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     textDecoration={textItem.textDecoration}
                     draggable
                     onClick={handleSelect}
+                    onTouchStart={handleSelect}
                     onDblClick={handleTextDblClick}
+                    onDblTap={handleTextDblClick}
                     onChange={handleTextChange}
                   />
                 ))}
@@ -1047,6 +1069,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     scaleY={pages[currentPageIndex].imageProps.scaleY || 1}
                     draggable
                     onClick={handleSelect}
+                    onTouchStart={handleSelect}
                   />
                 )}
                 <Transformer ref={transformerRef} />
