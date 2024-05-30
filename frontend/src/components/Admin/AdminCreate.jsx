@@ -1,26 +1,31 @@
-import React, { useState } from 'react';
-import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai';
-import { RxAvatar } from 'react-icons/rx';
-import axios from 'axios';
+import React, { useState } from "react";
+import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { RxAvatar } from "react-icons/rx";
+import axios from "axios";
 
-import { toast } from 'react-toastify';
-import '../../styles/toastDesign.css';
-import { server } from '../../server';
-import styles from '../../styles/style';
-import { Link } from 'react-router-dom';
+import { toast } from "react-toastify";
+import "../../styles/toastDesign.css";
+import { server } from "../../server";
+import styles from "../../styles/style";
+import { Link } from "react-router-dom";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const AdminCreate = () => {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [address, setAddress] = useState('');
-  const [zipCode, setZipCode] = useState('');
-  const [password, setPassword] = useState('');
-  const [visible, setVisible] = useState('');
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [password, setPassword] = useState("");
+  const [visible, setVisible] = useState("");
   const [avatar, setAvatar] = useState(null);
+  const [backdropOpen, setBackdropOpen] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    setBackdropOpen(true);
 
     axios
       .post(`${server}/admin/create-admin`, {
@@ -34,16 +39,19 @@ const AdminCreate = () => {
       })
       .then((res) => {
         toast.success(res.data.message);
-        setName('');
-        setEmail('');
-        setPassword('');
-        setAvatar('');
-        setZipCode('');
-        setAddress('');
-        setPhoneNumber('');
+        setName("");
+        setEmail("");
+        setPassword("");
+        setAvatar("");
+        setZipCode("");
+        setAddress("");
+        setPhoneNumber("");
       })
       .catch((error) => {
         toast.error(error.response.data.message);
+      })
+      .finally(() => {
+        setBackdropOpen(false);
       });
   };
 
@@ -59,7 +67,7 @@ const AdminCreate = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center 800px:pt-12 pt-0 pb-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col justify-center 800px:pt-12 pt-0 pb-12 sm:px-6 lg:px-8 px-4">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/*<img src={logo} alt="Engrabo Logo" className="m-0 p-0" />*/}
         <h2 className="800px:mt-6 mt-0 text-center text-3xl font-extrabold text-brown-dark">
@@ -183,7 +191,7 @@ const AdminCreate = () => {
               </label>
               <div className="mt-1 relative">
                 <input
-                  type={visible ? 'text' : 'password'}
+                  type={visible ? "text" : "password"}
                   name="password"
                   autoComplete="current-password"
                   required
@@ -260,6 +268,15 @@ const AdminCreate = () => {
               </Link>
             </div>
           </form>
+          <Backdrop
+            sx={{
+              color: "#fff",
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+            }}
+            open={backdropOpen}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </div>
     </div>

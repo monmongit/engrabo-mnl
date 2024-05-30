@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { server } from "../../server";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from 'react';
+import { server } from '../../server';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   AiOutlineArrowRight,
   AiOutlineCamera,
@@ -18,30 +18,30 @@ import {
   loadUser,
   updateUserAddress,
   updateUserInformation,
-} from "../../redux/action/user";
-import { City, Country, State } from "country-state-city";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { RxCross1 } from "react-icons/rx";
-import { getAllOrdersOfUser } from "../../redux/action/order";
+} from '../../redux/action/user';
+import { City, Country, State } from 'country-state-city';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { RxCross1 } from 'react-icons/rx';
+import { getAllOrdersOfUser } from '../../redux/action/order';
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
   const [name, setName] = useState(user && user.name);
   const [email, setEmail] = useState(user && user.email);
   const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   const [avatar, setAvatar] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (error) {
       toast.error(error);
-      dispatch({ type: "clearErrors" });
+      dispatch({ type: 'clearErrors' });
     }
     if (successMessage) {
       toast.success(successMessage);
-      dispatch({ type: "clearMessages" });
+      dispatch({ type: 'clearMessages' });
     }
   }, [dispatch, error, successMessage]);
 
@@ -72,7 +72,7 @@ const ProfileContent = ({ active }) => {
           )
           .then((res) => {
             dispatch(loadUser());
-            toast.success("Avatar updated successfully!");
+            toast.success('Avatar updated successfully!');
           })
           .catch((error) => {
             toast.error(error);
@@ -88,96 +88,133 @@ const ProfileContent = ({ active }) => {
       {active === 1 && (
         <>
           {/* Image and Change Image */}
-          <div className="flex justify-center w-full">
-            <div className="relative">
-              <img
-                src={avatar ? avatar : `${user?.avatar?.url}`}
-                className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#171203]"
-                alt="User Avatar"
-              />
-              <div className="w-[30px] h-[30px] bg-[#e1c77a] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[5px] right-[5px]">
-                <input
-                  type="file"
-                  id="image"
-                  className="hidden"
-                  onChange={handleImage}
-                />
-                <label htmlFor="image">
-                  <AiOutlineCamera />
-                </label>
+          <div
+            className="w-full min-h-screen flex flex-col items-center"
+            style={{ marginBottom: '100px' }}
+          >
+            <div className="p-4 flex w-full bg-white lg:w-[50%] flex-col justify-center ml-4 my-5 bg-[#171203] rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+              <div className="w-full flex items-center justify-center"></div>
+              <div className="flex justify-center w-full">
+                <div className="relative">
+                  <img
+                    src={avatar ? avatar : `${user?.avatar?.url}`}
+                    className="w-[150px] h-[150px] rounded-full object-cover border-[3px] border-[#171203]"
+                    alt="User Avatar"
+                  />
+                  <div className="w-[30px] h-[30px] bg-[#e1c77a] rounded-full flex items-center justify-center cursor-pointer absolute bottom-[5px] right-[5px]">
+                    <input
+                      type="file"
+                      id="image"
+                      className="hidden"
+                      onChange={handleImage}
+                    />
+                    <label htmlFor="image">
+                      <AiOutlineCamera />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full px-5">
+                <br />
+                <br />
+                <form
+                  onSubmit={handleSubmit}
+                  required
+                  className="flex flex-col items-center justify-center sm:px-5 px-2 sm:pb-0 pb-[60px]"
+                >
+                  {/* Fullname and Email Addresss */}
+
+                  <div className="w-full flex flex-wrap justify-between pb-3">
+                    <div className="w-full sm:w-[calc(50% - 10px)]">
+                      <label
+                        className="block pb-2 font-[600] text-black"
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                      >
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        className="mb-1 peer  w-full rounded-[7px]  !border  !border-gray-300 border-t-transparent bg-transparent bg-white px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700  shadow-lg shadow-gray-900/5 outline outline-0 ring-4 ring-transparent transition-all placeholder:text-gray-500 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2  focus:!border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 focus:ring-gray-900/10 disabled:border-0 disabled:bg-blue-gray-50"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </div>
+                    <div className="w-full sm:w-[calc(50% - 10px)] mt-5 sm:mt-0">
+                      <label
+                        className="block pb-2 font-[600] text-black"
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                      >
+                        Email Address
+                      </label>
+                      <input
+                        type="text"
+                        className="mb-1 peer w-full rounded-[7px]  !border  !border-gray-300 border-t-transparent bg-transparent bg-white px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700  shadow-lg shadow-gray-900/5 outline outline-0 ring-4 ring-transparent transition-all placeholder:text-gray-500 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2  focus:!border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 focus:ring-gray-900/10 disabled:border-0 disabled:bg-blue-gray-50"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-full flex flex-wrap justify-between pb-3">
+                    <div className="w-full sm:w-[calc(50% - 10px)]">
+                      <label
+                        className="block pb-2 font-[600] text-black"
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                      >
+                        Phone Number
+                      </label>
+                      <input
+                        type="number"
+                        className="mb-1 peer  w-full rounded-[7px]  !border  !border-gray-300 border-t-transparent bg-transparent bg-white px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700  shadow-lg shadow-gray-900/5 outline outline-0 ring-4 ring-transparent transition-all placeholder:text-gray-500 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2  focus:!border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 focus:ring-gray-900/10 disabled:border-0 disabled:bg-blue-gray-50"
+                        required
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                      />
+                    </div>
+                    <div className="w-full sm:w-[calc(50% - 10px)] mt-5 sm:mt-0">
+                      <label
+                        className="block pb-2 font-[600] text-black"
+                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                      >
+                        Enter your password
+                      </label>
+                      <input
+                        type="password"
+                        className="peer w-full rounded-[7px]  !border  !border-gray-300 border-t-transparent bg-transparent bg-white px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700  shadow-lg shadow-gray-900/5 outline outline-0 ring-4 ring-transparent transition-all placeholder:text-gray-500 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2  focus:!border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 focus:ring-gray-900/10 disabled:border-0 disabled:bg-blue-gray-50"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    className="w-[100%] flex items-center flex-col 800px:w-[100%] mt-5"
+                    style={{ marginBottom: '10px' }}
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                      value="Update"
+                      className={`${styles.input} !w-[100%] mb-4 800px:mb-0`}
+                      required
+                      //   readOnly
+                    >
+                      Update Profile
+                    </Button>
+                  </div>
+                  {/* <input
+                    type="submit"
+                    value="Update"
+                    required
+                    className={`w-[250px] text-center text-[#171203] border border-[#171203] mt-4 !rounded-[4px] !h-11 hover:bg-[#e8d5a9] transition duration-300 ease-in-out`}
+                  /> */}
+                </form>
               </div>
             </div>
-          </div>
-          <div className="w-full px-5">
-            <br />
-            <br />
-            <form
-              onSubmit={handleSubmit}
-              required
-              className="flex flex-col items-center justify-center sm:px-5 px-2 sm:pb-0 pb-[60px]"
-            >
-              {/* Fullname and Email Addresss */}
-              <div className="w-full 800px:flex block pb-3">
-                <div className="w-[100%] 800px:w-[50%]">
-                  <label className="block pb-2 text-[#171203]">Full Name</label>
-                  <input
-                    type="text"
-                    className={`${styles.input} !w-[95%] mb-4 800px:mb-0 pl-2`}
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-                <div className="w-[100%] 800px:w-[50%]">
-                  <label className="block pb-2 text-[#171203]">
-                    Email Address
-                  </label>
-                  <input
-                    type="text"
-                    className={`${styles.input} !w-[95%] mb-1 800px:mb-0 pl-2`}
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Phone number and Password */}
-              <div className="w-full 800px:flex block pb-3">
-                <div className="w-[100%] 800px:w-[50%]">
-                  <label className="block pb-2 text-[#171203]">
-                    Phone Number
-                  </label>
-                  <input
-                    type="number"
-                    className={`${styles.input} !w-[95%] mb-4 800px:mb-0 pl-2`}
-                    required
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                  />
-                </div>
-
-                <div className="w-[100%] 800px:w-[50%]">
-                  <label className="block pb-2 text-[#171203]">
-                    Enter your password
-                  </label>
-                  <input
-                    type="password"
-                    className={`${styles.input} !w-[95%] mb-4 800px:mb-0 pl-2`}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <input
-                type="submit"
-                value="Update"
-                required
-                className={`w-[250px] text-center text-[#171203] border border-[#171203] mt-4 !rounded-[4px] !h-11 hover:bg-[#e8d5a9] transition duration-300 ease-in-out`}
-              />
-            </form>
           </div>
         </>
       )}
@@ -225,6 +262,7 @@ const AllOrders = () => {
   const { user } = useSelector((state) => state.user);
   const { orders, isLoading } = useSelector((state) => state.order);
   const dispatch = useDispatch();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
@@ -251,41 +289,42 @@ const AllOrders = () => {
   const columns = [
     { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
     {
-      field: "status",
-      headerName: "Status",
+      field: 'status',
+      headerName: 'Status',
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.row.status === "Delivered" ? "greenColor" : "redColor";
+        return params.row.status === 'Delivered' ? 'greenColor' : 'redColor';
       },
     },
     {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
+      field: 'itemsQty',
+      headerName: 'Items Qty',
+      type: 'number',
       minWidth: 130,
       flex: 0.7,
     },
     {
-      field: "total",
-      headerName: "Total",
-      type: "number",
+      field: 'total',
+      headerName: 'Total',
+      type: 'number',
       minWidth: 130,
       flex: 0.8,
     },
     {
-      field: " ",
+      field: ' ',
       flex: 1,
       minWidth: 150,
-      headerName: "",
-      type: "number",
+      headerName: '',
+      type: 'number',
       sortable: false,
       renderCell: (params) => {
         return (
           <>
             <Link to={`/user/order/${params.id}`}>
-              <Button>
+              <Button variant="contained" color="secondary">
                 <AiOutlineArrowRight size={20} />
+                Check
               </Button>
             </Link>
           </>
@@ -306,49 +345,71 @@ const AllOrders = () => {
       });
     });
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <div className="w-full mx-8 pt-1 mt-10 bg-white">
-      <div className="w-full flex justify-end items-center mb-4">
-        <div className="relative w-[30%]">
-          <input
-            type="text"
-            placeholder="Search Orders..."
-            className="h-[45px] pl-2 pr-10 w-full border-[#171203] border-[2px] rounded-md placeholder-[#9e8a4f]"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <AiOutlineSearch
-            size={30}
-            className="absolute right-2 top-1.5 cursor-pointer"
-          />
+    <div
+      className="w-full sm:px-8 pt-1 mt-10 bg-white overflow-x-auto"
+      style={{
+        marginBottom: '100px',
+        borderRadius: '10px',
+        marginLeft: 'auto',
+        marginRight: isMobile ? '36px' : 'auto', // Apply margin-right only on mobile
+        maxWidth: '90%',
+      }}
+    >
+      <div className="mx-4">
+        <div className="w-full flex justify-end items-center mb-4 px-4">
+          <div className="relative w-full sm:w-[30%] mt-5">
+            <input
+              type="text"
+              placeholder="Search Orders..."
+              className="h-10 sm:h-[45px] pl-4 pr-10 w-full border-2 border-solid border-[#ff9800] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:outline-none hover:border-[#ff9800] hover:ring-[#ff9800] hover:ring-2"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <AiOutlineSearch
+              size={30}
+              className="absolute right-3 top-1.5 text-[#9e8a4f] cursor-pointer"
+            />
+          </div>
+          <div className="relative w-full sm:w-[30%] mt-5 ml-4">
+            <select
+              className="h-10 sm:h-[45px] pl-4 pr-10 w-full border-2 border-solid border-[#ff9800] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:outline-none hover:border-[#ff9800] hover:ring-[#ff9800] hover:ring-2"
+              value={statusFilter}
+              onChange={handleStatusChange}
+            >
+              <option value="">All Orders</option>
+              <option value="Processing">Processing</option>
+              <option value="Transferred to delivery partner">
+                Transferred to delivery partner
+              </option>
+              <option value="Shipping">Shipping</option>
+              <option value="On the way">On the way</option>
+              <option value="Delivered">Delivered</option>
+              <option value="Processing Refund">Processing Refund</option>
+              <option value="Refund Approved">Refund Approved</option>
+              <option value="Refund Successful">Refund Successful</option>
+            </select>
+          </div>
         </div>
-        <div className="relative w-[30%] ml-4">
-          <select
-            className="h-[45px] w-full border-[2px] border-[#171203] rounded-md"
-            value={statusFilter}
-            onChange={handleStatusChange}
-          >
-            <option value="">All Orders</option>
-            <option value="Processing">Processing</option>
-            <option value="Transferred to delivery partner">
-              Transferred to delivery partner
-            </option>
-            <option value="Shipping">Shipping</option>
-            <option value="On the way">On the way</option>
-            <option value="Delivered">Delivered</option>
-            <option value="Processing Refund">Processing Refund</option>
-            <option value="Refund Approved">Refund Approved</option>
-            <option value="Refund Successful">Refund Successful</option>
-          </select>
+        <div className="w-full overflow-x-auto mb-10">
+          <DataGrid
+            rows={row}
+            columns={columns}
+            pageSize={10}
+            disableSelectionOnClick
+            autoHeight
+            className="data-grid"
+          />
         </div>
       </div>
-      <DataGrid
-        rows={row}
-        columns={columns}
-        pageSize={10}
-        disableSelectionOnClick
-        autoHeight
-      />
     </div>
   );
 };
@@ -374,39 +435,39 @@ const AllRefundOrders = () => {
     );
 
   const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
+    { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
 
     {
-      field: "status",
-      headerName: "Status",
+      field: 'status',
+      headerName: 'Status',
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.row.status === "Delivered" ? "greenColor" : "redColor";
+        return params.row.status === 'Delivered' ? 'greenColor' : 'redColor';
       },
     },
     {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
+      field: 'itemsQty',
+      headerName: 'Items Qty',
+      type: 'number',
       minWidth: 130,
       flex: 0.7,
     },
 
     {
-      field: "total",
-      headerName: "Total",
-      type: "number",
+      field: 'total',
+      headerName: 'Total',
+      type: 'number',
       minWidth: 130,
       flex: 0.8,
     },
 
     {
-      field: " ",
+      field: ' ',
       flex: 1,
       minWidth: 150,
-      headerName: "",
-      type: "number",
+      headerName: '',
+      type: 'number',
       sortable: false,
       renderCell: (params) => {
         return (
@@ -429,7 +490,7 @@ const AllRefundOrders = () => {
       row.push({
         id: item._id,
         itemsQty: item.cart.length,
-        total: "₱" + item.totalPrice,
+        total: '₱' + item.totalPrice,
         status: item.status,
       });
     });
@@ -459,39 +520,39 @@ const TrackOrder = () => {
   }, [dispatch, user._id]);
 
   const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
+    { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
 
     {
-      field: "status",
-      headerName: "Status",
+      field: 'status',
+      headerName: 'Status',
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.row.status === "Delivered" ? "greenColor" : "redColor";
+        return params.row.status === 'Delivered' ? 'greenColor' : 'redColor';
       },
     },
     {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
+      field: 'itemsQty',
+      headerName: 'Items Qty',
+      type: 'number',
       minWidth: 130,
       flex: 0.7,
     },
 
     {
-      field: "total",
-      headerName: "Total",
-      type: "number",
+      field: 'total',
+      headerName: 'Total',
+      type: 'number',
       minWidth: 130,
       flex: 0.8,
     },
 
     {
-      field: " ",
+      field: ' ',
       flex: 1,
       minWidth: 150,
-      headerName: "",
-      type: "number",
+      headerName: '',
+      type: 'number',
       sortable: false,
       renderCell: (params) => {
         return (
@@ -514,7 +575,7 @@ const TrackOrder = () => {
       row.push({
         id: item._id,
         itemsQty: item.cart.length,
-        total: "₱" + item.totalPrice,
+        total: '₱' + item.totalPrice,
         status: item.status,
       });
     });
@@ -534,9 +595,9 @@ const TrackOrder = () => {
 
 // Change Password
 const ChangePassword = () => {
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const passwordChangeHandler = async (e) => {
     e.preventDefault();
@@ -548,104 +609,147 @@ const ChangePassword = () => {
         { withCredentials: true }
       );
       toast.success(response.data.message);
-      setOldPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
     } catch (error) {
       toast.error(error.response.data.message);
     }
   };
   return (
-    <div className="w-full px-5 800px:pt-0 pt-[60px]">
-      <h1 className="text-[25px] text-center font-[600] text-[#171203] pb-2">
-        Change Password
-      </h1>
-      <div className="w-full">
-        <form
-          onSubmit={passwordChangeHandler}
-          className="flex flex-col items-center "
-        >
-          {/* Old Password */}
-          <div className="w-[100%] 800px:w-[50%] mt-5">
-            <label className="block pb-2 text-[#171203]">
-              Current Password
-            </label>
-            <input
-              type="password"
-              className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
-              required
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
+    <>
+      <div
+        className="w-full min-h-screen flex flex-col items-center"
+        style={{ marginBottom: '100px' }}
+      >
+        <div className="p-4 flex w-full bg-white lg:w-[50%] flex-col justify-center ml-4 my-5 bg-[#171203] rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+          <div className="w-full flex items-center justify-center"></div>
+          <div className="flex justify-center w-full">
+            <div className="relative">
+              <h1 className="text-[25px] text-center font-[600] text-[#171203] pb-2">
+                Change Password
+              </h1>
+            </div>
           </div>
 
-          {/* New Password */}
-          <div className="w-[100%] 800px:w-[50%] mt-2">
-            <label className="block pb-2 text-[#171203]">New Password</label>
-            <input
-              type="password"
-              className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+          <div className="w-full px-5">
+            <form
+              onSubmit={passwordChangeHandler}
               required
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </div>
+              className="flex flex-col items-center justify-center sm:px-5 px-2 sm:pb-0 pb-[60px]"
+            >
+              {/* Fullname and Email Addresss */}
+              <div className="w-full flex flex-wrap justify-between pb-3">
+                <div className="w-full sm:w-[calc(50% - 10px)]">
+                  <label
+                    className="block pb-2 font-[600] text-black"
+                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                  >
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    className="mb-1 peer  w-full rounded-[7px]  !border  !border-gray-300 border-t-transparent bg-transparent bg-white px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700  shadow-lg shadow-gray-900/5 outline outline-0 ring-4 ring-transparent transition-all placeholder:text-gray-500 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2  focus:!border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 focus:ring-gray-900/10 disabled:border-0 disabled:bg-blue-gray-50"
+                    required
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                  />
+                </div>
+                <div className="w-full sm:w-[calc(50% - 10px)] mt-5 sm:mt-0">
+                  <label
+                    className="block pb-2 font-[600] text-black"
+                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                  >
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    className="mb-1 peer w-full rounded-[7px]  !border  !border-gray-300 border-t-transparent bg-transparent bg-white px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700  shadow-lg shadow-gray-900/5 outline outline-0 ring-4 ring-transparent transition-all placeholder:text-gray-500 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2  focus:!border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 focus:ring-gray-900/10 disabled:border-0 disabled:bg-blue-gray-50"
+                    required
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </div>
+              </div>
 
-          {/* Confirm New Password */}
-          <div className="w-[100%] 800px:w-[50%] mt-2">
-            <label className="block pb-2 text-[#171203]">
-              Confirm New Password
-            </label>
-            <input
-              type="password"
-              className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-            <input
-              type="submit"
-              value="Update"
-              required
-              className={`w-full text-center text-[#171203] border border-[#171203] mt-5 !rounded-[4px] !h-11 hover:bg-[#e8d5a9] transition duration-300 ease-in-out`}
-            />
+              <div className="w-full flex flex-wrap justify-between pb-3">
+                <div className="w-full sm:w-[calc(50% - 10px)]">
+                  <label
+                    className="block pb-2 font-[600] text-black"
+                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                  >
+                    Confirm Password
+                  </label>
+                  <input
+                    type="password"
+                    className="mb-1 peer  w-full rounded-[7px]  !border  !border-gray-300 border-t-transparent bg-transparent bg-white px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700  shadow-lg shadow-gray-900/5 outline outline-0 ring-4 ring-transparent transition-all placeholder:text-gray-500 placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2  focus:!border-gray-900 focus:border-t-transparent focus:!border-t-gray-900 focus:outline-0 focus:ring-gray-900/10 disabled:border-0 disabled:bg-blue-gray-50"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div
+                className="w-[100%] flex items-center flex-col 800px:w-[100%] mt-5"
+                style={{ marginBottom: '10px' }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  value="Update"
+                  className={`${styles.input} !w-[100%] mb-4 800px:mb-0`}
+                  required
+                  //   readOnly
+                >
+                  Update Profile
+                </Button>
+              </div>
+              {/* <input
+                type="submit"
+                value="Update"
+                required
+                className={`w-full text-center text-[#171203] border border-[#171203] mt-5 !rounded-[4px] !h-11 hover:bg-[#e8d5a9] transition duration-300 ease-in-out`}
+              /> */}
+            </form>
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
 // Address
 const Address = () => {
   const [open, setOpen] = useState(false);
-  const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
-  const [city, setCity] = useState("");
+  const [country, setCountry] = useState('');
+  const [state, setState] = useState('');
+  const [city, setCity] = useState('');
   const [zipCode, setZipCode] = useState();
-  const [address1, setAddress1] = useState("");
-  const [address2, setAddress2] = useState("");
-  const [addressType, setAddressType] = useState("");
+  const [address1, setAddress1] = useState('');
+  const [address2, setAddress2] = useState('');
+  const [addressType, setAddressType] = useState('');
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const addressTypeData = [
     {
-      name: "Default",
+      name: 'Default',
     },
     {
-      name: "House",
+      name: 'House',
     },
     {
-      name: "Office",
+      name: 'Office',
     },
   ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (addressType === "" || country === "" || state === "" || city === "") {
-      toast.error("Please fill all the fields!");
+    if (addressType === '' || country === '' || state === '' || city === '') {
+      toast.error('Please fill all the fields!');
     } else {
       dispatch(
         updateUserAddress(
@@ -659,13 +763,13 @@ const Address = () => {
         )
       );
       setOpen(false);
-      setCountry("");
-      setState("");
-      setCity("");
-      setAddress1("");
-      setAddress2("");
-      setZipCode("");
-      setAddressType("");
+      setCountry('');
+      setState('');
+      setCity('');
+      setAddress1('');
+      setAddress2('');
+      setZipCode('');
+      setAddressType('');
     }
   };
 
@@ -673,11 +777,19 @@ const Address = () => {
     dispatch(deleteUserAddress(item._id));
   };
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <div className="w-full px-5">
+    <div className="w-full px-5 relative">
       {open && (
-        <div className="fixed w-full h-screen bg-[#0000004b] top-0 left-0 flex items-center justify-center">
-          <div className="w-[35%] h-[80vh] bg-white rounded shadow relative overflow-y-scroll hide-scrollbar">
+        <div className="fixed top-0 left-0 w-full h-screen bg-[#0000004b] flex items-center justify-center z-50">
+          <div className="800px:w-[50%] w-[90%] bg-white shadow-lg h-[80vh] rounded-lg p-5 overflow-y-scroll hide-scrollbar">
             <div className="w-full flex justify-end p-3">
               <RxCross1
                 size={30}
@@ -685,22 +797,24 @@ const Address = () => {
                 onClick={() => setOpen(false)}
               />
             </div>
-            <h1 className="text-center text-[25px] font-Poppins text-[#171203]">
+            <h5 className="text-[30px] font-bold font-Poppins text-center">
               Add New Address
-            </h1>
+            </h5>
 
             <div className="w-full">
               <form onSubmit={handleSubmit} className="w-full">
                 <div className="w-full block p-4">
                   {/* Country Selection */}
                   <div className="w-full pb-2">
-                    <label className="block pb-2 text-[#171203]">Country</label>
+                    <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
+                      Country
+                    </label>
                     <select
                       name=""
                       id=""
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
-                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+                      className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="" className="block pb-2">
                         Choose your Country
@@ -720,13 +834,15 @@ const Address = () => {
 
                   {/* State Selection */}
                   <div className="w-full pb-2">
-                    <label className="block pb-2 text-[#171203]">State</label>
+                    <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
+                      State
+                    </label>{' '}
                     <select
                       name=""
                       id=""
                       value={state}
                       onChange={(e) => setState(e.target.value)}
-                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+                      className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="" className="block pb-2">
                         Choose your State
@@ -746,13 +862,15 @@ const Address = () => {
 
                   {/* City Selection */}
                   <div className="w-full pb-2">
-                    <label className="block pb-2 text-[#171203]">City</label>
+                    <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
+                      City
+                    </label>{' '}
                     <select
                       name=""
                       id=""
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+                      className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="" className="block pb-2">
                         Choose your City
@@ -774,11 +892,13 @@ const Address = () => {
                   {/* Address 1 */}
                   <div className="w-full pb-2">
                     <label className="block pb-2 text-[#171203]">
-                      Address 1
+                      <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
+                        Address 1
+                      </label>
                     </label>
                     <input
                       type="address"
-                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+                      className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                       value={address1}
                       onChange={(e) => setAddress1(e.target.value)}
@@ -787,12 +907,12 @@ const Address = () => {
 
                   {/* Address 2 */}
                   <div className="w-full pb-2">
-                    <label className="block pb-2 text-[#171203]">
+                    <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                       Address 2
-                    </label>
+                    </label>{' '}
                     <input
                       type="address"
-                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+                      className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       value={address2}
                       onChange={(e) => setAddress2(e.target.value)}
                     />
@@ -800,12 +920,12 @@ const Address = () => {
 
                   {/* ZipCode */}
                   <div className="w-full pb-2">
-                    <label className="block pb-2 text-[#171203]">
+                    <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                       Zip Code
-                    </label>
+                    </label>{' '}
                     <input
                       type="number"
-                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+                      className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       required
                       value={zipCode}
                       onChange={(e) => setZipCode(e.target.value)}
@@ -814,15 +934,15 @@ const Address = () => {
 
                   {/* Address Type */}
                   <div className="w-full pb-2">
-                    <label className="block pb-2 text-[#171203]">
+                    <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                       Address Type
-                    </label>
+                    </label>{' '}
                     <select
                       name=""
                       id=""
                       value={addressType}
                       onChange={(e) => setAddressType(e.target.value)}
-                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+                      className="mb-5 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="" className="block pb-2">
                         Choose your Address Type
@@ -844,7 +964,7 @@ const Address = () => {
                     <input
                       type="submit"
                       value="Create"
-                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark hover:bg-[#f9f1dc] transition duration-300 ease-in-out"
+                      className="block w-full py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-lg cursor-pointer text-center mt-3"
                     />
                   </div>
                 </div>
@@ -865,34 +985,67 @@ const Address = () => {
         </div>
       </div>
       <br />
+
       {user &&
         user.addresses.map((item, index) => (
-          <div
-            className="w-full bg-[#f7ebca] h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10"
-            key={index}
-          >
-            <div className="flex items-center w-[10%]">
-              <h5 className="pl-5 font-[600]">{item.addressType}</h5>
-            </div>
-            <div className="pl-8 flex items-center w-[50%]">
-              <h6 className="800px:text-[unset] text-[12px]">
-                {item.address1} {item.address2}
-              </h6>
-            </div>
-            <div className="pl-8 flex items-center">
-              <h6 className="text-[12px] 800px:text-[unset]">
-                +63 {user && user.phoneNumber}
-              </h6>
-            </div>
-            <div className="min-w-[10%] flex items-center justify-between pl-8">
-              <AiOutlineDelete
-                size={25}
-                className="cursor-pointer"
-                onClick={() => handleDelete(item)}
-              />
+          <div key={index}>
+            <div className="w-full min-h-screen flex flex-col items-center">
+              <div
+                className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
+                style={{ width: isMobile ? '100%' : '50%' }}
+              >
+                <div className="flex items-center w-full mb-2">
+                  <h6 className="text-[20px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
+                    {item.addressType}
+                  </h6>
+                </div>
+              </div>
+              <div
+                className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
+                style={{ width: isMobile ? '100%' : '50%' }}
+              >
+                {' '}
+                <div className="flex items-center w-full mb-2">
+                  <h6 className="text-[15px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
+                    {item.address1}
+                  </h6>
+                </div>
+              </div>
+              <div
+                className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
+                style={{ width: isMobile ? '100%' : '50%' }}
+              >
+                {' '}
+                <div className="flex items-center w-full mb-2">
+                  <h6 className="text-[15px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
+                    {item.address2}
+                  </h6>
+                </div>
+              </div>
+              <div
+                className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
+                style={{ width: isMobile ? '100%' : '50%' }}
+              >
+                {' '}
+                <div className="flex items-center w-full mb-2">
+                  <h6 className="text-[15px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
+                    +63 {user && user.phoneNumber}
+                  </h6>
+                </div>
+              </div>
+              <div className="flex items-center justify-center w-full">
+                <button
+                  className="flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300 ease-in-out"
+                  onClick={() => handleDelete(item)}
+                >
+                  <AiOutlineDelete size={20} className="mr-2" />
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}
+
       {user && user.addresses.length === 0 && (
         <h5 className="text-center pt-20 text-[18px]">
           You do not have any saved address yet!
