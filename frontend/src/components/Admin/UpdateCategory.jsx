@@ -1,31 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import {
+  updateCategory,
+  getCategoryDetails,
+} from '../../redux/action/category';
 import { toast } from 'react-toastify';
 import { RxCross1 } from 'react-icons/rx';
-import { createCategory } from '../../redux/action/category';
 import { AiOutlinePlusCircle } from 'react-icons/ai';
 
-const CreateCategory = ({ setOpen }) => {
+const UpdateCategory = ({ setOpen, categoryId }) => {
   const { admin } = useSelector((state) => state.admin);
-  const { success, error } = useSelector((state) => state.categories);
+  const { success, error, category } = useSelector((state) => state.categories);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [title, setTitle] = useState('');
   const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    if (categoryId) {
+      dispatch(getCategoryDetails(categoryId));
+    }
+  }, [dispatch, categoryId]);
+
+  useEffect(() => {
+    if (category) {
+      setTitle(category.title || '');
+      setImage(category.images[0]?.url || null);
+    }
+  }, [category]);
 
   useEffect(() => {
     if (error) {
       toast.error(error);
     }
     if (success) {
-      toast.success('Category created successfully');
+      toast.success('Category updated successfully');
       navigate('/dashboard-categories');
+      setOpen(false);
       window.location.reload();
     }
-  }, [error, success, navigate, setOpen]);
+  }, [dispatch, error, success, navigate, setOpen]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -37,7 +54,8 @@ const CreateCategory = ({ setOpen }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const base64Image = await convertToBase64(image);
+    const base64Image =
+      image instanceof File ? await convertToBase64(image) : image;
 
     const categoryData = {
       title,
@@ -45,7 +63,7 @@ const CreateCategory = ({ setOpen }) => {
       adminId: admin._id,
     };
 
-    dispatch(createCategory(categoryData));
+    dispatch(updateCategory(categoryId, categoryData));
   };
 
   const convertToBase64 = (file) => {
@@ -68,7 +86,7 @@ const CreateCategory = ({ setOpen }) => {
       </div>
 
       <h5 className="text-[30px] font-Poppins text-center text-[#171203]">
-        Create Category
+        Update Category
       </h5>
 
       <form onSubmit={handleSubmit}>
@@ -95,7 +113,7 @@ const CreateCategory = ({ setOpen }) => {
             id="upload"
             className="hidden"
             onChange={handleImageChange}
-            required
+            required={!image}
           />
           <div className="w-full flex items-center flex-wrap">
             <label htmlFor="upload" className="cursor-pointer">
@@ -103,7 +121,7 @@ const CreateCategory = ({ setOpen }) => {
             </label>
             {image && (
               <img
-                src={URL.createObjectURL(image)}
+                src={image instanceof File ? URL.createObjectURL(image) : image}
                 alt="Preview"
                 className="h-[120px] w-[120px] object-cover m-2"
               />
@@ -114,7 +132,7 @@ const CreateCategory = ({ setOpen }) => {
         <div>
           <input
             type="submit"
-            value="Create"
+            value="Update"
             className="appearance-none block w-full px-3 h-[35px] border !border-[#171203] text-center !text-[#171203] rounded-[3px] mt-8 cursor-pointer"
           />
         </div>
@@ -123,4 +141,4 @@ const CreateCategory = ({ setOpen }) => {
   );
 };
 
-export default CreateCategory;
+export default UpdateCategory;

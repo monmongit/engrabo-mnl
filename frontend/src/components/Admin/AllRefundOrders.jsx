@@ -23,7 +23,7 @@ const AllRefundOrders = () => {
       (item) =>
         item.status === 'Processing Refund' ||
         item.status === 'Refund Approved' ||
-        'Refund Received'
+        item.status === 'Refund Successfull'
     );
 
   const columns = [

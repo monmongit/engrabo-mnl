@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllEventsAdmin, deleteEvent } from "../../redux/action/event";
-import { Link } from "react-router-dom";
-import { AiOutlineDelete, AiOutlineEye, AiOutlineSearch } from "react-icons/ai";
-import Button from "@mui/material/Button";
-import Loader from "../Layout/Loader";
-import { DataGrid } from "@mui/x-data-grid";
-import { toast } from "react-toastify";
-import CreateEvent from "./CreateEvent";
-import styles from "../../styles/style";
-import { VscNewFile } from "react-icons/vsc";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllEventsAdmin, deleteEvent } from '../../redux/action/event';
+import { Link } from 'react-router-dom';
+import { AiOutlineDelete, AiOutlineEye, AiOutlineSearch } from 'react-icons/ai';
+import Button from '@mui/material/Button';
+import Loader from '../Layout/Loader';
+import { DataGrid } from '@mui/x-data-grid';
+import { toast } from 'react-toastify';
+import CreateEvent from './CreateEvent';
+import styles from '../../styles/style';
+import { VscNewFile } from 'react-icons/vsc';
 
 const AllEvents = () => {
   const [open, setOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const { events, isLoading } = useSelector((state) => state.events);
   const { admin } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const AllEvents = () => {
 
   const handleDelete = (id) => {
     dispatch(deleteEvent(id));
-    toast.success("Product event deleted successfully");
+    toast.success('Product event deleted successfully');
   };
 
   const handleSearchChange = (e) => {
@@ -38,47 +38,47 @@ const AllEvents = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "Product Id", minWidth: 150, flex: 0.7 },
+    { field: 'id', headerName: 'Product Id', minWidth: 150, flex: 0.7 },
     {
-      field: "name",
-      headerName: "Name",
+      field: 'name',
+      headerName: 'Name',
       minWidth: 100,
       flex: 1.4,
     },
     {
-      field: "price",
-      headerName: "Price",
+      field: 'price',
+      headerName: 'Price',
       minWidth: 100,
       flex: 0.6,
     },
     {
-      field: "discount",
-      headerName: "Discounted price",
+      field: 'discount',
+      headerName: 'Discounted price',
       minWidth: 100,
       flex: 0.6,
     },
     {
-      field: "stock",
-      headerName: "Stock",
+      field: 'stock',
+      headerName: 'Stock',
       minWidth: 80,
       flex: 0.5,
     },
     {
-      field: "sold",
-      headerName: "Sold out",
+      field: 'sold',
+      headerName: 'Sold out',
       minWidth: 100,
       flex: 0.6,
     },
     {
-      field: "Preview",
+      field: 'Preview',
       flex: 0.8,
       minWidth: 100,
-      headerName: "Preview",
-      type: "number",
+      headerName: 'Preview',
+      type: 'number',
       sortable: false,
       renderCell: (params) => {
         const d = params.row.name;
-        const product_name = d.replace(/\s+/g, "-");
+        const product_name = d.replace(/\s+/g, '-');
         return (
           <>
             <Link to={`/product/${product_name}`}>
@@ -92,11 +92,11 @@ const AllEvents = () => {
       },
     },
     {
-      field: "Delete",
+      field: 'Delete',
       flex: 0.8,
       minWidth: 130,
-      headerName: "Delete",
-      type: "number",
+      headerName: 'Delete',
+      type: 'number',
       sortable: false,
       renderCell: (params) => (
         <Button
@@ -114,8 +114,8 @@ const AllEvents = () => {
   const rows = getFilteredProducts().map((item) => ({
     id: item._id,
     name: item.name,
-    price: "₱ " + item.originalPrice,
-    discount: "₱ " + item.discountPrice,
+    price: '₱ ' + item.originalPrice,
+    discount: '₱ ' + item.discountPrice,
     stock: item.stock,
     sold: item.sold_out, // Assuming sold count is static for demonstration
   }));
@@ -127,7 +127,7 @@ const AllEvents = () => {
       ) : (
         <div
           className="w-full sm:px-8 pt-1 mt-10 bg-white overflow-x-auto"
-          style={{ marginBottom: "100px", borderRadius: "10px" }}
+          style={{ marginBottom: '100px', borderRadius: '10px' }}
         >
           <div className="w-full flex justify-end items-center mb-4">
             <div className="relative mr-3 w-[40%]">
@@ -136,7 +136,7 @@ const AllEvents = () => {
                 placeholder="Search Products..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="h-10 sm:h-[45px] pl-4 pr-10 w-full  border-2 border-solid border-[#ff9800] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300  focus:outline-none hover:border-[#ff9800] hover:ring-[#ff9800] hover:ring-2"
+                className="h-10 sm:h-[45px] pl-4 pr-10 w-full  border-2 border-solid border-[#171203] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300  focus:outline-none hover:border-[#171203] hover:ring-[#171203] hover:ring-1"
               />
               <AiOutlineSearch
                 size={30}
@@ -146,7 +146,7 @@ const AllEvents = () => {
 
             {/* Create Button */}
             <div
-              className={`${styles.button} w-max h-10 px-4 rounded-md mb-3 ml-2 bg-[#ff9800] hover:bg-[#e68900] text-white flex items-center justify-center transition ease-in-out duration-300 cursor-pointer mr-3`}
+              className={`${styles.button} w-max h-10 px-4 rounded-md mb-3 ml-2 bg-[#171203] hover:bg-[#171203] text-white flex items-center justify-center transition ease-in-out duration-300 cursor-pointer mr-3`}
               onClick={() => setOpen(true)}
             >
               <span className="text-white flex items-center justify-center">

@@ -2,55 +2,23 @@ import axios from 'axios';
 import { server } from '../../server';
 
 // Create Product
-export const createProduct =
-  (
-    name,
-    description,
-    category,
-    tags,
-    grossPrice,
-    originalPrice,
-    discountPrice,
-    stock,
-    adminId,
-    images,
-    instructions,
-    dropdowns
-  ) =>
-  async (dispatch) => {
-    try {
-      dispatch({
-        type: 'productCreateRequest',
-      });
+export const createProduct = (productData) => async (dispatch) => {
+  try {
+    dispatch({ type: 'productCreateRequest' });
 
-      const { data } = await axios.post(
-        `${server}/product/create-product`,
-        name,
-        description,
-        category,
-        tags,
-        grossPrice,
-        originalPrice,
-        discountPrice,
-        stock,
-        adminId,
-        images,
-        instructions,
-        dropdowns
-      );
+    const { data } = await axios.post(
+      `${server}/product/create-product`,
+      productData
+    );
 
-      console.log('action-create new product data: ', data);
-      dispatch({
-        type: 'productCreateSuccess',
-        payload: data.product,
-      });
-    } catch (error) {
-      dispatch({
-        type: 'productCreateFail',
-        payload: error.response.data.message,
-      });
-    }
-  };
+    dispatch({ type: 'productCreateSuccess', payload: data.product });
+  } catch (error) {
+    dispatch({
+      type: 'productCreateFail',
+      payload: error.response.data.message,
+    });
+  }
+};
 
 // Get All Products Admin
 export const getAllProductsAdmin = (id) => async (dispatch) => {

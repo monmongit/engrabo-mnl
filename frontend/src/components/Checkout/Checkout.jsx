@@ -70,10 +70,7 @@ const Checkout = () => {
   };
 
   const subTotalPrice = cart.reduce(
-    (acc, item) =>
-      acc +
-      item.qty *
-        (item.discountPrice > 0 ? item.discountPrice : item.originalPrice),
+    (acc, item) => acc + item.qty * item.price,
     0
   );
 
@@ -458,8 +455,6 @@ const cartInfo = (data = []) => {
     );
   }
 
-  console.log("checkout: ", data);
-
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8 mr-5">
       <br />
@@ -473,6 +468,14 @@ const cartInfo = (data = []) => {
           <div key={index} className="bg-gray-100 rounded p-4 mb-4">
             <h3 className="text-lg font-bold mb-2">{item.name}</h3>
             <p className="text-gray-700 mb-2">Response: {item.response}</p>
+            {item.size && (
+              <p className="text-gray-700 mb-2">Size: {item.size.name}</p>
+            )}
+            {item.engraving && (
+              <p className="text-gray-700 mb-2">
+                Engraving: {item.engraving.type}
+              </p>
+            )}
             {item.options && (
               <ul>
                 {Object.entries(item.options).map(([key, value]) => (
@@ -485,6 +488,28 @@ const cartInfo = (data = []) => {
           </div>
         ))}
       </div>
+      
+      {data[0].url &&  data[0].url.length !== 0 && (
+        <div className="">
+          <p>Custom Designs:</p>
+          {data.map((item, index) => (
+            <div key={index} className="bg-gray-100 rounded p-4 mb-4">
+              <a
+                key={index}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={item.url}
+                  alt={`Image ${index + 1}`}
+                  className="w-full h-full border-solid"
+                />
+              </a>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

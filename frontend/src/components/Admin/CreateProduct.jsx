@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { AiOutlinePlusCircle } from "react-icons/ai";
-import { createProduct } from "../../redux/action/product";
-import { toast } from "react-toastify";
-import { RxCross1 } from "react-icons/rx";
-import { getAllCategories } from "../../redux/action/category";
-import { FaPlus, FaTrash } from "react-icons/fa";
+
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { AiOutlinePlusCircle } from 'react-icons/ai';
+import { createProduct } from '../../redux/action/product';
+import { toast } from 'react-toastify';
+import { RxCross1 } from 'react-icons/rx';
+import { getAllCategories } from '../../redux/action/category';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 
 const CreateProduct = ({ setOpen }) => {
   const { admin } = useSelector((state) => state.admin);
@@ -16,19 +17,20 @@ const CreateProduct = ({ setOpen }) => {
   const { categories } = useSelector((state) => state.categories);
 
   const [images, setImages] = useState([]);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [details, setDetails] = useState("");
-  const [category, setCategory] = useState("");
-  const [tags, setTags] = useState("");
-  const [grossPrice, setGrossPrice] = useState("");
-  const [originalPrice, setOriginalPrice] = useState("");
-  const [discountPrice, setDiscountPrice] = useState("");
-  const [stock, setStock] = useState("");
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [details, setDetails] = useState('');
+  const [category, setCategory] = useState('');
+  const [tags, setTags] = useState('');
+  const [grossPrice, setGrossPrice] = useState('');
+  const [originalPrice, setOriginalPrice] = useState('');
+  const [discountPrice, setDiscountPrice] = useState('');
+  const [stock, setStock] = useState('');
   const [sizes, setSizes] = useState([]);
   const [engravings, setEngravings] = useState([]);
-  const [instructions, setInstructions] = useState("");
-  const [mediaType, setMediaType] = useState("none");
+  const [instructions, setInstructions] = useState('');
+  const [mediaType, setMediaType] = useState('none');
+  const [bundles, setBundles] = useState([]);
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -48,7 +50,7 @@ const CreateProduct = ({ setOpen }) => {
   const handleAddSize = () => {
     setSizes([
       ...sizes,
-      { name: "", grossPrice: "", price: "", stock: "", description: "" },
+      { name: '', grossPrice: '', price: '', stock: '', description: '' },
     ]);
   };
   const handleSizeChange = (index, field, value) => {
@@ -68,7 +70,7 @@ const CreateProduct = ({ setOpen }) => {
   const handleAddEngraving = () => {
     setEngravings([
       ...engravings,
-      { type: "", grossPrice: "", price: "", stock: "", description: "" },
+      { type: '', grossPrice: '', price: '', stock: '', description: '' },
     ]);
   };
   const handleEngravingChange = (index, field, value) => {
@@ -83,6 +85,23 @@ const CreateProduct = ({ setOpen }) => {
   const handleDeleteEngraving = (index) => {
     const newEngravings = engravings.filter((_, i) => i !== index);
     setEngravings(newEngravings);
+  };
+
+  const handleAddBundle = () => {
+    setBundles([...bundles, { name: '', stock: '' }]);
+  };
+  const handleBundleChange = (index, field, value) => {
+    const newBundles = bundles.map((bundle, i) => {
+      if (i === index) {
+        return { ...bundle, [field]: value };
+      }
+      return bundle;
+    });
+    setBundles(newBundles);
+  };
+  const handleDeleteBundle = (index) => {
+    const newBundles = bundles.filter((_, i) => i !== index);
+    setBundles(newBundles);
   };
 
   const handleImageChange = (e) => {
@@ -110,20 +129,21 @@ const CreateProduct = ({ setOpen }) => {
     const defaultSize = sizes[0];
     const defaultEngraving = engravings[0];
 
-    newForm.append("name", name);
+    newForm.append('name', name);
     newForm.append(
-      "description",
+      'description',
       defaultSize
         ? defaultSize.description
         : defaultEngraving
         ? defaultEngraving.description
         : description
     );
-    newForm.append("details", details);
-    newForm.append("category", category);
-    newForm.append("tags", tags);
+
+    newForm.append('details', details);
+    newForm.append('category', category);
+    newForm.append('tags', tags);
     newForm.append(
-      "grossPrice",
+      'grossPrice',
       defaultSize
         ? defaultSize.grossPrice
         : defaultEngraving
@@ -131,27 +151,28 @@ const CreateProduct = ({ setOpen }) => {
         : grossPrice
     );
     newForm.append(
-      "originalPrice",
+      'originalPrice',
       defaultSize
         ? defaultSize.price
         : defaultEngraving
         ? defaultEngraving.price
         : originalPrice
     );
-    newForm.append("discountPrice", discountPrice);
+    newForm.append('discountPrice', discountPrice);
     newForm.append(
-      "stock",
+      'stock',
       defaultSize
         ? defaultSize.stock
         : defaultEngraving
         ? defaultEngraving.stock
         : stock
     );
-    newForm.append("adminId", admin._id);
-    newForm.append("instructions", instructions);
-    newForm.append("sizes", JSON.stringify(sizes));
-    newForm.append("engravings", JSON.stringify(engravings));
-    newForm.append("mediaType", mediaType);
+    newForm.append('adminId', admin._id);
+    newForm.append('instructions', instructions);
+    newForm.append('sizes', JSON.stringify(sizes));
+    newForm.append('engravings', JSON.stringify(engravings));
+    newForm.append('bundles', JSON.stringify(bundles));
+    newForm.append('mediaType', mediaType);
 
     dispatch(
       createProduct({
@@ -185,6 +206,7 @@ const CreateProduct = ({ setOpen }) => {
         instructions,
         sizes,
         engravings,
+        bundles,
         mediaType,
       })
     );
@@ -409,7 +431,7 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size gross price"
                   value={size.grossPrice}
                   onChange={(e) =>
-                    handleSizeChange(index, "grossPrice", e.target.value)
+                    handleSizeChange(index, "grossPrice", e.target.value)     
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -429,7 +451,7 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Size stock"
                   value={size.stock}
                   onChange={(e) =>
-                    handleSizeChange(index, "stock", e.target.value)
+                    handleSizeChange(index, "stock", e.target.value)                 
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -440,6 +462,7 @@ const CreateProduct = ({ setOpen }) => {
                   value={size.description}
                   onChange={(e) =>
                     handleSizeChange(index, "description", e.target.value)
+               
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -473,6 +496,7 @@ const CreateProduct = ({ setOpen }) => {
                   value={engraving.type}
                   onChange={(e) =>
                     handleEngravingChange(index, "type", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -483,6 +507,7 @@ const CreateProduct = ({ setOpen }) => {
                   value={engraving.grossPrice}
                   onChange={(e) =>
                     handleEngravingChange(index, "grossPrice", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -492,7 +517,9 @@ const CreateProduct = ({ setOpen }) => {
                   placeholder="Engraving price"
                   value={engraving.price}
                   onChange={(e) =>
+
                     handleEngravingChange(index, "price", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -503,6 +530,7 @@ const CreateProduct = ({ setOpen }) => {
                   value={engraving.stock}
                   onChange={(e) =>
                     handleEngravingChange(index, "stock", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -513,6 +541,7 @@ const CreateProduct = ({ setOpen }) => {
                   value={engraving.description}
                   onChange={(e) =>
                     handleEngravingChange(index, "description", e.target.value)
+
                   }
                   className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -520,6 +549,49 @@ const CreateProduct = ({ setOpen }) => {
                 <button
                   type="button"
                   onClick={() => handleDeleteEngraving(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Bundles
+            </label>
+            <button
+              type="button"
+              onClick={handleAddBundle}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Bundle
+            </button>
+            {bundles.map((bundle, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Bundle name"
+                  value={bundle.name}
+                  onChange={(e) =>
+                    handleBundleChange(index, 'name', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Bundle stock"
+                  value={bundle.stock}
+                  onChange={(e) =>
+                    handleBundleChange(index, 'stock', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteBundle(index)}
                   className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
                 >
                   <FaTrash />

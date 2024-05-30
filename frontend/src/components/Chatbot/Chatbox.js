@@ -805,7 +805,14 @@ const Chatbox = () => {
       'shipping time',
       'delivery schedule',
     ],
-    'Paano mag-order?': ['Paano mag-order?', 'order', 'bumili', 'pagbili'],
+    'Paano mag-order?': [
+      'Paano mag-order?',
+      'order',
+      'bumili',
+      'pagbili',
+      'bili',
+      'binili',
+    ],
     'Paano mag-refund?': [
       'Paano mag-refund?',
       'refund',
@@ -939,17 +946,21 @@ const Chatbox = () => {
 
   const handleSendMessage = (question) => {
     const userMessage = question || input.trim();
+    console.log('User Message:', userMessage); // Debugging line
     let botResponse;
 
     Object.keys(keywordMapping).forEach((key) => {
-      keywordMapping[key].forEach((keyword) => {
-        if (userMessage.toLowerCase().includes(keyword.toLowerCase())) {
-          botResponse = faqResponses[language][key];
-        }
-      });
+      if (!botResponse) {
+        keywordMapping[key].forEach((keyword) => {
+          if (userMessage.toLowerCase().includes(keyword.toLowerCase())) {
+            botResponse = faqResponses[language][key];
+          }
+        });
+      }
     });
 
     if (botResponse) {
+      console.log('Bot Response Found:', botResponse); // Debugging line
       setUnknownMessageCount(0);
       setMessages([
         ...messages,
@@ -957,6 +968,7 @@ const Chatbox = () => {
         { sender: 'bot', text: botResponse },
       ]);
     } else {
+      console.log('Bot Response Not Found'); // Debugging line
       setUnknownMessageCount((count) => count + 1);
       let response;
       if (unknownMessageCount === 0) {
@@ -1097,6 +1109,7 @@ const Chatbox = () => {
                   className={styles.chatboxSelectionButton}
                   onClick={(e) => {
                     e.stopPropagation();
+                    console.log('Button clicked:', question); // Debugging line
                     handleSendMessage(question);
                   }}
                 >

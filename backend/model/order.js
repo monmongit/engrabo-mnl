@@ -1,10 +1,16 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  cart: {
-    type: Array,
-    required: true,
-  },
+  cart: [
+    {
+      type: Object,
+      required: true,
+      subTotal: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
   shippingAddress: {
     type: Object,
     required: true,
@@ -13,12 +19,9 @@ const orderSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
-
   insResponse: {
     type: String,
   },
-
-  // model to make upload image
   images: [
     {
       public_id: {
@@ -31,7 +34,6 @@ const orderSchema = new mongoose.Schema({
       },
     },
   ],
-
   totalPrice: {
     type: Number,
     required: true,

@@ -5,7 +5,7 @@ const initialState = {
   loading: false, // Ensure all initial state properties are defined here
   user: null,
   error: null,
-  usersList: []
+  usersList: [],
 };
 
 export const userReducer = createReducer(initialState, (builder) => {
@@ -79,6 +79,21 @@ export const userReducer = createReducer(initialState, (builder) => {
     })
     .addCase('getAllUsersFailed', (state, action) => {
       state.addressloading = false;
+      state.error = action.payload;
+    })
+
+    // Delete User
+    .addCase('deleteUserRequest', (state) => {
+      state.loading = true;
+    })
+    .addCase('deleteUserSuccess', (state, action) => {
+      state.loading = false;
+      state.usersList = state.usersList.filter(
+        (user) => user._id !== action.payload.id
+      );
+    })
+    .addCase('deleteUserFailed', (state, action) => {
+      state.loading = false;
       state.error = action.payload;
     })
 
