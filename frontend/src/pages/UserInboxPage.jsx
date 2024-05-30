@@ -9,8 +9,8 @@ import { GrGallery } from "react-icons/gr";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
 import Header from "../components/Layout/Header";
-// const ENDPOINT = "https://socket-engrabomanila.onrender.com"; (Deployment)
-const ENDPOINT = "http://localhost:4000/";
+const ENDPOINT = "https://socket-engrabomanila.onrender.com"; //(Deployment)
+// const ENDPOINT = "http://localhost:4000/";
 const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const UserInboxPage = () => {
