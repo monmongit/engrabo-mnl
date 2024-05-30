@@ -1,22 +1,27 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AiOutlineEyeInvisible, AiOutlineEye } from 'react-icons/ai';
-import { Link } from 'react-router-dom';
-import styles from '../../styles/style';
-import Homebackground from '../../assets/Logo/home-background.jpg';
-import axios from 'axios';
-import { server } from '../../server';
-import { toast } from 'react-toastify';
-import '../../styles/toastDesign.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
+import { Link } from "react-router-dom";
+import styles from "../../styles/style";
+import Homebackground from "../../assets/Logo/home-background.jpg";
+import axios from "axios";
+import { server } from "../../server";
+import { toast } from "react-toastify";
+import "../../styles/toastDesign.css";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const AdminLogin = () => {
-  const navigate = useNavigate('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [visible, setVisible] = useState('');
+  const navigate = useNavigate("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [visible, setVisible] = useState("");
+  const [backdropOpen, setBackdropOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setBackdropOpen(true);
 
     await axios
       .post(
@@ -28,17 +33,20 @@ const AdminLogin = () => {
         { withCredentials: true }
       )
       .then((res) => {
-        toast.success('Login Success!');
-        navigate('/dashboard');
+        toast.success("Login Success!");
+        navigate("/dashboard");
         window.location.reload(true);
       })
       .catch((err) => {
         toast.error(err.response.data.message);
+      })
+      .finally(() => {
+        setBackdropOpen(false);
       });
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 px-4">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-brown-dark">
           Login to your admin account
@@ -83,7 +91,7 @@ const AdminLogin = () => {
               </label>
               <div className="mt-1 relative">
                 <input
-                  type={visible ? 'text' : 'password'}
+                  type={visible ? "text" : "password"}
                   name="password"
                   autoComplete="current-password"
                   required
@@ -148,6 +156,15 @@ const AdminLogin = () => {
               </Link>
             </div>
           </form>
+          <Backdrop
+            sx={{
+              color: "#fff",
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+            }}
+            open={backdropOpen}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </div>
       </div>
     </div>
