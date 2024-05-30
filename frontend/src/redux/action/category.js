@@ -32,7 +32,7 @@ export const createCategory = (categoryData) => async (dispatch) => {
 export const getAllCategories = () => async (dispatch) => {
   try {
     dispatch({ type: 'fetchCategoriesRequest' });
-    const { data } = await axios.get(`${server}/category/categories`); // Corrected URL
+    const { data } = await axios.get(`${server}/category/categories`);
     dispatch({
       type: 'fetchCategoriesSuccess',
       payload: data.categories,
@@ -45,18 +45,35 @@ export const getAllCategories = () => async (dispatch) => {
   }
 };
 
+// Get Category Details
+export const getCategoryDetails = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: 'categoryDetailsRequest' });
+    const { data } = await axios.get(`${server}/category/${id}`, {
+      withCredentials: true,
+    });
+    dispatch({
+      type: 'categoryDetailsSuccess',
+      payload: data.category,
+    });
+  } catch (error) {
+    dispatch({
+      type: 'categoryDetailsFail',
+      payload: error.response.data.message,
+    });
+  }
+};
+
 // Update Category
 export const updateCategory = (id, categoryData) => async (dispatch) => {
   try {
     dispatch({ type: 'updateCategoryRequest' });
     const { data } = await axios.put(
-      `${server}/update-category/${id}`,
-      categoryData
+      `${server}/category/update-category/${id}`,
+      categoryData,
+      { withCredentials: true }
     );
-    dispatch({
-      type: 'updateCategorySuccess',
-      payload: data.category,
-    });
+    dispatch({ type: 'updateCategorySuccess', payload: data.category });
   } catch (error) {
     dispatch({
       type: 'updateCategoryFail',
@@ -69,7 +86,6 @@ export const updateCategory = (id, categoryData) => async (dispatch) => {
 export const deleteCategory = (id) => async (dispatch) => {
   try {
     dispatch({ type: 'deleteCategoryRequest' });
-    // Use `server` which already includes the `/api/v2` prefix
     const { data } = await axios.delete(
       `${server}/category/delete-category/${id}`,
       {

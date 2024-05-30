@@ -18,13 +18,14 @@ import { toast } from 'react-toastify';
 import CreateProduct from './CreateProduct';
 import UpdateProduct from './UpdateProduct';
 import CreateCategory from './CreateCategories';
+import UpdateCategory from './UpdateCategory';
 import styles from '../../styles/style';
 import { VscNewFile } from 'react-icons/vsc';
 
 const AllProducts = () => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editProductId, setEditProductId] = useState(null);
+  const [editItemId, setEditItemId] = useState(null);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('Product');
@@ -72,7 +73,7 @@ const AllProducts = () => {
   };
 
   const handleEdit = (id) => {
-    setEditProductId(id);
+    setEditItemId(id);
     setEditOpen(true);
   };
 
@@ -95,7 +96,6 @@ const AllProducts = () => {
       ? [
           {
             field: 'grossprice',
-
             headerName: <span className="header-name">Gross Price</span>,
             minWidth: 100,
             flex: 0.5,
@@ -120,7 +120,6 @@ const AllProducts = () => {
           },
         ]
       : []),
-
     viewMode === 'Product'
       ? [
           {
@@ -143,26 +142,26 @@ const AllProducts = () => {
               </Button>
             ),
           },
-          {
-            field: 'Edit',
-            headerName: 'Edit',
-            minWidth: 100,
-            flex: 0.3,
-            renderHeader: () => <div className="header-cell">Edit</div>,
-            renderCell: (params) => (
-              <Button
-                variant="contained"
-                color="secondary"
-                style={{ marginRight: '8px' }}
-                onClick={() => handleEdit(params.row.id)}
-              >
-                <AiOutlineEdit size={20} />
-                Edit
-              </Button>
-            ),
-          },
         ]
       : [],
+    {
+      field: 'Edit',
+      headerName: 'Edit',
+      minWidth: 100,
+      flex: 0.3,
+      renderHeader: () => <div className="header-cell">Edit</div>,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="secondary"
+          style={{ marginRight: '8px' }}
+          onClick={() => handleEdit(params.row.id)}
+        >
+          <AiOutlineEdit size={20} />
+          Edit
+        </Button>
+      ),
+    },
     {
       field: 'Delete',
       headerName: 'Delete',
@@ -281,18 +280,15 @@ const AllProducts = () => {
             )}
             {editOpen && viewMode === 'Product' && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <UpdateProduct
-                  setOpen={setEditOpen}
-                  productId={editProductId}
-                />
+                <UpdateProduct setOpen={setEditOpen} productId={editItemId} />
+              </div>
+            )}
+            {editOpen && viewMode === 'Category' && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <UpdateCategory setOpen={setEditOpen} categoryId={editItemId} />
               </div>
             )}
           </div>
-          {editOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-              <UpdateProduct setOpen={setEditOpen} productId={editProductId} />
-            </div>
-          )}
         </div>
       </div>
     </>

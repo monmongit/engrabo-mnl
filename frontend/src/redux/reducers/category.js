@@ -39,6 +39,19 @@ export const categoryReducer = createReducer(initialState, (builder) => {
       state.error = action.payload;
     })
 
+    // Get Category Details
+    .addCase('categoryDetailsRequest', (state) => {
+      state.isLoading = true;
+    })
+    .addCase('categoryDetailsSuccess', (state, action) => {
+      state.isLoading = false;
+      state.category = action.payload;
+    })
+    .addCase('categoryDetailsFail', (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+
     // Update Category
     .addCase('updateCategoryRequest', (state) => {
       state.isLoading = true;
