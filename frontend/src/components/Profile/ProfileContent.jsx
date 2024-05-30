@@ -1,47 +1,47 @@
-import React, { useEffect, useState } from 'react';
-import { server } from '../../server';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { server } from "../../server";
+import { useDispatch, useSelector } from "react-redux";
 import {
   AiOutlineArrowRight,
   AiOutlineCamera,
   AiOutlineDelete,
   AiOutlineSearch,
-} from 'react-icons/ai';
-import styles from '../../styles/style';
-import { Link } from 'react-router-dom';
-import { MdTrackChanges } from 'react-icons/md';
-import Button from '@mui/material/Button';
-import { DataGrid } from '@mui/x-data-grid';
+} from "react-icons/ai";
+import styles from "../../styles/style";
+import { Link } from "react-router-dom";
+import { MdTrackChanges } from "react-icons/md";
+import Button from "@mui/material/Button";
+import { DataGrid } from "@mui/x-data-grid";
 
 import {
   deleteUserAddress,
   loadUser,
   updateUserAddress,
   updateUserInformation,
-} from '../../redux/action/user';
-import { City, Country, State } from 'country-state-city';
-import { toast } from 'react-toastify';
-import axios from 'axios';
-import { RxCross1 } from 'react-icons/rx';
-import { getAllOrdersOfUser } from '../../redux/action/order';
+} from "../../redux/action/user";
+import { City, Country, State } from "country-state-city";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { RxCross1 } from "react-icons/rx";
+import { getAllOrdersOfUser } from "../../redux/action/order";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
   const [name, setName] = useState(user && user.name);
   const [email, setEmail] = useState(user && user.email);
   const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (error) {
       toast.error(error);
-      dispatch({ type: 'clearErrors' });
+      dispatch({ type: "clearErrors" });
     }
     if (successMessage) {
       toast.success(successMessage);
-      dispatch({ type: 'clearMessages' });
+      dispatch({ type: "clearMessages" });
     }
   }, [dispatch, error, successMessage]);
 
@@ -72,7 +72,7 @@ const ProfileContent = ({ active }) => {
           )
           .then((res) => {
             dispatch(loadUser());
-            toast.success('Avatar updated successfully!');
+            toast.success("Avatar updated successfully!");
           })
           .catch((error) => {
             toast.error(error);
@@ -90,7 +90,7 @@ const ProfileContent = ({ active }) => {
           {/* Image and Change Image */}
           <div
             className="w-full min-h-screen flex flex-col items-center"
-            style={{ marginBottom: '100px' }}
+            style={{ marginBottom: "100px" }}
           >
             <div className="p-4 flex w-full bg-white lg:w-[50%] flex-col justify-center ml-4 my-5 bg-[#171203] rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
               <div className="w-full flex items-center justify-center"></div>
@@ -129,7 +129,7 @@ const ProfileContent = ({ active }) => {
                     <div className="w-full sm:w-[calc(50% - 10px)]">
                       <label
                         className="block pb-2 font-[600] text-black"
-                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                        style={{ fontFamily: "Roboto, sans-serif" }}
                       >
                         Full Name
                       </label>
@@ -144,7 +144,7 @@ const ProfileContent = ({ active }) => {
                     <div className="w-full sm:w-[calc(50% - 10px)] mt-5 sm:mt-0">
                       <label
                         className="block pb-2 font-[600] text-black"
-                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                        style={{ fontFamily: "Roboto, sans-serif" }}
                       >
                         Email Address
                       </label>
@@ -161,7 +161,7 @@ const ProfileContent = ({ active }) => {
                     <div className="w-full sm:w-[calc(50% - 10px)]">
                       <label
                         className="block pb-2 font-[600] text-black"
-                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                        style={{ fontFamily: "Roboto, sans-serif" }}
                       >
                         Phone Number
                       </label>
@@ -176,7 +176,7 @@ const ProfileContent = ({ active }) => {
                     <div className="w-full sm:w-[calc(50% - 10px)] mt-5 sm:mt-0">
                       <label
                         className="block pb-2 font-[600] text-black"
-                        style={{ fontFamily: 'Roboto, sans-serif' }}
+                        style={{ fontFamily: "Roboto, sans-serif" }}
                       >
                         Enter your password
                       </label>
@@ -192,7 +192,7 @@ const ProfileContent = ({ active }) => {
 
                   <div
                     className="w-[100%] flex items-center flex-col 800px:w-[100%] mt-5"
-                    style={{ marginBottom: '10px' }}
+                    style={{ marginBottom: "10px" }}
                   >
                     <Button
                       variant="contained"
@@ -262,14 +262,8 @@ const AllOrders = () => {
   const { user } = useSelector((state) => state.user);
   const { orders, isLoading } = useSelector((state) => state.order);
   const dispatch = useDispatch();
-<<<<<<< HEAD
   const [statusFilter, setStatusFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-=======
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
->>>>>>> bf6f4074c883eae5635acb0a29c72d007a197290
 
   useEffect(() => {
     dispatch(getAllOrdersOfUser(user._id));
@@ -287,41 +281,41 @@ const AllOrders = () => {
     orders &&
     orders.filter((item) => {
       const matchesSearch = item._id.includes(searchTerm);
-      const matchesStatus = statusFilter === '' || item.status === statusFilter;
+      const matchesStatus = statusFilter === "" || item.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
 
   const columns = [
-    { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
+    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
     {
-      field: 'status',
-      headerName: 'Status',
+      field: "status",
+      headerName: "Status",
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.row.status === 'Delivered' ? 'greenColor' : 'redColor';
+        return params.row.status === "Delivered" ? "greenColor" : "redColor";
       },
     },
     {
-      field: 'itemsQty',
-      headerName: 'Items Qty',
-      type: 'number',
+      field: "itemsQty",
+      headerName: "Items Qty",
+      type: "number",
       minWidth: 130,
       flex: 0.7,
     },
     {
-      field: 'total',
-      headerName: 'Total',
-      type: 'number',
+      field: "total",
+      headerName: "Total",
+      type: "number",
       minWidth: 130,
       flex: 0.8,
     },
     {
-      field: ' ',
+      field: " ",
       flex: 1,
       minWidth: 150,
-      headerName: '',
-      type: 'number',
+      headerName: "",
+      type: "number",
       sortable: false,
       renderCell: (params) => {
         return (
@@ -345,7 +339,7 @@ const AllOrders = () => {
       row.push({
         id: item._id,
         itemsQty: item.cart.length,
-        total: '₱ ' + item.totalPrice,
+        total: "₱ " + item.totalPrice,
         status: item.status,
       });
     });
@@ -354,19 +348,19 @@ const AllOrders = () => {
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
     <div
       className="w-full sm:px-8 pt-1 mt-10 bg-white overflow-x-auto"
       style={{
-        marginBottom: '100px',
-        borderRadius: '10px',
-        marginLeft: 'auto',
-        marginRight: isMobile ? '36px' : 'auto', // Apply margin-right only on mobile
-        maxWidth: '90%',
+        marginBottom: "100px",
+        borderRadius: "10px",
+        marginLeft: "auto",
+        marginRight: isMobile ? "36px" : "auto", // Apply margin-right only on mobile
+        maxWidth: "90%",
       }}
     >
       <div className="mx-4">
@@ -434,45 +428,45 @@ const AllRefundOrders = () => {
     orders &&
     orders.filter(
       (item) =>
-        item.status === 'Processing Refund' ||
-        item.status === 'Refund Approved' ||
-        item.status === 'Refund Successfull'
+        item.status === "Processing Refund" ||
+        item.status === "Refund Approved" ||
+        item.status === "Refund Successfull"
     );
 
   const columns = [
-    { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
+    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
 
     {
-      field: 'status',
-      headerName: 'Status',
+      field: "status",
+      headerName: "Status",
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.row.status === 'Delivered' ? 'greenColor' : 'redColor';
+        return params.row.status === "Delivered" ? "greenColor" : "redColor";
       },
     },
     {
-      field: 'itemsQty',
-      headerName: 'Items Qty',
-      type: 'number',
+      field: "itemsQty",
+      headerName: "Items Qty",
+      type: "number",
       minWidth: 130,
       flex: 0.7,
     },
 
     {
-      field: 'total',
-      headerName: 'Total',
-      type: 'number',
+      field: "total",
+      headerName: "Total",
+      type: "number",
       minWidth: 130,
       flex: 0.8,
     },
 
     {
-      field: ' ',
+      field: " ",
       flex: 1,
       minWidth: 150,
-      headerName: '',
-      type: 'number',
+      headerName: "",
+      type: "number",
       sortable: false,
       renderCell: (params) => {
         return (
@@ -495,7 +489,7 @@ const AllRefundOrders = () => {
       row.push({
         id: item._id,
         itemsQty: item.cart.length,
-        total: '₱' + item.totalPrice,
+        total: "₱" + item.totalPrice,
         status: item.status,
       });
     });
@@ -525,39 +519,39 @@ const TrackOrder = () => {
   }, [dispatch, user._id]);
 
   const columns = [
-    { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
+    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
 
     {
-      field: 'status',
-      headerName: 'Status',
+      field: "status",
+      headerName: "Status",
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.row.status === 'Delivered' ? 'greenColor' : 'redColor';
+        return params.row.status === "Delivered" ? "greenColor" : "redColor";
       },
     },
     {
-      field: 'itemsQty',
-      headerName: 'Items Qty',
-      type: 'number',
+      field: "itemsQty",
+      headerName: "Items Qty",
+      type: "number",
       minWidth: 130,
       flex: 0.7,
     },
 
     {
-      field: 'total',
-      headerName: 'Total',
-      type: 'number',
+      field: "total",
+      headerName: "Total",
+      type: "number",
       minWidth: 130,
       flex: 0.8,
     },
 
     {
-      field: ' ',
+      field: " ",
       flex: 1,
       minWidth: 150,
-      headerName: '',
-      type: 'number',
+      headerName: "",
+      type: "number",
       sortable: false,
       renderCell: (params) => {
         return (
@@ -580,7 +574,7 @@ const TrackOrder = () => {
       row.push({
         id: item._id,
         itemsQty: item.cart.length,
-        total: '₱' + item.totalPrice,
+        total: "₱" + item.totalPrice,
         status: item.status,
       });
     });
@@ -600,9 +594,9 @@ const TrackOrder = () => {
 
 // Change Password
 const ChangePassword = () => {
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const passwordChangeHandler = async (e) => {
     e.preventDefault();
@@ -614,9 +608,9 @@ const ChangePassword = () => {
         { withCredentials: true }
       );
       toast.success(response.data.message);
-      setOldPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -625,7 +619,7 @@ const ChangePassword = () => {
     <>
       <div
         className="w-full min-h-screen flex flex-col items-center"
-        style={{ marginBottom: '100px' }}
+        style={{ marginBottom: "100px" }}
       >
         <div className="p-4 flex w-full bg-white lg:w-[50%] flex-col justify-center ml-4 my-5 bg-[#171203] rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
           <div className="w-full flex items-center justify-center"></div>
@@ -648,7 +642,7 @@ const ChangePassword = () => {
                 <div className="w-full sm:w-[calc(50% - 10px)]">
                   <label
                     className="block pb-2 font-[600] text-black"
-                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                    style={{ fontFamily: "Roboto, sans-serif" }}
                   >
                     Current Password
                   </label>
@@ -663,7 +657,7 @@ const ChangePassword = () => {
                 <div className="w-full sm:w-[calc(50% - 10px)] mt-5 sm:mt-0">
                   <label
                     className="block pb-2 font-[600] text-black"
-                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                    style={{ fontFamily: "Roboto, sans-serif" }}
                   >
                     New Password
                   </label>
@@ -681,7 +675,7 @@ const ChangePassword = () => {
                 <div className="w-full sm:w-[calc(50% - 10px)]">
                   <label
                     className="block pb-2 font-[600] text-black"
-                    style={{ fontFamily: 'Roboto, sans-serif' }}
+                    style={{ fontFamily: "Roboto, sans-serif" }}
                   >
                     Confirm Password
                   </label>
@@ -697,7 +691,7 @@ const ChangePassword = () => {
 
               <div
                 className="w-[100%] flex items-center flex-col 800px:w-[100%] mt-5"
-                style={{ marginBottom: '10px' }}
+                style={{ marginBottom: "10px" }}
               >
                 <Button
                   variant="contained"
@@ -728,33 +722,33 @@ const ChangePassword = () => {
 // Address
 const Address = () => {
   const [open, setOpen] = useState(false);
-  const [country, setCountry] = useState('');
-  const [state, setState] = useState('');
-  const [city, setCity] = useState('');
+  const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
   const [zipCode, setZipCode] = useState();
-  const [address1, setAddress1] = useState('');
-  const [address2, setAddress2] = useState('');
-  const [addressType, setAddressType] = useState('');
+  const [address1, setAddress1] = useState("");
+  const [address2, setAddress2] = useState("");
+  const [addressType, setAddressType] = useState("");
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const addressTypeData = [
     {
-      name: 'Default',
+      name: "Default",
     },
     {
-      name: 'House',
+      name: "House",
     },
     {
-      name: 'Office',
+      name: "Office",
     },
   ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (addressType === '' || country === '' || state === '' || city === '') {
-      toast.error('Please fill all the fields!');
+    if (addressType === "" || country === "" || state === "" || city === "") {
+      toast.error("Please fill all the fields!");
     } else {
       dispatch(
         updateUserAddress(
@@ -768,13 +762,13 @@ const Address = () => {
         )
       );
       setOpen(false);
-      setCountry('');
-      setState('');
-      setCity('');
-      setAddress1('');
-      setAddress2('');
-      setZipCode('');
-      setAddressType('');
+      setCountry("");
+      setState("");
+      setCity("");
+      setAddress1("");
+      setAddress2("");
+      setZipCode("");
+      setAddressType("");
     }
   };
 
@@ -786,8 +780,8 @@ const Address = () => {
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
@@ -841,7 +835,7 @@ const Address = () => {
                   <div className="w-full pb-2">
                     <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                       State
-                    </label>{' '}
+                    </label>{" "}
                     <select
                       name=""
                       id=""
@@ -869,7 +863,7 @@ const Address = () => {
                   <div className="w-full pb-2">
                     <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                       City
-                    </label>{' '}
+                    </label>{" "}
                     <select
                       name=""
                       id=""
@@ -914,7 +908,7 @@ const Address = () => {
                   <div className="w-full pb-2">
                     <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                       Address 2
-                    </label>{' '}
+                    </label>{" "}
                     <input
                       type="address"
                       className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -927,7 +921,7 @@ const Address = () => {
                   <div className="w-full pb-2">
                     <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                       Zip Code
-                    </label>{' '}
+                    </label>{" "}
                     <input
                       type="number"
                       className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -941,7 +935,7 @@ const Address = () => {
                   <div className="w-full pb-2">
                     <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                       Address Type
-                    </label>{' '}
+                    </label>{" "}
                     <select
                       name=""
                       id=""
@@ -997,7 +991,7 @@ const Address = () => {
             <div className="w-full min-h-screen flex flex-col items-center">
               <div
                 className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
-                style={{ width: isMobile ? '100%' : '50%' }}
+                style={{ width: isMobile ? "100%" : "50%" }}
               >
                 <div className="flex items-center w-full mb-2">
                   <h6 className="text-[20px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
@@ -1007,9 +1001,9 @@ const Address = () => {
               </div>
               <div
                 className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
-                style={{ width: isMobile ? '100%' : '50%' }}
+                style={{ width: isMobile ? "100%" : "50%" }}
               >
-                {' '}
+                {" "}
                 <div className="flex items-center w-full mb-2">
                   <h6 className="text-[15px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
                     {item.address1}
@@ -1018,9 +1012,9 @@ const Address = () => {
               </div>
               <div
                 className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
-                style={{ width: isMobile ? '100%' : '50%' }}
+                style={{ width: isMobile ? "100%" : "50%" }}
               >
-                {' '}
+                {" "}
                 <div className="flex items-center w-full mb-2">
                   <h6 className="text-[15px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
                     {item.address2}
@@ -1029,9 +1023,9 @@ const Address = () => {
               </div>
               <div
                 className="w-full bg-white rounded-[4px] p-4 shadow transition duration-300 ease-in-out hover:shadow-lg mb-4"
-                style={{ width: isMobile ? '100%' : '50%' }}
+                style={{ width: isMobile ? "100%" : "50%" }}
               >
-                {' '}
+                {" "}
                 <div className="flex items-center w-full mb-2">
                   <h6 className="text-[15px]  font-bold  font-Poppins font-medium sm:text-[unset] text-center w-full">
                     +63 {user && user.phoneNumber}

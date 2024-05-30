@@ -120,7 +120,6 @@ const AllProducts = () => {
           },
         ]
       : []),
-<<<<<<< HEAD
     {
       field: "Preview",
       headerName: "Preview",
@@ -159,51 +158,6 @@ const AllProducts = () => {
         </Button>
       ),
     },
-=======
-
-    viewMode === 'Product'
-      ? [
-          {
-            field: 'Preview',
-            headerName: 'Preview',
-            minWidth: 100,
-            flex: 0.3,
-            renderHeader: () => <div className="header-cell">Preview</div>,
-            renderCell: (params) => (
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ marginRight: '8px' }}
-                onClick={() =>
-                  navigate(`/${viewMode.toLowerCase()}/${params.row.id}`)
-                }
-              >
-                <AiOutlineEye size={20} />
-                View
-              </Button>
-            ),
-          },
-          {
-            field: 'Edit',
-            headerName: 'Edit',
-            minWidth: 100,
-            flex: 0.3,
-            renderHeader: () => <div className="header-cell">Edit</div>,
-            renderCell: (params) => (
-              <Button
-                variant="contained"
-                color="secondary"
-                style={{ marginRight: '8px' }}
-                onClick={() => handleEdit(params.row.id)}
-              >
-                <AiOutlineEdit size={20} />
-                Edit
-              </Button>
-            ),
-          },
-        ]
-      : [],
->>>>>>> bf6f4074c883eae5635acb0a29c72d007a197290
     {
       field: 'Delete',
       headerName: 'Delete',
