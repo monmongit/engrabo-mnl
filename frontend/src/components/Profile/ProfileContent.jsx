@@ -262,13 +262,8 @@ const AllOrders = () => {
   const { user } = useSelector((state) => state.user);
   const { orders, isLoading } = useSelector((state) => state.order);
   const dispatch = useDispatch();
-<<<<<<< HEAD
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-=======
   const [statusFilter, setStatusFilter] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
->>>>>>> 956b2e7d20ecafff414f50cf8e96ea1f7a0a4d6a
 
   useEffect(() => {
     dispatch(getAllOrdersOfUser(user._id));

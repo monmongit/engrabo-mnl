@@ -120,49 +120,44 @@ const AllProducts = () => {
           },
         ]
       : []),
-
-    viewMode === "Product"
-      ? [
-          {
-            field: "Preview",
-            headerName: "Preview",
-            minWidth: 100,
-            flex: 0.3,
-            renderHeader: () => <div className="header-cell">Preview</div>,
-            renderCell: (params) => (
-              <Button
-                variant="contained"
-                color="primary"
-                style={{ marginRight: "8px" }}
-                onClick={() =>
-                  navigate(`/${viewMode.toLowerCase()}/${params.row.id}`)
-                }
-              >
-                <AiOutlineEye size={20} />
-                View
-              </Button>
-            ),
-          },
-          {
-            field: "Edit",
-            headerName: "Edit",
-            minWidth: 100,
-            flex: 0.3,
-            renderHeader: () => <div className="header-cell">Edit</div>,
-            renderCell: (params) => (
-              <Button
-                variant="contained"
-                color="secondary"
-                style={{ marginRight: "8px" }}
-                onClick={() => handleEdit(params.row.id)}
-              >
-                <AiOutlineEdit size={20} />
-                Edit
-              </Button>
-            ),
-          },
-        ]
-      : [],
+    {
+      field: "Preview",
+      headerName: "Preview",
+      minWidth: 100,
+      flex: 0.3,
+      renderHeader: () => <div className="header-cell">Preview</div>,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="primary"
+          style={{ marginRight: "8px" }}
+          onClick={() =>
+            navigate(`/${viewMode.toLowerCase()}/${params.row.id}`)
+          }
+        >
+          <AiOutlineEye size={20} />
+          View
+        </Button>
+      ),
+    },
+    {
+      field: "Edit",
+      headerName: "Edit",
+      minWidth: 100,
+      flex: 0.3,
+      renderHeader: () => <div className="header-cell">Edit</div>,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="secondary"
+          style={{ marginRight: "8px" }}
+          onClick={() => handleEdit(params.row.id)}
+        >
+          <AiOutlineEdit size={20} />
+          Edit
+        </Button>
+      ),
+    },
     {
       field: "Delete",
       headerName: "Delete",

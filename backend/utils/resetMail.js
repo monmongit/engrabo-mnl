@@ -18,11 +18,13 @@ const resetMail = async (options) => {
         filename: "engrabo-logo.png",
         path: path.join(__dirname, "images", "engrabo-logo.png"),
         cid: "logo",
+        
       },
       {
-        filename: "footer.png",
+        filename: "engraboMnila.png",
         path: path.join(__dirname, "images", "footer.png"),
         cid: "logo2",
+   
       },
     ];
 
@@ -68,8 +70,8 @@ const resetMail = async (options) => {
                  </div>`
               : ""
           }
+          <img src="cid:logo2" alt="Footer" style="width: 100%; margin: 0; height: auto; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;" />
         </div>
-        <img src="cid:logo2" alt="Footer" style="width: 100%; margin: 0; height: auto; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;" />
       </div>
       `,
       attachments: attachments,
