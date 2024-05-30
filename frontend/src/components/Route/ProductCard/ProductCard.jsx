@@ -186,12 +186,12 @@ const ProductCard = ({ data, isEvent }) => {
           {data.sizes && data.sizes.length > 0 && (
             <div className="mt-4">
               <label className="block font-medium text-[#534723]">Sizes:</label>
-              <div className="flex space-x-2">
+              <div className="grid grid-cols-3 space-x-2">
                 {data.sizes.map((size, index) => (
                   <button
                     key={index}
                     onClick={() => handleSizeChange(size)}
-                    className={`px-4 py-2 border rounded-md ${
+                    className={`px-4 py-2 border rounded-md flex justify-center ${
                       selectedSize && selectedSize.name === size.name
                         ? 'bg-blue-500 text-white'
                         : 'bg-white text-gray-700'
@@ -210,12 +210,12 @@ const ProductCard = ({ data, isEvent }) => {
               <label className="block font-medium text-[#534723]">
                 Engraving Options:
               </label>
-              <div className="flex space-x-2">
+              <div className="grid grid-cols-3 space-x-2">
                 {data.engravings.map((engraving, index) => (
                   <button
                     key={index}
                     onClick={() => handleEngravingChange(engraving)}
-                    className={`px-4 py-2 border rounded-md ${
+                    className={`px-4 py-2 border rounded-md  flex justify-center ${
                       selectedEngraving &&
                       selectedEngraving.type === engraving.type
                         ? 'bg-blue-500 text-white'
