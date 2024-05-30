@@ -18,7 +18,8 @@ const AllUsers = () => {
   }, [dispatch, admin._id]);
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+  
       dispatch(deleteUser(id));
     }
   };
@@ -28,24 +29,29 @@ const AllUsers = () => {
   );
 
   const columns = [
-    { field: 'id', headerName: 'User ID', minWidth: 150, flex: 0.7 },
-    { field: 'name', headerName: 'User Name', minWidth: 150, flex: 0.7 },
-    { field: 'email', headerName: 'User Email', minWidth: 130, flex: 0.8 },
+    { field: "id", headerName: "User ID", minWidth: 100, flex: 1 },
+    { field: "name", headerName: "User Name", minWidth: 100, flex: 1 },
+    { field: "email", headerName: "User Email", minWidth: 150, flex: 1 },
     {
-      field: 'phonenumber',
-      headerName: 'User Phone Number',
-      type: 'string',
+      field: "phonenumber",
+      headerName: "User Phone Number",
+      type: "string",
       minWidth: 150,
-      flex: 0.8,
+      flex: 1,
     },
     {
-      field: 'actions',
-      headerName: 'Actions',
-      minWidth: 150,
+      field: "actions",
+      headerName: "Actions",
+      minWidth: 130,
       flex: 0.5,
       renderCell: (params) => (
-        <Button onClick={() => handleDelete(params.row.id)}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleDelete(params.row.id)}
+        >
           <AiOutlineDelete size={20} />
+          Delete
         </Button>
       ),
     },
@@ -63,29 +69,37 @@ const AllUsers = () => {
       {isLoading ? (
         <Loader />
       ) : (
-        <div className="w-full mx-8 pt-1 mt-10 bg-white">
-          <div className="w-full flex justify-end items-center mb-4">
-            <div className="relative w-[40%]">
-              <input
-                type="text"
-                placeholder="Search Users..."
-                className="h-[45px] pl-2 pr-10 w-full border-[#171203] border-[2px] rounded-md placeholder-[#9e8a4f]"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <AiOutlineSearch
-                size={30}
-                className="absolute right-2 top-1.5 cursor-pointer"
+        <div
+          className="w-full px-0 sm:px-8 pt-1 mt-10 bg-white overflow-x-auto"
+          style={{ marginBottom: "60px", borderRadius: "10px" }}
+        >
+          <div className="mx-4">
+            <div className="w-full flex justify-end items-center mb-4">
+              <div className="relative w-full sm:w-[40%] mt-5">
+                <input
+                  type="text"
+                  placeholder="Search Users..."
+                  className="h-10 sm:h-[45px] pl-4 pr-10 w-full  border-2 border-solid border-[#ff9800] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300  focus:outline-none hover:border-[#ff9800] hover:ring-[#ff9800] hover:ring-2"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <AiOutlineSearch
+                  size={30}
+                  className="absolute right-2 top-1.5 cursor-pointer"
+                />
+              </div>
+            </div>
+            <div className="w-full overflow-x-auto mb-10">
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                pageSize={10}
+                disableSelectionOnClick
+                autoHeight
+                className="data-grid"
               />
             </div>
           </div>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={10}
-            disableSelectionOnClick
-            autoHeight
-          />
         </div>
       )}
     </>

@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { server } from '../server';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { AiOutlineArrowRight, AiOutlineSend } from 'react-icons/ai';
-import styles from '../styles/style';
-import { GrGallery } from 'react-icons/gr';
-import socketIO from 'socket.io-client';
-import { format } from 'timeago.js';
-import Header from '../components/Layout/Header';
-const ENDPOINT = 'http://localhost:4000/';
-const socket = socketIO(ENDPOINT, { transports: ['websocket'] });
+import React, { useEffect, useRef, useState } from "react";
+import { server } from "../server";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
+import styles from "../styles/style";
+import { GrGallery } from "react-icons/gr";
+import socketIO from "socket.io-client";
+import { format } from "timeago.js";
+import Header from "../components/Layout/Header";
+const ENDPOINT = "http://localhost:4000/";
+const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const UserInboxPage = () => {
   const { user, loading } = useSelector((state) => state.user);
@@ -18,7 +18,7 @@ const UserInboxPage = () => {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [currentChat, setCurrentChat] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [userData, setUserData] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [activeStatus, setActiveStatus] = useState(false);
@@ -27,7 +27,7 @@ const UserInboxPage = () => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    socket.on('getMessage', (data) => {
+    socket.on("getMessage", (data) => {
       setArrivalMessage({
         sender: data.senderId,
         text: data.text,
@@ -65,8 +65,8 @@ const UserInboxPage = () => {
 
   useEffect(() => {
     if (user) {
-      socket.emit('addUser', user?._id);
-      socket.on('getUsers', (data) => {
+      socket.emit("addUser", user?._id);
+      socket.on("getUsers", (data) => {
         setOnlineUsers(data);
       });
     }
@@ -107,14 +107,14 @@ const UserInboxPage = () => {
       (member) => member !== user?._id
     );
 
-    socket.emit('sendMessage', {
+    socket.emit("sendMessage", {
       senderId: user._id,
       receiverId,
       text: newMessage,
     });
 
     try {
-      if (newMessage !== '') {
+      if (newMessage !== "") {
         const res = await axios.post(
           `${server}/message/create-new-message`,
           message
@@ -128,7 +128,7 @@ const UserInboxPage = () => {
   };
 
   const updateLastMessage = async () => {
-    socket.emit('updateLastMessage', {
+    socket.emit("updateLastMessage", {
       lastMessage: newMessage,
       lastMessageId: user._id,
     });
@@ -141,7 +141,7 @@ const UserInboxPage = () => {
           lastMessageId: user._id,
         }
       );
-      setNewMessage('');
+      setNewMessage("");
     } catch (error) {
       console.log(error);
     }
@@ -163,7 +163,7 @@ const UserInboxPage = () => {
       (member) => member !== user._id
     );
 
-    socket.emit('sendMessage', {
+    socket.emit("sendMessage", {
       senderId: user._id,
       receiverId,
       images: image, // Include image in the event
@@ -189,7 +189,7 @@ const UserInboxPage = () => {
       await axios.put(
         `${server}/conversation/update-last-message/${currentChat._id}`,
         {
-          lastMessage: 'Sent an image',
+          lastMessage: "Sent an image",
           lastMessageId: user._id,
         }
       );
@@ -199,7 +199,7 @@ const UserInboxPage = () => {
   };
 
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (
@@ -293,34 +293,36 @@ const MessageList = ({
 
   console.log(online);
   return (
-    <div
-      className={`w-full flex p-3 py-3 ${
-        handleClick ? 'bg-[#00000010]' : 'bg-transparent'
-      } cursor-pointer`}
-      onClick={() => handleClick(data._id)}
-    >
-      <div className="relative">
-        <img
-          src={`${user?.avatar?.url}`}
-          alt=""
-          className="w-[50px] h-[50px] rounded-full"
-        />
-        {online ? (
-          <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[1px] right-[1px]" />
-        ) : (
-          <div className="w-[12px] h-[12px] bg-[#b5b5ac] rounded-full absolute top-[1px] right-[1px]" />
-        )}
+    <>
+      <div
+        className={`flex items-center m-4 p-3  py-3 ${
+          handleClick ? "bg-[#00000010]" : "bg-transparent"
+        } cursor-pointer`}
+        onClick={() => handleClick(data._id)}
+      >
+        <div className="relative">
+          <img
+            src={`${user?.avatar?.url}`}
+            alt=""
+            className="w-[50px] h-[50px] rounded-full"
+          />
+          {online ? (
+            <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[1px] right-[1px]" />
+          ) : (
+            <div className="w-[12px] h-[12px] bg-[#b5b5ac] rounded-full absolute top-[1px] right-[1px]" />
+          )}
+        </div>
+        <div className="pl-3">
+          <h1 className="font-[600]">{user?.name}</h1>
+          <p className="text-[14px] text-[#000000a1]">
+            {!loading && data?.lastMessageId !== user?._id
+              ? "You"
+              : `${user?.name?.split(" ")[0]} `}
+            : {data?.lastMessage}
+          </p>
+        </div>
       </div>
-      <div className="pl-3">
-        <h1 className="font-[600]">{user?.name}</h1>
-        <p className="text-[14px] text-[#000000a1]">
-          {!loading && data?.lastMessageId !== user?._id
-            ? 'You'
-            : `${user?.name?.split(' ')[0]} `}
-          : {data?.lastMessage}
-        </p>
-      </div>
-    </div>
+    </>
   );
 };
 
@@ -350,7 +352,7 @@ const AdminInbox = ({
             <h1 className="text-[18px] font-[600] text-[#171203]">
               {userData?.name}
             </h1>
-            <h1>{activeStatus ? 'Active Now' : ''}</h1>
+            <h1>{activeStatus ? "Active Now" : ""}</h1>
           </div>
         </div>
         <AiOutlineArrowRight
@@ -365,7 +367,7 @@ const AdminInbox = ({
           <div
             key={index}
             className={`flex w-full my-2 ${
-              item.sender === userId ? 'justify-end' : 'justify-start'
+              item.sender === userId ? "justify-end" : "justify-start"
             }`}
             ref={scrollRef}
           >
@@ -380,12 +382,12 @@ const AdminInbox = ({
             {item.images && (
               <div
                 className={`flex flex-col w-max ${
-                  item.sender === userId ? 'items-end' : 'items-start'
+                  item.sender === userId ? "items-end" : "items-start"
                 }`}
               >
                 <img
                   src={
-                    typeof item.images === 'string'
+                    typeof item.images === "string"
                       ? item.images
                       : item.images.url
                   }
@@ -398,12 +400,12 @@ const AdminInbox = ({
             {item.text && (
               <div
                 className={`flex flex-col w-max ${
-                  item.sender === userId ? 'items-end' : 'items-start'
+                  item.sender === userId ? "items-end" : "items-start"
                 }`}
               >
                 <div
                   className={`p-2 rounded ${
-                    item.sender === userId ? 'bg-[#171203]' : 'bg-[#78683a96]'
+                    item.sender === userId ? "bg-[#171203]" : "bg-[#78683a96]"
                   } text-[#fff]`}
                 >
                   <p>{item.text}</p>

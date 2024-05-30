@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import styles from '../../styles/style';
-import { BsFillBagFill } from 'react-icons/bs';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllOrdersOfAdmin } from '../../redux/action/order';
-import { server } from '../../server';
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import styles from "../../styles/style";
+import { BsFillBagFill } from "react-icons/bs";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllOrdersOfAdmin } from "../../redux/action/order";
+import { server } from "../../server";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const OrderDetails = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState("");
   const navigate = useNavigate();
 
   const { id } = useParams();
@@ -36,8 +36,8 @@ const OrderDetails = () => {
         }
       )
       .then((res) => {
-        toast.success('Order Status Update!');
-        navigate('/dashboard-orders');
+        toast.success("Order Status Update!");
+        navigate("/dashboard-orders");
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -56,7 +56,7 @@ const OrderDetails = () => {
         }
       )
       .then((res) => {
-        toast.success('Order Status Update!');
+        toast.success("Order Status Update!");
         dispatch(getAllOrdersOfAdmin(admin._id));
       })
       .catch((error) => {
@@ -138,7 +138,7 @@ const OrderDetails = () => {
           <h4 className="pt-3 text-[20px] font-[600]">Shipping Address</h4>
           <h4 className="pt-3 ">
             {data?.shippingAddress.address1 +
-              ' ' +
+              " " +
               data?.shippingAddress.address2}
           </h4>
           <h4 className="pt-3">{data?.shippingAddress.country}</h4>
@@ -164,37 +164,36 @@ const OrderDetails = () => {
 
         <div className="w-full 800px:w-[40%]">
           <h4 className="pt-3 text-[20px] font-[600]">Payment Information</h4>
-          Status:{' '}
-          {data?.paymentInfo?.status ? data?.paymentInfo?.status : 'Not Paid'}
+          Status:{" "}
+          {data?.paymentInfo?.status ? data?.paymentInfo?.status : "Not Paid"}
         </div>
       </div>
-
 
       <br />
 
       {/* Status of Order */}
       <h4 className="pt-3 text-[20px] font-[600]">Order Status:</h4>
-      {data?.status !== 'Processing Refund' &&
-        data?.status !== 'Refund Approved' && (
+      {data?.status !== "Processing Refund" &&
+        data?.status !== "Refund Approved" && (
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             className="mt-2 appearance-none block px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
           >
             {[
-              'Processing',
-              'Transferred to delivery partner',
-              'Shipping',
-              'On the way',
-              'Delivered',
+              "Processing",
+              "Transferred to delivery partner",
+              "Shipping",
+              "On the way",
+              "Delivered",
             ]
               .slice(
                 [
-                  'Processing',
-                  'Transferred to delivery partner',
-                  'Shipping',
-                  'On the way',
-                  'Delivered',
+                  "Processing",
+                  "Transferred to delivery partner",
+                  "Shipping",
+                  "On the way",
+                  "Delivered",
                 ].indexOf(data?.status)
               )
               .map((option, index) => (
@@ -205,20 +204,20 @@ const OrderDetails = () => {
           </select>
         )}
 
-      {(data?.status === 'Processing Refund' ||
-        data?.status === 'Refund Approved' ||
-        data?.status === 'Refund Successful') && (
+      {(data?.status === "Processing Refund" ||
+        data?.status === "Refund Approved" ||
+        data?.status === "Refund Successful") && (
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
           className="mt-2 appearance-none block px-3 h-[35px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
         >
-          {['Processing Refund', 'Refund Approved', 'Refund Successful']
+          {["Processing Refund", "Refund Approved", "Refund Successful"]
             .slice(
               [
-                'Processing Refund',
-                'Refund Approved',
-                'Refund Successful',
+                "Processing Refund",
+                "Refund Approved",
+                "Refund Successful",
               ].indexOf(data?.status)
             )
             .map((option, index) => (
@@ -232,7 +231,7 @@ const OrderDetails = () => {
       <div
         className={`${styles.button}!w-max !h-[45px] px-3 !rounded-[5px] mr-3 mb-3 font-[600] text-[18px] text-[#fff4d7]`}
         onClick={
-          data?.status !== 'Processing Refund'
+          data?.status !== "Processing Refund"
             ? orderUpdateHandler
             : refundOrderUpdateHandler
         }
@@ -244,45 +243,47 @@ const OrderDetails = () => {
 };
 
 const orderCustomDesign = (data) => {
-  console.log("order custom design ", data);
+  console.log("order custom design url hello: ", data[0].url);
 
   return (
     <>
-      {data.map((item, index) => (
-        <div key={index} className="bg-gray-100 rounded p-4 mb-4">
-          <a
-            key={index}
-            href={item.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-          >
-            <img
-              src={item.url}
-              alt={`Image ${index + 1}`}
-              className="w-full h-full border-solid"
-            />
-          </a>
-        </div>
-      ))}
+      {data[0].url && data[0].url.length !== 0 && (
+        <>
+          {data.map((item, index) => (
+            <div key={index} className="bg-gray-100 rounded p-4 mb-4">
+              <a
+                key={index}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+              >
+                <img
+                  src={item.url}
+                  alt={`Image ${index + 1}`}
+                  className="w-full h-full border-solid"
+                />
+              </a>
+            </div>
+          ))}
+        </>
+      )}
     </>
   );
 };
 
-
-
 const cartInfo = (datas) => {
-  console.log('data in cart info', datas);
+  console.log("data in cart info", datas);
   if (!datas || !datas.cart) {
     return null;
   }
   const data = Object.entries(datas);
-  console.log('Datas : ', data);
+  console.log("Datas : ", data);
   return (
     <div>
       {data.map((item, index) => {
         // Check if the item contains a cart array
-        if (item[0] === 'cart') {
+        if (item[0] === "cart") {
           return (
             <div key={index}>
               {item[1].map((cartItem, cartIndex) => (
@@ -290,6 +291,7 @@ const cartInfo = (datas) => {
                   <strong>
                     <h2>Item Ordered : {cartItem.name}</h2>
                   </strong>
+                  <br />
                   <h2>
                     Customer Note: <br /> {cartItem.response}
                   </h2>
