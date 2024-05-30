@@ -20,7 +20,6 @@ import axios from "axios";
 import Modal from "react-modal";
 import UserCreateDesign from "../UserCreateDesign";
 import CreateProduct from "../Admin/CreateProduct";
-import UserOrderOptions from "./UserOrderOptions";
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
