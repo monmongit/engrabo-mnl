@@ -153,7 +153,7 @@ const AdminProfileData = ({ isOwner }) => {
 
       {active === 2 && (
         <div className="w-full">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 justify-items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-items-start">
             {events &&
               events.map((i, index) => (
                 <ProductCard
@@ -163,7 +163,7 @@ const AdminProfileData = ({ isOwner }) => {
                   isEvent={true}
                 />
               ))}
-          </div>
+            </div>
           {events && events.length === 0 && (
             <h5 className="w-full text-center py-5 text-[18px]">
               No Events have for this shop!

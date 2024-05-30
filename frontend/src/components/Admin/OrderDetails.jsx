@@ -22,12 +22,7 @@ const OrderDetails = () => {
   }, [dispatch, admin._id]);
 
   const data = orders && orders.find((item) => item._id === id);
-<<<<<<< HEAD
-  console.log("orders information: ", data);
-  console.log("Cart: ", cart);
-=======
   console.log('orders information: ', data);
->>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
 
   const orderUpdateHandler = async (e) => {
     await axios
@@ -300,20 +295,6 @@ const cartInfo = (datas) => {
                   <h2>
                     Customer Note: <br /> {cartItem.response}
                   </h2>
-<<<<<<< HEAD
-
-                  {cartItem.options && (
-                    <>
-                      <h2>Selected Options:</h2>
-                      <ul>
-                        {Object.entries(cartItem.options).map(
-                          ([key, value]) => (
-                            <li key={key}>{`${key}: ${value}`}</li>
-                          )
-                        )}
-                      </ul>
-                    </>
-=======
                   {cartItem.size && (
                     <h2>
                       Size: <br /> {cartItem.size.name}
@@ -336,7 +317,6 @@ const cartInfo = (datas) => {
                     </ul>
                   ) : (
                     <p>No options available.</p>
->>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
                   )}
                 </div>
               ))}

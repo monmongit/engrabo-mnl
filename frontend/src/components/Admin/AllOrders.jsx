@@ -139,7 +139,7 @@ const AllOrders = () => {
             </div>
             <div className="w-full overflow-x-auto mb-10">
               <DataGrid
-                rows={rows}
+                rows={row}
                 columns={columns}
                 pageSize={10}
                 disableSelectionOnClick

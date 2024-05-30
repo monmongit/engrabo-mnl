@@ -8,20 +8,6 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineFontSize,
-<<<<<<< HEAD
-} from "react-icons/ai";
-import { server } from "../../server";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllProductsAdmin } from "../../redux/action/product";
-import { addToWishlist, removeFromWishlist } from "../../redux/action/wishlist";
-import { toast } from "react-toastify";
-import { addTocart } from "../../redux/action/cart";
-import Ratings from "./Ratings";
-import axios from "axios";
-import Modal from "react-modal";
-import UserCreateDesign from "../UserCreateDesign";
-import CreateProduct from "../Admin/CreateProduct";
-=======
 } from 'react-icons/ai';
 import { server } from '../../server';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,7 +21,6 @@ import Modal from 'react-modal';
 import UserCreateDesign from '../UserCreateDesign';
 
 // import UserOrderOptions from './UserOrderOptions';
->>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);

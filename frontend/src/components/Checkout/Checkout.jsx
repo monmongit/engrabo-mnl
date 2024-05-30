@@ -455,11 +455,6 @@ const cartInfo = (data = []) => {
     );
   }
 
-<<<<<<< HEAD
-  console.log("checkout: ", data);
-
-=======
->>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
   return (
     <div className="w-full bg-[#fff] rounded-md p-5 pb-8 mr-5">
       <br />

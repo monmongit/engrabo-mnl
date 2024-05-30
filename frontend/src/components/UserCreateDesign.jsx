@@ -128,11 +128,7 @@ const drawHeartPath = (x1, y1, x2, y2) => {
 };
 
 const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
-<<<<<<< HEAD
-  const [tool, setTool] = useState("select");
-=======
   const [tool, setTool] = useState('select');
->>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
   const [lines, setLines] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [image, setImage] = useState(null);
@@ -160,11 +156,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   // UI of canvas
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isToolCollapsed, setIsToolCollapsed] = useState(true);
-<<<<<<< HEAD
-  const [selectedTools, setTools] = useState("");
-=======
   const [selectedTools, setTools] = useState('');
->>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -440,11 +432,8 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
       urls.push(url); // Push the URL to the array
     }
     setUrls(urls); // Return the array of URLs
-<<<<<<< HEAD
-=======
     toast.success('Panget ng design mo HAHAHAHA! Design???');
     setOpen(false);
->>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
   };
 
   const handleImageUpload = (event) => {
@@ -630,21 +619,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                 >
                   Clear
                 </button>
-<<<<<<< HEAD
-                <button
-                  className="bg-white border border-gray-300 px-4 py-2 rounded w-50%"
-                  style={{ position: "relative", overflow: "hidden" }}
-                >
-                  Upload
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    onChange={handleImageUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                </button>
-=======
 
                 {(data.mediaType === 'both' || data.mediaType === 'image') && (
                   <button
@@ -662,7 +636,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                   </button>
                 )}
 
->>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
                 <button
                   onClick={handleExport}
                   className="bg-purple-700 text-white px-4 py-2 rounded"

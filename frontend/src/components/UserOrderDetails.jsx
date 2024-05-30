@@ -431,27 +431,6 @@ const cartInfo = (datas) => {
                   <strong>
                     <h2>Item Ordered : {cartItem.name}</h2>
                   </strong>
-<<<<<<< HEAD
-
-                  {cartItem.response && (
-                    <>
-                      <h2>Customer Note: </h2> <br />
-                      {cartItem.response}
-                    </>
-                  )}
-
-                  {cartItem.options && (
-                    <>
-                      <h2>Selected Options:</h2>
-                      <ul>
-                        {Object.entries(cartItem.options).map(
-                          ([key, value]) => (
-                            <li key={key}>{`${key}: ${value}`}</li>
-                          )
-                        )}
-                      </ul>
-                    </>
-=======
                   <h2>
                     Customer Note: <br /> {cartItem.response}
                   </h2>
@@ -474,7 +453,6 @@ const cartInfo = (datas) => {
                     </ul>
                   ) : (
                     <p>No options available.</p>
->>>>>>> 786d054f322dc4b052ac3b9bbc6a46941dd055e7
                   )}
                 </div>
               ))}

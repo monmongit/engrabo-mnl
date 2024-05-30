@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsAdmin, deleteProduct } from "../../redux/action/product";
 import { getAllCategories, deleteCategory } from "../../redux/action/category";
 import { useNavigate } from "react-router-dom";
-import { makeStyles } from "@mui/styles";
+// import { makeStyles } from "@mui/styles";
 
 import {
   AiOutlineDelete,
