@@ -153,6 +153,17 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
 
   const { cart } = useSelector((state) => state.cart);
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 800);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isToolCollapsed, setIsToolCollapsed] = useState(true);
   const [selectedTools, setTools] = useState('');
@@ -240,8 +251,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const handleMouseDown = (e) => {
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
     if (tool === 'pen' || tool === 'eraser') {
       setIsDrawing(true);
       const pos = e.target.getStage().getPointerPosition();
@@ -266,8 +275,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
 
   const handleMouseMove = (e) => {
     if (!isDrawing) return;
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
 
@@ -296,34 +303,12 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
     }
   };
 
-  const handleMouseUp = (e) => {
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
+  const handleMouseUp = () => {
     setIsDrawing(false);
     setTempShape(null);
   };
 
-  const handleTouchStart = (e) => {
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
-    handleMouseDown(e);
-  };
-
-  const handleTouchMove = (e) => {
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
-    handleMouseMove(e);
-  };
-
-  const handleTouchEnd = (e) => {
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
-    handleMouseUp(e);
-  };
-
   const handleTextAdd = (e) => {
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
     const stage = stageRef.current.getStage();
     const pointer = stage.getPointerPosition();
     setTexts([
@@ -343,15 +328,11 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const handleTextDblClick = (e) => {
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
     const id = e.target.id();
     setSelectedId(id);
   };
 
   const handleTextChange = (e) => {
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
     const id = selectedId;
     const newText = e.target.text();
     setTexts(
@@ -373,8 +354,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const handleSelect = (e) => {
-    e.evt.preventDefault(); // Prevent the default touch behavior
-    e.evt.stopPropagation(); // Stop the touch event from propagating
     setSelectedId(e.target.id());
     const selectedText = texts.find((text) => text.id === e.target.id());
     if (selectedText) {
@@ -564,8 +543,18 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
 
   return (
     <>
-      <div className="grid grid-cols-2 lg:grid-cols-3 p-4 bg-slate-500 rounded-md gap-2">
-        <div className="flex flex-col border-solid">
+      <div
+        className={`grid ${
+          isMobile
+            ? 'grid-cols-1 h-[90%] overflow-y-scroll'
+            : 'grid-cols-2 lg:grid-cols-3'
+        } p-4 bg-slate-500 rounded-md gap-2`}
+      >
+        <div
+          className={`${
+            isMobile ? 'order-last' : ''
+          } flex flex-col border-solid`}
+        >
           <span className="flex justify">
             <RxCross1
               size={30}
@@ -849,7 +838,11 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
           </button>
         </div>
 
-        <div className="lg:col-span-2">
+        <div
+          className={`${
+            isMobile ? 'h-[60vh] overflow-y-scroll' : 'lg:col-span-2'
+          }`}
+        >
           <div className="h-full w-full">
             <Stage
               width={window.innerWidth * 0.9}
@@ -857,9 +850,6 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
               onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
               onMousemove={handleMouseMove}
               onMouseup={handleMouseUp}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
               ref={stageRef}
               className="bg-white border rounded border-black"
               onClick={handleSelect}
@@ -892,7 +882,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
-                        onTouchStart={handleSelect}
+                        onTap={handleSelect} // For touch devices
                       />
                     );
                   } else if (shape.tool === 'circle') {
@@ -910,7 +900,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
-                        onTouchStart={handleSelect}
+                        onTap={handleSelect} // For touch devices
                       />
                     );
                   } else if (shape.tool === 'line') {
@@ -924,7 +914,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         lineCap="round"
                         draggable
                         onClick={handleSelect}
-                        onTouchStart={handleSelect}
+                        onTap={handleSelect} // For touch devices
                       />
                     );
                   } else if (shape.tool === 'arrow') {
@@ -938,7 +928,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         lineCap="round"
                         draggable
                         onClick={handleSelect}
-                        onTouchStart={handleSelect}
+                        onTap={handleSelect} // For touch devices
                       />
                     );
                   } else if (shape.tool === 'star') {
@@ -954,7 +944,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
-                        onTouchStart={handleSelect}
+                        onTap={handleSelect} // For touch devices
                       />
                     );
                   } else if (shape.tool === 'polygon') {
@@ -972,7 +962,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
-                        onTouchStart={handleSelect}
+                        onTap={handleSelect} // For touch devices
                       />
                     );
                   } else if (shape.tool === 'heart') {
@@ -989,7 +979,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                         stroke="black"
                         draggable
                         onClick={handleSelect}
-                        onTouchStart={handleSelect}
+                        onTap={handleSelect} // For touch devices
                       />
                     );
                   }
@@ -1051,9 +1041,9 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     textDecoration={textItem.textDecoration}
                     draggable
                     onClick={handleSelect}
-                    onTouchStart={handleSelect}
+                    onTap={handleSelect} // For touch devices
                     onDblClick={handleTextDblClick}
-                    onDblTap={handleTextDblClick}
+                    onDblTap={handleTextDblClick} // For touch devices
                     onChange={handleTextChange}
                   />
                 ))}
@@ -1069,7 +1059,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
                     scaleY={pages[currentPageIndex].imageProps.scaleY || 1}
                     draggable
                     onClick={handleSelect}
-                    onTouchStart={handleSelect}
+                    onTap={handleSelect} // For touch devices
                   />
                 )}
                 <Transformer ref={transformerRef} />
