@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import styles from '../../styles/style';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import styles from "../../styles/style";
 import {
   AiFillHeart,
   AiOutlineClose,
@@ -8,17 +8,17 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineFontSize,
-} from 'react-icons/ai';
-import { server } from '../../server';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductsAdmin } from '../../redux/action/product';
-import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
-import { toast } from 'react-toastify';
-import { addTocart } from '../../redux/action/cart';
-import Ratings from './Ratings';
-import axios from 'axios';
-import Modal from 'react-modal';
-import UserCreateDesign from '../UserCreateDesign';
+} from "react-icons/ai";
+import { server } from "../../server";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsAdmin } from "../../redux/action/product";
+import { addToWishlist, removeFromWishlist } from "../../redux/action/wishlist";
+import { toast } from "react-toastify";
+import { addTocart } from "../../redux/action/cart";
+import Ratings from "./Ratings";
+import axios from "axios";
+import Modal from "react-modal";
+import UserCreateDesign from "../UserCreateDesign";
 
 // import UserOrderOptions from './UserOrderOptions';
 
@@ -28,11 +28,11 @@ const ProductDetails = ({ data }) => {
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
 
-  const [insResponse, setInsResponse] = useState('');
+  const [insResponse, setInsResponse] = useState("");
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedEngraving, setSelectedEngraving] = useState(null);
-  const [drawingInfo, setDrawingInfo] = useState('');
+  const [drawingInfo, setDrawingInfo] = useState("");
   const [open, setOpen] = useState(false);
   const [urls, setUrls] = useState([]);
   const [count, setCount] = useState(1);
@@ -70,7 +70,7 @@ const ProductDetails = ({ data }) => {
 
   const decrementCount = () => {
     if (count <= 1) {
-      toast.error('You cannot order less than 1 item.');
+      toast.error("You cannot order less than 1 item.");
       return;
     }
     setCount(count - 1);
@@ -94,7 +94,7 @@ const ProductDetails = ({ data }) => {
           toast.error(error.response.data.message);
         });
     } else {
-      toast.error('Please login to make a conversation');
+      toast.error("Please login to make a conversation");
     }
   };
 
@@ -213,7 +213,7 @@ const ProductDetails = ({ data }) => {
                     <div
                       key={index}
                       className={`cursor-pointer p-1 rounded-md ${
-                        select === index ? 'border-2 border-gray-500' : ''
+                        select === index ? "border-2 border-gray-500" : ""
                       }`}
                       onClick={() => setSelect(index)}
                     >
@@ -276,7 +276,7 @@ const ProductDetails = ({ data }) => {
               <div className="flex justify-between items-center">
                 {/* Products Stock */}
                 <h4 className="font-[400] text-[#534723] font-Roboto">
-                  Stocks:{' '}
+                  Stocks:{" "}
                   {selectedSize?.stock ??
                     selectedEngraving?.stock ??
                     data.stock}
@@ -300,8 +300,8 @@ const ProductDetails = ({ data }) => {
                         onClick={() => handleSizeChange(size)}
                         className={`px-4 py-2 border rounded-md ${
                           selectedSize && selectedSize.name === size.name
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
+                            ? "bg-blue-500 text-white"
+                            : "bg-white text-gray-700"
                         }`}
                       >
                         {size.name}
@@ -325,8 +325,8 @@ const ProductDetails = ({ data }) => {
                         className={`px-4 py-2 border rounded-md ${
                           selectedEngraving &&
                           selectedEngraving.type === engraving.type
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
+                            ? "bg-blue-500 text-white"
+                            : "bg-white text-gray-700"
                         }`}
                       >
                         {engraving.type}
@@ -389,7 +389,7 @@ const ProductDetails = ({ data }) => {
               </div>
 
               {/* Create Design Button */}
-              {data.mediaType !== 'none' && (
+              {data.mediaType !== "none" && (
                 <div
                   className="flex items-center justify-center bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold py-3 px-8 md:px-16 rounded-xl cursor-pointer hover:bg-gradient-to-r hover:from-green-600 hover:to-green-800 transition duration-300 ease-in-out mt-4 md:mt-0"
                   onClick={() => setOpen(true)}
@@ -398,21 +398,6 @@ const ProductDetails = ({ data }) => {
                     Create Your Own Design
                     <AiOutlineFontSize className="ml-1" />
                   </span>
-                </div>
-              )}
-
-              {/* pops us the drawing page */}
-              {open && (
-                <div className="fixed inset-0 z-50 flex justify-center items-center">
-                  {/* <UserOrderOptions setOpen={setOpen} /> */}
-                  {
-                    <UserCreateDesign
-                      data={data}
-                      setDrawingInfo={setDrawingInfo}
-                      setOpen={setOpen}
-                      setUrls={setUrls}
-                    />
-                  }
                 </div>
               )}
 
@@ -494,6 +479,20 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
+          {/* pops us the drawing page */}
+          {open && (
+            <div className="fixed inset-0 z-50 flex justify-center items-center lg:w-6/6  top-20 left-20 right-20 ">
+              {/* <UserOrderOptions setOpen={setOpen} /> */}
+              {
+                <UserCreateDesign
+                  data={data}
+                  setDrawingInfo={setDrawingInfo}
+                  setOpen={setOpen}
+                  setUrls={setUrls}
+                />
+              }
+            </div>
+          )}
           <ProductDetailsInfo
             data={data}
             products={products}
@@ -517,13 +516,13 @@ const ProductDetailsInfo = ({
   const [selectedImage, setSelectedImage] = useState(null);
 
   const maskName = (name) => {
-    const parts = name.split(' ');
+    const parts = name.split(" ");
     return parts
       .map((part, index) => {
-        if (index === 0) return part.slice(0, 2) + '*****';
-        return '*****';
+        if (index === 0) return part.slice(0, 2) + "*****";
+        return "*****";
       })
-      .join(' ');
+      .join(" ");
   };
 
   const openModal = (image) => {
@@ -542,7 +541,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(1)}
           >
@@ -553,7 +552,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(2)}
           >
@@ -564,7 +563,7 @@ const ProductDetailsInfo = ({
         <div className="relative">
           <h5
             className={
-              'text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]'
+              "text-[#171203] text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px]"
             }
             onClick={() => setActive(3)}
           >
@@ -648,18 +647,18 @@ const ProductDetailsInfo = ({
               <h5 className="font-[600] text-[#171203]">
                 Joined on:
                 <span className="font-[500] text-[#534723]">
-                  {' '}
+                  {" "}
                   14 March, 2023
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Products:{' '}
+                Total Products:{" "}
                 <span className="font-[500]">
                   {products && products.length}
                 </span>
               </h5>
               <h5 className="font-[600] text-[#171203] pt-3">
-                Total Reviews:{' '}
+                Total Reviews:{" "}
                 <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">
