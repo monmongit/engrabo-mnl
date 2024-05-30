@@ -91,7 +91,7 @@ router.post("/forgot-pass", async (req, res, next) => {
 
     const userPayload = { email: email };
     const activationToken = createActivationToken(userPayload);
-    const activationUrl = `http://localhost:3000/reset/${activationToken}`;
+    const activationUrl = `https://engrabo-mnl-frnt.vercel.app/reset/${activationToken}`;
 
     try {
       await resetMail({
