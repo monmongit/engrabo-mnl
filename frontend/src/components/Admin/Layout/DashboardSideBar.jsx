@@ -1,21 +1,17 @@
-
-import React, { useState, useEffect } from "react";
-import { AiOutlineGift, AiOutlineLogout } from "react-icons/ai";
-import { FiPackage, FiShoppingBag } from "react-icons/fi";
-import { MdOutlineLocalOffer } from "react-icons/md";
-import { RxDashboard } from "react-icons/rx";
-import { RiLockPasswordLine } from "react-icons/ri";
-import { CiSettings } from "react-icons/ci";
-import { Link } from "react-router-dom";
-import { BiMessageSquareDetail } from "react-icons/bi";
-import { HiOutlineReceiptRefund } from "react-icons/hi";
-import { server } from "../../../server";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { FaRegUser } from "react-icons/fa";
-// import { useMediaQuery } from "react-responsive";
-
+import React, { useState, useEffect } from 'react';
+import { AiOutlineGift, AiOutlineLogout } from 'react-icons/ai';
+import { FiPackage, FiShoppingBag } from 'react-icons/fi';
+import { BiMessageSquareDetail } from 'react-icons/bi';
+import { MdOutlineLocalOffer } from 'react-icons/md';
+import { RxDashboard } from 'react-icons/rx';
+import { RiLockPasswordLine } from 'react-icons/ri';
+import { CiSettings } from 'react-icons/ci';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { FaRegUser } from 'react-icons/fa';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { server } from '../../../server';
 
 const DashboardSideBar = ({ active }) => {
   const navigate = useNavigate();
@@ -26,70 +22,74 @@ const DashboardSideBar = ({ active }) => {
       .then((res) => {
         toast.success(res.data.message);
         window.location.reload(true);
-        navigate("/admin-login");
+        navigate('/admin-login');
       })
       .catch((error) => {
         console.log(error.response.data.message);
       });
   };
 
-
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showMore, setShowMore] = useState(false);
 
-
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleMoreClick = () => setShowMore(!showMore);
 
   const mainIcons = [
-    { to: "/dashboard", icon: <RxDashboard />, label: "Dashboard", id: 1 },
-    { to: "/dashboard-users", icon: <FaRegUser />, label: "All Users", id: 12 },
+    { to: '/dashboard', icon: <RxDashboard />, label: 'Dashboard', id: 1 },
+    { to: '/dashboard-users', icon: <FaRegUser />, label: 'All Users', id: 12 },
     {
-      to: "/dashboard-orders",
+      to: '/dashboard-orders',
       icon: <FiPackage />,
-      label: "All Orders",
+      label: 'All Orders',
       id: 2,
     },
     {
-      to: "/dashboard-products",
+      to: '/dashboard-products',
       icon: <FiShoppingBag />,
-      label: "Products",
+      label: 'Products',
       id: 3,
     },
     {
-      to: "/dashboard-coupons",
+      to: '/dashboard-coupons',
       icon: <AiOutlineGift />,
-      label: "Coupon Codes",
+      label: 'Coupon Codes',
       id: 9,
     },
   ];
 
   const moreIcons = [
     {
-      to: "/dashboard-events",
+      to: '/dashboard-events',
       icon: <MdOutlineLocalOffer />,
-      label: "Events",
+      label: 'Events',
       id: 5,
     },
     {
-      to: "/dashboard-messages",
+      to: '/dashboard-messages',
       icon: <BiMessageSquareDetail />,
-      label: "Admin Inbox",
+      label: 'Admin Inbox',
       id: 6,
     },
     {
-      to: "/dashboard-settings",
+      to: '/dashboard-settings',
       icon: <RiLockPasswordLine />,
-      label: "Change Password",
+      label: 'Change Password',
       id: 8,
     },
-    { to: "/settings", icon: <CiSettings />, label: "Settings", id: 13 },
-    { to: "/admin-login", icon: <AiOutlineLogout />, label: "Log out", id: 11 },
+    { to: '/settings', icon: <CiSettings />, label: 'Settings', id: 13 },
+    {
+      to: '#',
+      icon: <AiOutlineLogout />,
+      label: 'Log out',
+      id: 11,
+      action: logoutHandler, // Add action to handle the logout functionality
+    },
   ];
 
   return (
@@ -99,23 +99,33 @@ const DashboardSideBar = ({ active }) => {
           <Link
             key={id}
             to={to}
-            className="flex flex-col items-center md:items-start p-2 md:p-4"
+            className={`flex flex-col items-center md:items-start p-2 md:p-4 ${
+              active === id ? 'text-[#171203]' : 'text-[#6b540f]'
+            }`}
           >
-            <div className={`flex items-center flex-col md:flex-row`}>
+            <div
+              className={`flex items-center flex-col md:flex-row transition-transform duration-300 hover:scale-125 ${
+                active === id ? 'hover:text-[#171203]' : 'hover:text-[#171203]'
+              } group`}
+            >
               <div
-                className={`inline-block transition-transform duration-300 hover:scale-125 ${
-                  active === id ? "text-[#171203]" : "text-[#6b540f]"
+                className={`inline-block ${
+                  active === id
+                    ? 'text-[#171203]'
+                    : 'text-[#6b540f] group-hover:text-[#171203]'
                 }`}
               >
                 {React.cloneElement(icon, {
                   size: isMobile ? 24 : 30,
-                  color: active === id ? "#171203" : "#6b540f",
+                  color: active === id ? '#171203' : 'currentColor',
                 })}
               </div>
               <h5
-                className={`text-center ml-0 md:ml-2 md:text-[15px] mt-1 md:mt-0 font-[700] ${
-                  active === id ? "text-[#171203]" : "text-[#6b540f]"
-                } hidden md:block hover:text-[#ff9800] transition-colors duration-300`}
+                className={`text-center ml-0 md:ml-2 md:text-[15px] mt-1 md:mt-0 font-[700] hidden md:block ${
+                  active === id
+                    ? 'text-[#171203]'
+                    : 'text-[#6b540f] group-hover:text-[#171203]'
+                }`}
               >
                 {label}
               </h5>
@@ -128,46 +138,73 @@ const DashboardSideBar = ({ active }) => {
             className="flex flex-col items-center md:items-start"
           >
             <div className="flex items-center flex-col">
-              <div className="inline-block transition-transform duration-300 hover:scale-125 text-[#6b540f]">
+              <div className="inline-block transition-transform duration-300 hover:scale-125 text-[#6b540f] hover:text-[#171203]">
                 <span className="text-[24px]">•••</span>
               </div>
-              <h5 className="text-center mb-2 text-xs font-[700] text-[#6b540f] hover:text-[#ff9800] transition-colors duration-300">
-                More
-              </h5>
             </div>
           </button>
         )}
 
         {(!isMobile || showMore) &&
-          moreIcons.map(({ to, icon, label, id }) => (
-            <Link
-              key={id}
-              to={to}
-              className="flex flex-col items-center md:items-start p-2 md:p-4"
-            >
-              <div className={`flex items-center flex-col md:flex-row`}>
-                <div
-                  className={`inline-block transition-transform duration-300 hover:scale-125 ${
-                    active === id ? "text-[#171203]" : "text-[#6b540f]"
-                  }`}
-                >
-                  <div className="inline-block transition-transform duration-300 hover:scale-125">
+          moreIcons.map(({ to, icon, label, id, action }) =>
+            action ? (
+              <button
+                key={id}
+                onClick={action}
+                className="flex flex-col items-center md:items-start p-2 md:p-4 text-[#6b540f] hover:text-[#171203] transition-colors duration-300"
+              >
+                <div className="flex items-center flex-col md:flex-row transition-transform duration-300 hover:scale-125">
+                  <div className="inline-block group-hover:text-[#171203]">
                     {React.cloneElement(icon, {
                       size: isMobile ? 24 : 30,
-                      color: "#171203",
+                      color: 'currentColor',
                     })}
                   </div>
+                  <h5 className="text-center ml-0 md:ml-2 md:text-[15px] mt-1 md:mt-0 font-[700] hidden md:block group-hover:text-[#171203]">
+                    {label}
+                  </h5>
                 </div>
-                <h5
-                  className={`text-center ml-0 md:ml-2 md:text-[15px] mt-1 md:mt-0 font-[700] ${
-                    active === id ? "text-[#171203]" : "text-[#6b540f]"
-                  } hidden md:block hover:text-[#ff9800] transition-colors duration-300`}
+              </button>
+            ) : (
+              <Link
+                key={id}
+                to={to}
+                className={`flex flex-col items-center md:items-start p-2 md:p-4 ${
+                  active === id ? 'text-[#171203]' : 'text-[#6b540f]'
+                }`}
+              >
+                <div
+                  className={`flex items-center flex-col md:flex-row transition-transform duration-300 hover:scale-125 ${
+                    active === id
+                      ? 'hover:text-[#171203]'
+                      : 'hover:text-[#171203] group'
+                  }`}
                 >
-                  {label}
-                </h5>
-              </div>
-            </Link>
-          ))}
+                  <div
+                    className={`inline-block ${
+                      active === id
+                        ? 'text-[#171203]'
+                        : 'text-[#6b540f] group-hover:text-[#171203]'
+                    }`}
+                  >
+                    {React.cloneElement(icon, {
+                      size: isMobile ? 24 : 30,
+                      color: active === id ? '#171203' : 'currentColor',
+                    })}
+                  </div>
+                  <h5
+                    className={`text-center ml-0 md:ml-2 md:text-[15px] mt-1 md:mt-0 font-[700] hidden md:block ${
+                      active === id
+                        ? 'text-[#171203]'
+                        : 'text-[#6b540f] group-hover:text-[#171203]'
+                    }`}
+                  >
+                    {label}
+                  </h5>
+                </div>
+              </Link>
+            )
+          )}
       </div>
     </div>
   );

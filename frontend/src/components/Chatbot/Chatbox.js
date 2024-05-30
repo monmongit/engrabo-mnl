@@ -805,7 +805,14 @@ const Chatbox = () => {
       'shipping time',
       'delivery schedule',
     ],
-    'Paano mag-order?': ['Paano mag-order?', 'order', 'bumili', 'pagbili'],
+    'Paano mag-order?': [
+      'Paano mag-order?',
+      'order',
+      'bumili',
+      'pagbili',
+      'bili',
+      'binili',
+    ],
     'Paano mag-refund?': [
       'Paano mag-refund?',
       'refund',

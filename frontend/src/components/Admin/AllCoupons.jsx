@@ -1,32 +1,32 @@
-import Button from "@mui/material/Button";
-import { DataGrid } from "@mui/x-data-grid";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { AiOutlineDelete, AiOutlineSearch } from "react-icons/ai";
-import { RxCross1 } from "react-icons/rx";
-import { useDispatch, useSelector } from "react-redux";
-import styles from "../../styles/style";
-import Loader from "../Layout/Loader";
-import { server } from "../../server";
-import { toast } from "react-toastify";
-import ExpiredIcon from "../../assets/Icons/ExpiredIcon.png";
-import ActiveIcon from "../../assets/Icons/ActiveIcon.png";
-import { VscNewFile } from "react-icons/vsc";
+import Button from '@mui/material/Button';
+import { DataGrid } from '@mui/x-data-grid';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { AiOutlineDelete, AiOutlineSearch } from 'react-icons/ai';
+import { RxCross1 } from 'react-icons/rx';
+import { useDispatch, useSelector } from 'react-redux';
+import styles from '../../styles/style';
+import Loader from '../Layout/Loader';
+import { server } from '../../server';
+import { toast } from 'react-toastify';
+import ExpiredIcon from '../../assets/Icons/ExpiredIcon.png';
+import ActiveIcon from '../../assets/Icons/ActiveIcon.png';
+import { VscNewFile } from 'react-icons/vsc';
 
 const AllCoupons = () => {
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [coupons, setCoupons] = useState([]);
   const [minAmount, setMinAmout] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState(null);
-  const [expiresAt, setExpiresAt] = useState("");
+  const [expiresAt, setExpiresAt] = useState('');
   const [value, setValue] = useState(null);
   const { admin } = useSelector((state) => state.admin);
   const { products } = useSelector((state) => state.products);
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split('T')[0];
 
-  const [searchTerm, setSearchTerm] = useState(""); // To hold the search term
+  const [searchTerm, setSearchTerm] = useState(''); // To hold the search term
   const [searchResults] = useState([]); // To hold the search results
 
   const dispatch = useDispatch();
@@ -56,11 +56,11 @@ const AllCoupons = () => {
       await axios.delete(`${server}/coupon/delete-coupon/${id}`, {
         withCredentials: true,
       });
-      toast.success("Coupon code deleted successfully!");
+      toast.success('Coupon code deleted successfully!');
       setCoupons(coupons.filter((coupon) => coupon._id !== id)); // Update the local state
     } catch (error) {
-      toast.error("Failed to delete the coupon code.");
-      console.error("Error deleting coupon:", error);
+      toast.error('Failed to delete the coupon code.');
+      console.error('Error deleting coupon:', error);
     }
   };
 
@@ -83,11 +83,11 @@ const AllCoupons = () => {
       );
 
       setCoupons([...coupons, data.couponCode]);
-      toast.success("Coupon code created successfully!");
+      toast.success('Coupon code created successfully!');
       setOpen(false);
     } catch (error) {
-      console.error("Error creating coupon:", error);
-      toast.error("Failed to create coupon.");
+      console.error('Error creating coupon:', error);
+      toast.error('Failed to create coupon.');
     }
 
     setIsLoading(false);
@@ -103,31 +103,31 @@ const AllCoupons = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", minWidth: 150, flex: 0.7 },
+    { field: 'id', headerName: 'ID', minWidth: 150, flex: 0.7 },
     {
-      field: "name",
-      headerName: "Coupon Code",
+      field: 'name',
+      headerName: 'Coupon Code',
       minWidth: 180,
       flex: 1.4,
     },
     {
-      field: "price",
-      headerName: "Value",
+      field: 'price',
+      headerName: 'Value',
       minWidth: 100,
       flex: 0.6,
     },
     {
-      field: "status",
-      headerName: "Status",
+      field: 'status',
+      headerName: 'Status',
       minWidth: 100,
       flex: 0.6,
       renderCell: (params) => {
-        const isActive = params.row.status === "Active";
+        const isActive = params.row.status === 'Active';
         return (
           <div className="flex justify-start items-center h-full">
             <img
               src={isActive ? ActiveIcon : ExpiredIcon}
-              alt={isActive ? "Active" : "Expired"}
+              alt={isActive ? 'Active' : 'Expired'}
               className="block w-4 h-4"
             />
           </div>
@@ -135,11 +135,11 @@ const AllCoupons = () => {
       },
     },
     {
-      field: "Delete",
+      field: 'Delete',
       flex: 0.8,
       minWidth: 130,
-      headerName: "Delete",
-      type: "number",
+      headerName: 'Delete',
+      type: 'number',
       sortable: false,
       renderCell: (params) => {
         return (
@@ -161,8 +161,8 @@ const AllCoupons = () => {
   const rows = getFilteredCoupons().map((item) => ({
     id: item._id,
     name: item.name,
-    price: item.value + " %",
-    status: new Date() < new Date(item.expiresAt) ? "Active" : "Expired",
+    price: item.value + ' %',
+    status: new Date() < new Date(item.expiresAt) ? 'Active' : 'Expired',
     sold: 10,
   }));
   return (
@@ -172,7 +172,7 @@ const AllCoupons = () => {
       ) : (
         <div
           className="w-full sm:px-8 pt-1 mt-10 bg-white overflow-x-auto"
-          style={{ marginBottom: "100px", borderRadius: "10px" }}
+          style={{ marginBottom: '100px', borderRadius: '10px' }}
         >
           <div className="w-full flex justify-end items-center mb-4">
             {/* Search Bar */}
@@ -182,7 +182,7 @@ const AllCoupons = () => {
                 placeholder="Search Coupon..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="h-10 sm:h-[45px] pl-4 pr-10 w-full  border-2 border-solid border-[#ff9800] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300  focus:outline-none hover:border-[#ff9800] hover:ring-[#ff9800] hover:ring-2"
+                className="h-10 sm:h-[45px] pl-4 pr-10 w-full  border-2 border-solid border-[#171203] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300  focus:outline-none hover:border-[#171203] hover:ring-[#171203] hover:ring-1"
               />
               <AiOutlineSearch
                 size={30}
@@ -191,7 +191,7 @@ const AllCoupons = () => {
               {searchResults.length > 0 && (
                 <div
                   className="absolute w-full bg-white shadow-md z-10"
-                  style={{ top: "100%", left: 0 }}
+                  style={{ top: '100%', left: 0 }}
                 >
                   {searchResults.map((coupon) => (
                     <div key={coupon._id} className="p-2 hover:bg-gray-100">
@@ -204,7 +204,7 @@ const AllCoupons = () => {
 
             {/* Create Button */}
             <div
-              className={`${styles.button} w-max h-10 px-4 rounded-md mb-3 ml-2 bg-[#ff9800] hover:bg-[#e68900] text-white flex items-center justify-center transition ease-in-out duration-300 cursor-pointer mr-3`}
+              className={`${styles.button} w-max h-10 px-4 rounded-md mb-3 ml-2 bg-[#171203] hover:bg-[#171203] text-white flex items-center justify-center transition ease-in-out duration-300 cursor-pointer mr-3`}
               onClick={() => setOpen(true)}
             >
               <span className="text-white flex items-center justify-center">
@@ -245,7 +245,7 @@ const AllCoupons = () => {
                     <div>
                       <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                         Name <span className="text-red-500">*</span>
-                      </label>{" "}
+                      </label>{' '}
                       <input
                         type="text"
                         name="name"
@@ -261,9 +261,9 @@ const AllCoupons = () => {
                     {/* Discount Percentenge */}
                     <div>
                       <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
-                        Discount Percentage{" "}
+                        Discount Percentage{' '}
                         <span className="text-red-500">*</span>
-                      </label>{" "}
+                      </label>{' '}
                       <input
                         type="number"
                         name="value"
@@ -280,7 +280,7 @@ const AllCoupons = () => {
                     <div>
                       <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                         Min Amount <span className="text-red-500">*</span>
-                      </label>{" "}
+                      </label>{' '}
                       <input
                         type="number"
                         name="value"
@@ -296,7 +296,7 @@ const AllCoupons = () => {
                     <div>
                       <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                         Selected Product <span className="text-red-500">*</span>
-                      </label>{" "}
+                      </label>{' '}
                       <select
                         className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         value={selectedProducts}
@@ -319,7 +319,7 @@ const AllCoupons = () => {
                     <div>
                       <label className="block text-l font-medium text-gray-800 mb-2  font-Poppins">
                         Expiry Date: <span className="text-red-500">*</span>
-                      </label>{" "}
+                      </label>{' '}
                       <input
                         type="date"
                         value={expiresAt}

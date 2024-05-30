@@ -30,6 +30,7 @@ const CreateProduct = ({ setOpen }) => {
   const [engravings, setEngravings] = useState([]);
   const [instructions, setInstructions] = useState('');
   const [mediaType, setMediaType] = useState('none');
+  const [bundles, setBundles] = useState([]);
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -84,6 +85,23 @@ const CreateProduct = ({ setOpen }) => {
   const handleDeleteEngraving = (index) => {
     const newEngravings = engravings.filter((_, i) => i !== index);
     setEngravings(newEngravings);
+  };
+
+  const handleAddBundle = () => {
+    setBundles([...bundles, { name: '', stock: '' }]);
+  };
+  const handleBundleChange = (index, field, value) => {
+    const newBundles = bundles.map((bundle, i) => {
+      if (i === index) {
+        return { ...bundle, [field]: value };
+      }
+      return bundle;
+    });
+    setBundles(newBundles);
+  };
+  const handleDeleteBundle = (index) => {
+    const newBundles = bundles.filter((_, i) => i !== index);
+    setBundles(newBundles);
   };
 
   const handleImageChange = (e) => {
@@ -153,6 +171,7 @@ const CreateProduct = ({ setOpen }) => {
     newForm.append('instructions', instructions);
     newForm.append('sizes', JSON.stringify(sizes));
     newForm.append('engravings', JSON.stringify(engravings));
+    newForm.append('bundles', JSON.stringify(bundles));
     newForm.append('mediaType', mediaType);
 
     dispatch(
@@ -187,6 +206,7 @@ const CreateProduct = ({ setOpen }) => {
         instructions,
         sizes,
         engravings,
+        bundles,
         mediaType,
       })
     );
@@ -529,6 +549,49 @@ const CreateProduct = ({ setOpen }) => {
                 <button
                   type="button"
                   onClick={() => handleDeleteEngraving(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Bundles
+            </label>
+            <button
+              type="button"
+              onClick={handleAddBundle}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Bundle
+            </button>
+            {bundles.map((bundle, index) => (
+              <div key={index} className="mt-2 flex flex-wrap">
+                <input
+                  type="text"
+                  placeholder="Bundle name"
+                  value={bundle.name}
+                  onChange={(e) =>
+                    handleBundleChange(index, 'name', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Bundle stock"
+                  value={bundle.stock}
+                  onChange={(e) =>
+                    handleBundleChange(index, 'stock', e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDeleteBundle(index)}
                   className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
                 >
                   <FaTrash />

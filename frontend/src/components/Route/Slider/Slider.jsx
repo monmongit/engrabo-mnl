@@ -37,7 +37,7 @@ const Slider = () => {
   }, [nextSlide, intervalTime, autoScroll]);
 
   return (
-    <div className="slider ">
+    <div className="slider">
       <AiOutlineArrowLeft className="arrow prev" onClick={prevSlide} />
       <AiOutlineArrowRight className="arrow next" onClick={nextSlide} />
       {sliderData.map((slide, index) => {
