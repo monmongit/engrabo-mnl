@@ -19,6 +19,7 @@ import Ratings from '../../Products/Ratings';
 const ProductCard = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
+  const { admin } = useSelector((state) => state.admin);
 
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
@@ -183,15 +184,15 @@ const ProductCard = ({ data, isEvent }) => {
           </p>
 
           {/* Sizes */}
-          {data.sizes && data.sizes.length > 0 && (
+          {/* {data.sizes && data.sizes.length > 0 && (
             <div className="mt-4">
               <label className="block font-medium text-[#534723]">Sizes:</label>
-              <div className="flex space-x-2">
+              <div className="grid grid-cols-3 space-x-2">
                 {data.sizes.map((size, index) => (
                   <button
                     key={index}
                     onClick={() => handleSizeChange(size)}
-                    className={`px-4 py-2 border rounded-md ${
+                    className={`px-4 py-2 border rounded-md flex justify-center ${
                       selectedSize && selectedSize.name === size.name
                         ? 'bg-blue-500 text-white'
                         : 'bg-white text-gray-700'
@@ -202,20 +203,20 @@ const ProductCard = ({ data, isEvent }) => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Engraving Options */}
-          {data.engravings && data.engravings.length > 0 && (
+          {/* {data.engravings && data.engravings.length > 0 && (
             <div className="mt-4">
               <label className="block font-medium text-[#534723]">
                 Engraving Options:
               </label>
-              <div className="flex space-x-2">
+              <div className="grid grid-cols-3 space-x-2">
                 {data.engravings.map((engraving, index) => (
                   <button
                     key={index}
                     onClick={() => handleEngravingChange(engraving)}
-                    className={`px-4 py-2 border rounded-md ${
+                    className={`px-4 py-2 border rounded-md  flex justify-center ${
                       selectedEngraving &&
                       selectedEngraving.type === engraving.type
                         ? 'bg-blue-500 text-white'
@@ -227,39 +228,41 @@ const ProductCard = ({ data, isEvent }) => {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* buttons */}
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <button
-            className="px-3 py-1 rounded-lg bg-gray-300 hover:bg-blue-400"
-            onClick={() => setOpen(!open)}
-          >
-            <AiOutlineEye className="w-6" />
-          </button>
-          {click ? (
+        {!admin && (
+          <div className="flex items-center justify-center gap-2 mb-3">
             <button
-              className="px-3 py-1 rounded-lg bg-gray-300 hover:bg-yellow-400 hover"
-              onClick={() => removeFromWishlistHandler(data)}
+              className="px-3 py-1 rounded-lg bg-gray-300 hover:bg-blue-400"
+              onClick={() => setOpen(!open)}
             >
-              <AiFillHeart className="w-6" color="white" />
+              <AiOutlineEye className="w-6" />
             </button>
-          ) : (
+            {click ? (
+              <button
+                className="px-3 py-1 rounded-lg bg-gray-300 hover:bg-yellow-400 hover"
+                onClick={() => removeFromWishlistHandler(data)}
+              >
+                <AiFillHeart className="w-6" color="white" />
+              </button>
+            ) : (
+              <button
+                className="px-3 py-1 rounded-lg bg-gray-300 hover:bg-yellow-400"
+                onClick={() => addToWishlistHandler(data)}
+              >
+                <AiOutlineHeart className="w-6" />
+              </button>
+            )}
             <button
-              className="px-3 py-1 rounded-lg bg-gray-300 hover:bg-yellow-400"
-              onClick={() => addToWishlistHandler(data)}
+              className="flex items-center gap-2 px-3 py-1 rounded-lg bg-gray-300 hover:bg-green-400"
+              onClick={() => addToCartHandler(data._id)}
             >
-              <AiOutlineHeart className="w-6" />
+              <AiOutlineShoppingCart />
             </button>
-          )}
-          <button
-            className="flex items-center gap-2 px-3 py-1 rounded-lg bg-gray-300 hover:bg-green-400"
-            onClick={() => addToCartHandler(data._id)}
-          >
-            <AiOutlineShoppingCart />
-          </button>
-        </div>
+          </div>
+        )}
       </div>
       {open ? <ProductDetailsCard setOpen={setOpen} data={data} /> : null}
     </>

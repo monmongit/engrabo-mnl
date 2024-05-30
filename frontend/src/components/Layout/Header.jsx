@@ -241,7 +241,7 @@ const Header = ({ activeHeading }) => {
       <div
         className={`${
           active === true ? 'shadow-sm fixed top-0 left-0 z-10' : null
-        } w-full h-[60px] fixed bg-[#171203] z-20 top-0 left-0 shadow-sm 800px:hidden`}
+        } w-full h-[60px] fixed bg-[#171203] z-20 top-0 left-0 shadow-sm 800px:hidden `}
       >
         <div className="w-full flex items-center justify-between">
           <div>
@@ -253,7 +253,7 @@ const Header = ({ activeHeading }) => {
               />
             </Link>
           </div>
-          <div className='flex flex-row'>
+          <div className="flex flex-row">
             {/* wishlist */}
             <div className={`${styles.normalFlex}`}>
               <div
@@ -266,7 +266,6 @@ const Header = ({ activeHeading }) => {
                 </span>
               </div>
             </div>
-            
 
             {/* cart */}
             <div
@@ -452,7 +451,6 @@ const Header = ({ activeHeading }) => {
             <br />
             <br />
             <br />
-            <br />
 
             {/* Logo */}
             <div className="flex w-full justify-center">
@@ -465,8 +463,6 @@ const Header = ({ activeHeading }) => {
               </Link>
             </div>
 
-            <br />
-            <br />
             <br />
             <br />
             <br />

@@ -7,7 +7,6 @@ import Loader from '../Layout/Loader';
 import { AiOutlineArrowRight, AiOutlineSearch } from 'react-icons/ai';
 import { getAllOrdersOfAdmin } from '../../redux/action/order';
 
-
 const AllOrders = () => {
   const { orders, isLoading } = useSelector((state) => state.order);
   const { admin } = useSelector((state) => state.admin);
@@ -15,7 +14,6 @@ const AllOrders = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-
 
   useEffect(() => {
     dispatch(getAllOrdersOfAdmin(admin._id));
@@ -29,7 +27,6 @@ const AllOrders = () => {
     setStatusFilter(e.target.value);
   };
 
-
   const filteredOrders =
     orders &&
     orders.filter((item) => {
@@ -39,36 +36,36 @@ const AllOrders = () => {
     });
 
   const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
+    { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
     {
-      field: "status",
-      headerName: "Status",
+      field: 'status',
+      headerName: 'Status',
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.row.status === "Delivered" ? "greenColor" : "redColor";
+        return params.row.status === 'Delivered' ? 'greenColor' : 'redColor';
       },
     },
     {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
+      field: 'itemsQty',
+      headerName: 'Items Qty',
+      type: 'number',
       minWidth: 130,
       flex: 0.7,
     },
     {
-      field: "total",
-      headerName: "Total",
-      type: "number",
+      field: 'total',
+      headerName: 'Total',
+      type: 'number',
       minWidth: 130,
       flex: 0.8,
     },
     {
-      field: " ",
+      field: ' ',
       flex: 1,
       minWidth: 150,
-      headerName: "",
-      type: "number",
+      headerName: '',
+      type: 'number',
       sortable: false,
       renderCell: (params) => (
         <Link to={`/order/${params.id}`}>
@@ -100,7 +97,7 @@ const AllOrders = () => {
       ) : (
         <div
           className="w-full sm:px-8 pt-1 mt-10 bg-white overflow-x-auto"
-          style={{ marginBottom: "100px", borderRadius: "10px" }}
+          style={{ marginBottom: '100px', borderRadius: '10px' }}
         >
           <div className="mx-4">
             <div className="w-full flex justify-end items-center mb-4">
@@ -108,7 +105,7 @@ const AllOrders = () => {
                 <input
                   type="text"
                   placeholder="Search Orders..."
-                  className="h-10 sm:h-[45px] pl-4 pr-10 w-full border-2 border-solid border-[#ff9800] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:outline-none hover:border-[#ff9800] hover:ring-[#ff9800] hover:ring-2"
+                  className="h-10 sm:h-[45px] pl-4 pr-10 w-full border-2 border-solid border-[#171203] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:outline-none hover:border-[#171203] hover:ring-[#171203] hover:ring-1"
                   value={searchTerm}
                   onChange={handleSearchChange}
                 />
@@ -119,7 +116,7 @@ const AllOrders = () => {
               </div>
               <div className="relative w-full sm:w-[30%] mt-5 ml-4">
                 <select
-                  className="h-10 sm:h-[45px] pl-4 pr-10 w-full border-2 border-solid border-[#ff9800] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:outline-none hover:border-[#ff9800] hover:ring-[#ff9800] hover:ring-2"
+                  className="h-10 sm:h-[45px] pl-4 pr-10 w-full border-2 border-solid border-[#171203] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:outline-none hover:border-[#171203] hover:ring-[#171203] hover:ring-1"
                   value={statusFilter}
                   onChange={handleStatusChange}
                 >
