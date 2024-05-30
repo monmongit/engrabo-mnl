@@ -19,6 +19,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
   const [images, setImages] = useState([]);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [details, setDetails] = useState('');
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [grossPrice, setGrossPrice] = useState('');
@@ -40,6 +41,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
       setImages(product.images || []);
       setName(product.name || '');
       setDescription(product.description || '');
+      setDetails(product.details || '');
       setCategory(product.category || '');
       setTags(product.tags || '');
       setGrossPrice(product.grossPrice || '');
@@ -63,7 +65,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
       setOpen(false);
       window.location.reload();
     }
-  }, [dispatch, error, success, navigate]);
+  }, [dispatch, error, success, navigate, setOpen]);
 
   const handleImageChange = (e) => {
     e.preventDefault();
@@ -130,6 +132,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
       id: productId,
       name,
       description,
+      details,
       category,
       tags,
       grossPrice,
@@ -188,6 +191,21 @@ const UpdateProduct = ({ setOpen, productId }) => {
               value={description}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter your product description..."
+            ></textarea>
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Details <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              cols="30"
+              required
+              rows="8"
+              name="details"
+              value={details}
+              className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={(e) => setDetails(e.target.value)}
               placeholder="Enter your product description..."
             ></textarea>
           </div>
