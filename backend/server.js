@@ -1,6 +1,8 @@
 const app = require('./app');
 const connectDatabase = require('./db/Database');
 const cloudinary = require('cloudinary');
+const express = require('express');
+const path = require('path');
 
 // Handling uncaught exception
 process.on('uncaughtException', (err) => {
@@ -14,6 +16,11 @@ if (process.env.NODE_ENV !== 'PRODUCTION') {
     path: 'config/.env',
   });
 }
+
+// app.use(
+//   "/images",
+//   express.static(path.join(__dirname, "frontend/src/assets/Logo"))
+// );
 
 // database
 connectDatabase();

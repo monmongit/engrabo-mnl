@@ -1,10 +1,16 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  cart: {
-    type: Array,
-    required: true,
-  },
+  cart: [
+    {
+      type: Object,
+      required: true,
+      subTotal: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
   shippingAddress: {
     type: Object,
     required: true,
@@ -13,16 +19,21 @@ const orderSchema = new mongoose.Schema({
     type: Object,
     required: true,
   },
-
   insResponse: {
     type: String,
   },
-
-  // selectedOptions: {
-  //   type: Map,
-  //   of: String
-  // },
-
+  images: [
+    {
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
   totalPrice: {
     type: Number,
     required: true,

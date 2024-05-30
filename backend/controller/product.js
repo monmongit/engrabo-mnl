@@ -57,7 +57,6 @@ router.post(
     }
   })
 );
-
 // Get all Products
 router.get(
   '/get-all-products-admin/:id',
@@ -263,6 +262,90 @@ router.put(
       res.status(200).json({
         success: true,
         message: 'Reviewed successfully!',
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// Update Product
+router.put(
+  '/update-product/:id',
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const product = await Product.findById(req.params.id);
+      if (!product) {
+        return next(new ErrorHandler('Product not found', 404));
+      }
+
+      // Update images if necessary
+      let images = product.images;
+      if (req.body.images && Array.isArray(req.body.images)) {
+        images = [];
+        for (let i = 0; i < req.body.images.length; i++) {
+          if (typeof req.body.images[i] === 'string') {
+            const result = await cloudinary.v2.uploader.upload(
+              req.body.images[i],
+              {
+                folder: 'products',
+              }
+            );
+            images.push({
+              public_id: result.public_id,
+              url: result.secure_url,
+            });
+          } else {
+            return next(new ErrorHandler('Invalid image format', 400));
+          }
+        }
+      }
+
+      const updatedProductData = {
+        name: req.body.name,
+        description: req.body.description,
+        details: req.body.details,
+        category: req.body.category,
+        tags: req.body.tags,
+        grossPrice: req.body.grossPrice,
+        originalPrice: req.body.originalPrice,
+        discountPrice: req.body.discountPrice,
+        stock: req.body.stock,
+        images,
+        instructions: req.body.instructions,
+        sizes: req.body.sizes,
+        engravings: req.body.engravings,
+        mediaType: req.body.mediaType,
+      };
+
+      const updatedProduct = await Product.findByIdAndUpdate(
+        req.params.id,
+        updatedProductData,
+        { new: true, runValidators: true }
+      );
+
+      res.status(200).json({
+        success: true,
+        product: updatedProduct,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
+
+// Get Product Details
+router.get(
+  '/get-product-details/:id',
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const product = await Product.findById(req.params.id);
+      if (!product) {
+        return next(new ErrorHandler('Product not found', 404));
+      }
+      res.status(200).json({
+        success: true,
+        product,
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));

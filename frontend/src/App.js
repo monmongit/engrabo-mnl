@@ -4,7 +4,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   LoginPage,
   SignupPage,
+  ForgotPage,
   ActivationPage,
+  ResetPage,
   HomePage,
   ProductsPage,
   BestSellingPage,
@@ -21,7 +23,10 @@ import {
   OrderDetailsPage,
   TrackOrderPage,
   UserInboxPage,
-  CreatePage
+  CreatePage,
+  AboutPage,
+  ContactPage,
+
 } from './routes/Routes.js';
 import {
   AdminHomePage,
@@ -64,11 +69,13 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/.forgot-password" element={<ForgotPage />} />
         <Route path="/sign-up" element={<SignupPage />} />
         <Route
           path="/activation/:activation_token"
           element={<ActivationPage />}
         />
+        <Route path="/reset/:reset_token" element={<ResetPage />} />
         <Route
           path="/admin/activation/:activation_token"
           element={<AdminActivationPage />}
@@ -78,8 +85,9 @@ const App = () => {
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/create" element={<CreatePage />} />
-        
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/about" element={<AboutPage />} />
+
         <Route
           path="/checkout"
           element={
@@ -126,7 +134,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
         {/* Admin Route */}
         <Route path="/admin/preview/:id" element={<AdminPreviewPage />} />
 

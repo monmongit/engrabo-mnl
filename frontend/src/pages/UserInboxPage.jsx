@@ -9,7 +9,8 @@ import { GrGallery } from "react-icons/gr";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
 import Header from "../components/Layout/Header";
-const ENDPOINT = "https://socket-engrabomanila.onrender.com";
+// const ENDPOINT = "https://socket-engrabomanila.onrender.com"; (Deployment)
+const ENDPOINT = "http://localhost:4000/";
 const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const UserInboxPage = () => {
@@ -293,34 +294,36 @@ const MessageList = ({
 
   console.log(online);
   return (
-    <div
-      className={`w-full flex p-3 py-3 ${
-        handleClick ? "bg-[#00000010]" : "bg-transparent"
-      } cursor-pointer`}
-      onClick={() => handleClick(data._id)}
-    >
-      <div className="relative">
-        <img
-          src={`${user?.avatar?.url}`}
-          alt=""
-          className="w-[50px] h-[50px] rounded-full"
-        />
-        {online ? (
-          <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[1px] right-[1px]" />
-        ) : (
-          <div className="w-[12px] h-[12px] bg-[#b5b5ac] rounded-full absolute top-[1px] right-[1px]" />
-        )}
+    <>
+      <div
+        className={`flex items-center m-4 p-3  py-3 ${
+          handleClick ? "bg-[#00000010]" : "bg-transparent"
+        } cursor-pointer`}
+        onClick={() => handleClick(data._id)}
+      >
+        <div className="relative">
+          <img
+            src={`${user?.avatar?.url}`}
+            alt=""
+            className="w-[50px] h-[50px] rounded-full"
+          />
+          {online ? (
+            <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[1px] right-[1px]" />
+          ) : (
+            <div className="w-[12px] h-[12px] bg-[#b5b5ac] rounded-full absolute top-[1px] right-[1px]" />
+          )}
+        </div>
+        <div className="pl-3">
+          <h1 className="font-[600]">{user?.name}</h1>
+          <p className="text-[14px] text-[#000000a1]">
+            {!loading && data?.lastMessageId !== user?._id
+              ? "You"
+              : `${user?.name?.split(" ")[0]} `}
+            : {data?.lastMessage}
+          </p>
+        </div>
       </div>
-      <div className="pl-3">
-        <h1 className="font-[600]">{user?.name}</h1>
-        <p className="text-[14px] text-[#000000a1]">
-          {!loading && data?.lastMessageId !== user?._id
-            ? "You"
-            : `${user?.name?.split(" ")[0]} `}
-          : {data?.lastMessage}
-        </p>
-      </div>
-    </div>
+    </>
   );
 };
 
@@ -403,7 +406,7 @@ const AdminInbox = ({
               >
                 <div
                   className={`p-2 rounded ${
-                    item.sender === userId ? "bg-[#000]" : "bg-[#b19a5696]"
+                    item.sender === userId ? "bg-[#171203]" : "bg-[#78683a96]"
                   } text-[#fff]`}
                 >
                   <p>{item.text}</p>

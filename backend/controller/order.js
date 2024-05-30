@@ -8,6 +8,9 @@ const Product = require('../model/product');
 const Event = require('../model/event');
 const Admin = require('../model/admin');
 const sendMail = require('../utils/sendMail');
+const receiptMail = require('../utils/receiptMail');
+
+const cloudinary = require('cloudinary');
 
 // Email Template Function
 const getEmailTemplate = (content) => {
@@ -49,13 +52,24 @@ router.post(
 
       for (const [adminId, items] of adminItemsMap) {
         const order = await Order.create({
-          cart: items,
+          cart: items.map((item) => ({
+            ...item,
+            subTotal: item.qty * item.price,
+          })),
           shippingAddress,
           user,
           totalPrice,
           paymentInfo,
         });
+
+        email = order?.user?.email;
+
         orders.push(order);
+      }
+
+      if (email) {
+        const latestOrder = await getData(email); // Capture the latestOrder value returned by getData
+        await receiptMail(latestOrder); // Pass the latestOrder to receiptMail
       }
 
       res.status(201).json({
@@ -67,7 +81,37 @@ router.post(
     }
   })
 );
+const latestOrderByEmail = (orders, email) => {
+  if (!orders) return null;
 
+  const filteredOrders = orders.filter((order) => order.user.email === email);
+
+  // Sort orders by creation date in descending order
+  const sortedOrders = filteredOrders.sort(
+    (a, b) => new Date(b.createAt) - new Date(a.createAt)
+  );
+
+  return sortedOrders[0] || null;
+};
+//Creating Logic of Receipt
+const getData = async (email) => {
+  try {
+    const orders = await Order.find({ 'user.email': email });
+
+    const latestOrder = latestOrderByEmail(orders, email);
+
+    if (latestOrder) {
+      console.log('Latest Order:', latestOrder);
+      return latestOrder; // Return the latestOrder
+    } else {
+      console.log('No orders found for the given email.');
+      return null; // Return null if no latestOrder found
+    }
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    throw error; // Throw error if any
+  }
+};
 // Get all orders of the user
 router.get(
   '/get-all-orders/:userId',
@@ -125,7 +169,7 @@ router.put(
       // Update the stock when transferring to delivery partner
       if (newStatus === 'Transferred to delivery partner') {
         for (let item of order.cart) {
-          await updateItemStock(item._id, item.qty);
+          await updateItemStock(item, item.qty);
         }
       }
 
@@ -291,39 +335,36 @@ router.put(
   })
 );
 
-async function updateItemStock(id, qty) {
-  // Try to update a product
-  let item = await Product.findById(id);
+async function updateItemStock(item, qty) {
+  // Find the product by item._id
+  const product = await Product.findById(item._id);
 
-  // If not a product, it might be an event
-  if (!item) {
-    item = await Event.findById(id);
+  if (!product) {
+    console.log('Product not found with ID:', item._id);
+    return;
   }
 
-  if (!item) {
-    console.log('Item not found with ID:', id);
-    return; // If neither, skip the update
-  }
-
-  // Update stock and sold_out values
-  item.stock -= qty;
-  item.sold_out += qty;
-
-  await item.save({ validateBeforeSave: false });
-
-  // Check if stock is low and send an email to the admin
-  if (item.stock <= 5) {
-    const admin = await Admin.findOne(); // Assuming there's a single admin, modify if multiple admins
-    if (admin) {
-      const message = `The stock for product "${item.name}" is low. Current stock: ${item.stock}`;
-      await sendMail({
-        email: admin.email,
-        subject: 'Low Stock Alert',
-        message,
-      });
+  // Deduct stock for specific size or engraving if present
+  if (item.size) {
+    const size = product.sizes.find((s) => s.name === item.size.name);
+    if (size) {
+      size.stock -= qty;
     }
+  } else if (item.engraving) {
+    const engraving = product.engravings.find(
+      (e) => e.type === item.engraving.type
+    );
+    if (engraving) {
+      engraving.stock -= qty;
+    }
+  } else {
+    // Deduct stock from main product if no size or engraving
+    product.stock -= qty;
   }
+
+  await product.save({ validateBeforeSave: false });
 }
+
 // Refund for admin side
 router.put(
   '/order-refund-success/:id',
@@ -338,29 +379,61 @@ router.put(
 
       order.status = req.body.status;
 
+      if (req.body.status === 'Refund Approved') {
+        for (let item of order.cart) {
+          await refundItemStock(item, item.qty);
+        }
+      }
+
       await order.save();
 
       res.status(200).json({
         success: true,
         message: 'Order Refund Successfully!',
       });
-
-      if (req.body.status === 'Refund Approved') {
-        order.cart.forEach(async (o) => {
-          await updateOrder(o._id, o.qty);
-        });
-      }
-
-      async function updateOrder(id, qty) {
-        const product = await Product.findById(id);
-        product.stock += qty;
-        product.sold_out -= qty;
-
-        await product.save({ validateBeforeSave: false });
-      }
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
+  })
+);
+
+async function refundItemStock(item, qty) {
+  // Find the product by item._id
+  const product = await Product.findById(item._id);
+
+  if (!product) {
+    console.log('Product not found with ID:', item._id);
+    return;
+  }
+
+  // Add stock for specific size or engraving if present
+  if (item.size) {
+    const size = product.sizes.find((s) => s.name === item.size.name);
+    if (size) {
+      size.stock += qty;
+    }
+  } else if (item.engraving) {
+    const engraving = product.engravings.find(
+      (e) => e.type === item.engraving.type
+    );
+    if (engraving) {
+      engraving.stock += qty;
+    }
+  } else {
+    // Add stock to main product if no size or engraving
+    product.stock += qty;
+  }
+
+  await product.save({ validateBeforeSave: false });
+}
+
+router.post(
+  '/custom',
+  catchAsyncError(async (req, res, next) => {
+    // get the url
+    console.log(req.body);
+    // get upload the url to the cloudinary
+    // send back the url as a string? or json
   })
 );
 

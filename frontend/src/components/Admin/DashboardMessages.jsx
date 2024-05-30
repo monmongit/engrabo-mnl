@@ -9,7 +9,8 @@ import { GrGallery } from "react-icons/gr";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
 
-const ENDPOINT = "https://socket-engrabomanila.onrender.com";
+// const ENDPOINT = "https://socket-engrabomanila.onrender.com"; (production)
+const ENDPOINT = "http://localhost:4000/";
 const socket = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const DashboardMessages = () => {
@@ -202,12 +203,22 @@ const DashboardMessages = () => {
   }, [messages]);
 
   return (
-    <div className="w-[90%] bg-white m-5 h-[85vh] overflow-y-scroll hide-scrollbar rounded">
+    <div
+      className="w-[90%] bg-white m-5 p-4 h-[85vh] overflow-y-scroll hide-scrollbar rounded px-5 br"
+      style={{ marginBottom: "100px", borderRadius: "10" }}
+    >
+      <div className="mt-4 p-4 bg-[#171203] mb-4 rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
+        <h3 className="text-[22px] font-Poppins pb-2 text-white">
+          {" "}
+          All Messages
+        </h3>
+      </div>
+
       {!open && (
         <>
-          <h1 className="text-center text-[30px] py-3 font-Poppins">
+          {/* <h1 className="text-center text-[30px] py-3 font-Poppins">
             All Messages
-          </h1>
+          </h1> */}
           {conversations.map((item, index) => (
             <MessageList
               key={index}
@@ -283,7 +294,7 @@ const MessageList = ({
   console.log(online);
   return (
     <div
-      className={`w-full flex p-3 py-3 ${
+      className={`w-full flex p-3 py-3 mb-4 rounded ${
         data.seen ? "bg-transparent" : "bg-[#00000010]"
       } cursor-pointer`}
       onClick={() => handleClick(data._id)}
@@ -350,7 +361,7 @@ const AdminInbox = ({
       </div>
 
       {/* messages */}
-      <div className="px-3 h-[65vh] py-3 overflow-y-scroll hide-scrollbar">
+      <div className="px-3 h-[65vh] py-3 overflow-y-scroll hide-scrollbar ">
         {messages.map((item, index) => (
           <div
             key={index}
@@ -369,7 +380,7 @@ const AdminInbox = ({
 
             {item.images && (
               <div
-                className={`flex flex-col w-max ${
+                className={`flex flex-col w-max  ${
                   item.sender === adminId ? "items-end" : "items-start"
                 }`}
               >
@@ -393,7 +404,7 @@ const AdminInbox = ({
               >
                 <div
                   className={`p-2 rounded ${
-                    item.sender === adminId ? "bg-[#000]" : "bg-[#b19a5696]"
+                    item.sender === adminId ? "bg-[#171203]" : "bg-[#78683a96]"
                   } text-[#fff]`}
                 >
                   <p>{item.text}</p>
@@ -412,7 +423,7 @@ const AdminInbox = ({
         className="p-3 relative w-full flex justify-between items-center"
         onSubmit={sendMessageHandler}
       >
-        <div className="w-[30px]">
+        <div className="w-[30px] ">
           <input
             type="file"
             name=""

@@ -5,7 +5,8 @@ import Categories from '../components/Route/Categories/Categories';
 import BestDeals from '../components/Route/BestDeals/BestDeals';
 import FeaturedProduct from '../components/Route/FeaturedProduct/FeaturedProduct';
 import Events from '../components/Route/Events/Events';
-import Footer from '../components/Layout/Footer.jsx';
+import Footer from '../components/Layout/Footer';
+import Chatbox from '../components/Chatbot/Chatbox';
 const HomePage = () => {
   return (
     <div>
@@ -15,6 +16,7 @@ const HomePage = () => {
       <BestDeals />
       <Events />
       <FeaturedProduct />
+      <Chatbox />
       <Footer />
     </div>
   );
