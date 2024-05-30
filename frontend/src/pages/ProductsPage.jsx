@@ -10,7 +10,7 @@ import 'rc-slider/assets/index.css';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import { IoOptionsOutline } from 'react-icons/io5';
 
-import FilterModal from '../components/FilterModal/FilterModal'; // Import the modal
+import FilterModal from '../components/Filter/FilterModal'; // Import the modal
 
 const ProductsPage = () => {
   const [searchParams] = useSearchParams();
