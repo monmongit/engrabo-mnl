@@ -153,6 +153,7 @@ const ProductDetails = ({ data }) => {
             : data.discountPrice > 0
             ? data.discountPrice
             : data.originalPrice,
+          url: urls
         };
         dispatch(addTocart(cartData));
         toast.success(`${data.name} added to cart successfully!`);
@@ -196,14 +197,14 @@ const ProductDetails = ({ data }) => {
     <div className="bg-[#fff4d7] min-h-screen py-10">
       {data ? (
         <div className={`${styles.section} w-[90%] md:w-[80%] mx-auto`}>
-          <div className="py-5 flex flex-col md:flex-row gap-10">
+          <div className="py-5 flex flex-col md:flex-row gap-10 mt-8 lg:mt-1 ">
             {/* Images of Product */}
             <div className="w-full md:w-1/2 flex flex-col items-center">
               {/* Image of Product Main */}
               <img
                 src={`${data && data.images[select]?.url}`}
                 alt=""
-                className=" shadow-lg w-full h-full aspect-square rounded-xl"
+                className=" shadow-lg w-full h-1/2 aspect-square rounded-xl "
               />
 
               <div className="flex mt-4 space-x-2">
@@ -220,7 +221,7 @@ const ProductDetails = ({ data }) => {
                       <img
                         src={`${i?.url}`}
                         alt=""
-                        className="h-[100px] w-[100px] object-cover rounded-md"
+                        className="w-24 h-24 rounded-md cursor-pointer"
                       />
                     </div>
                   ))}
