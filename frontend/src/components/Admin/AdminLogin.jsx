@@ -146,15 +146,6 @@ const AdminLogin = () => {
                 Submit
               </button>
             </div>
-            <div className={`${styles.normalFlex} w-full`}>
-              <h4>Not have any account?</h4>
-              <Link
-                to="/admin-create"
-                className="ml-2 text-brown-semidark hover:text-brown-dark"
-              >
-                Sign Up
-              </Link>
-            </div>
           </form>
           <Backdrop
             sx={{
