@@ -9,13 +9,13 @@ app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://engrabo-mnl-frnt.vercel.app",
     credentials: true,
   })
 );
 app.use("/", express.static(path.join(__dirname, "uploads")));
 app.use("/test", (req, res) => {
-  res.send("Please Work");
+  res.send("Hello Stphenson");
 });
 
 app.use(cookieParser());
