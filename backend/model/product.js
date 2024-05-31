@@ -16,6 +16,11 @@ const engravingSchema = new mongoose.Schema({
   description: { type: String, required: true },
 });
 
+const colorSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  stock: { type: Number, required: true },
+});
+
 const productSchema = new mongoose.Schema({
   name: { type: String, required: [true, 'Please enter your product name'] },
   description: {
@@ -50,6 +55,7 @@ const productSchema = new mongoose.Schema({
   instructions: { type: String },
   sizes: [optionSchema],
   engravings: [engravingSchema],
+  colors: [colorSchema],
   ratings: { type: Number },
   reviews: [
     {

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +30,7 @@ const CreateProduct = ({ setOpen }) => {
   const [instructions, setInstructions] = useState('');
   const [mediaType, setMediaType] = useState('none');
   const [bundles, setBundles] = useState([]);
+  const [colors, setColors] = useState([]); // New state for colors
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -41,11 +41,30 @@ const CreateProduct = ({ setOpen }) => {
       toast.error(error);
     }
     if (success) {
-      toast.success("Product created successfully");
-      navigate("/dashboard-products");
+      toast.success('Product created successfully');
+      navigate('/dashboard-products');
       window.location.reload();
     }
   }, [dispatch, error, success, navigate]);
+
+  const handleAddColor = () => {
+    setColors([...colors, { name: '', stock: '' }]);
+  };
+
+  const handleColorChange = (index, field, value) => {
+    const newColors = colors.map((color, i) => {
+      if (i === index) {
+        return { ...color, [field]: value };
+      }
+      return color;
+    });
+    setColors(newColors);
+  };
+
+  const handleDeleteColor = (index) => {
+    const newColors = colors.filter((_, i) => i !== index);
+    setColors(newColors);
+  };
 
   const handleAddSize = () => {
     setSizes([
@@ -53,6 +72,7 @@ const CreateProduct = ({ setOpen }) => {
       { name: '', grossPrice: '', price: '', stock: '', description: '' },
     ]);
   };
+
   const handleSizeChange = (index, field, value) => {
     const newSizes = sizes.map((size, i) => {
       if (i === index) {
@@ -62,6 +82,7 @@ const CreateProduct = ({ setOpen }) => {
     });
     setSizes(newSizes);
   };
+
   const handleDeleteSize = (index) => {
     const newSizes = sizes.filter((_, i) => i !== index);
     setSizes(newSizes);
@@ -73,6 +94,7 @@ const CreateProduct = ({ setOpen }) => {
       { type: '', grossPrice: '', price: '', stock: '', description: '' },
     ]);
   };
+
   const handleEngravingChange = (index, field, value) => {
     const newEngravings = engravings.map((engraving, i) => {
       if (i === index) {
@@ -82,6 +104,7 @@ const CreateProduct = ({ setOpen }) => {
     });
     setEngravings(newEngravings);
   };
+
   const handleDeleteEngraving = (index) => {
     const newEngravings = engravings.filter((_, i) => i !== index);
     setEngravings(newEngravings);
@@ -90,6 +113,7 @@ const CreateProduct = ({ setOpen }) => {
   const handleAddBundle = () => {
     setBundles([...bundles, { name: '', stock: '' }]);
   };
+
   const handleBundleChange = (index, field, value) => {
     const newBundles = bundles.map((bundle, i) => {
       if (i === index) {
@@ -99,6 +123,7 @@ const CreateProduct = ({ setOpen }) => {
     });
     setBundles(newBundles);
   };
+
   const handleDeleteBundle = (index) => {
     const newBundles = bundles.filter((_, i) => i !== index);
     setBundles(newBundles);
@@ -123,11 +148,12 @@ const CreateProduct = ({ setOpen }) => {
     e.preventDefault();
     const newForm = new FormData();
     images.forEach((image) => {
-      newForm.set("images", image);
+      newForm.set('images', image);
     });
 
     const defaultSize = sizes[0];
     const defaultEngraving = engravings[0];
+    const defaultColor = colors[0];
 
     newForm.append('name', name);
     newForm.append(
@@ -165,6 +191,8 @@ const CreateProduct = ({ setOpen }) => {
         ? defaultSize.stock
         : defaultEngraving
         ? defaultEngraving.stock
+        : defaultColor
+        ? defaultColor.stock
         : stock
     );
     newForm.append('adminId', admin._id);
@@ -172,6 +200,7 @@ const CreateProduct = ({ setOpen }) => {
     newForm.append('sizes', JSON.stringify(sizes));
     newForm.append('engravings', JSON.stringify(engravings));
     newForm.append('bundles', JSON.stringify(bundles));
+    newForm.append('colors', JSON.stringify(colors)); // Add colors to form data
     newForm.append('mediaType', mediaType);
 
     dispatch(
@@ -200,6 +229,8 @@ const CreateProduct = ({ setOpen }) => {
           ? defaultSize.stock
           : defaultEngraving
           ? defaultEngraving.stock
+          : defaultColor
+          ? defaultColor.stock
           : stock,
         adminId: admin._id,
         images,
@@ -207,6 +238,7 @@ const CreateProduct = ({ setOpen }) => {
         sizes,
         engravings,
         bundles,
+        colors, // Include colors in product data
         mediaType,
       })
     );
@@ -255,7 +287,6 @@ const CreateProduct = ({ setOpen }) => {
               disabled={sizes.length > 0 || engravings.length > 0}
             ></textarea>
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Details <span className="text-red-500">*</span>
@@ -271,7 +302,6 @@ const CreateProduct = ({ setOpen }) => {
               placeholder="Enter your product details..."
             ></textarea>
           </div>
-
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Category <span className="text-red-500">*</span>
@@ -355,7 +385,9 @@ const CreateProduct = ({ setOpen }) => {
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setStock(e.target.value)}
               placeholder="Enter your product stock..."
-              disabled={sizes.length > 0 || engravings.length > 0}
+              disabled={
+                sizes.length > 0 || engravings.length > 0 || colors.length > 0
+              }
             />
           </div>
           <div>
@@ -375,7 +407,7 @@ const CreateProduct = ({ setOpen }) => {
                 <AiOutlinePlusCircle
                   size={30}
                   className="mt-3 text-gray-600 hover:text-gray-800 cursor-pointer"
-                />{" "}
+                />
               </label>
               {images &&
                 images.map((i) => (
@@ -390,7 +422,7 @@ const CreateProduct = ({ setOpen }) => {
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Instruction For Personalization{" "}
+              Instruction For Personalization{' '}
               <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -405,6 +437,51 @@ const CreateProduct = ({ setOpen }) => {
           </div>
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
+              Colors
+            </label>
+            <button
+              type="button"
+              onClick={handleAddColor}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Color
+            </button>
+            {colors.map((color, index) => (
+              <div key={index} className="mt-2 flex flex-wrap items-start">
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="text"
+                    placeholder="Color name"
+                    value={color.name}
+                    onChange={(e) =>
+                      handleColorChange(index, 'name', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Color stock"
+                    value={color.stock}
+                    onChange={(e) =>
+                      handleColorChange(index, 'stock', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteColor(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
               Sizes
             </label>
             <button
@@ -415,65 +492,69 @@ const CreateProduct = ({ setOpen }) => {
               <FaPlus className="mr-2" /> Add Size
             </button>
             {sizes.map((size, index) => (
-              <div key={index} className="mt-2 flex flex-wrap">
-                <input
-                  type="text"
-                  placeholder="Size name"
-                  value={size.name}
-                  onChange={(e) =>
-                    handleSizeChange(index, "name", e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Size gross price"
-                  value={size.grossPrice}
-                  onChange={(e) =>
-                    handleSizeChange(index, "grossPrice", e.target.value)     
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Size price"
-                  value={size.price}
-                  onChange={(e) =>
-                    handleSizeChange(index, "price", e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Size stock"
-                  value={size.stock}
-                  onChange={(e) =>
-                    handleSizeChange(index, "stock", e.target.value)                 
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Size description"
-                  value={size.description}
-                  onChange={(e) =>
-                    handleSizeChange(index, "description", e.target.value)
-               
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => handleDeleteSize(index)}
-                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                >
-                  <FaTrash />
-                </button>
+              <div key={index} className="mt-2 flex flex-wrap items-start">
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="text"
+                    placeholder="Size name"
+                    value={size.name}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'name', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Size gross price"
+                    value={size.grossPrice}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'grossPrice', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="number"
+                    placeholder="Size price"
+                    value={size.price}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'price', e.target.value)
+                    }
+                    className=" w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Size stock"
+                    value={size.stock}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'stock', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <div className="w-full flex flex-wrap">
+                  <textarea
+                    placeholder="Size description"
+                    value={size.description}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'description', e.target.value)
+                    }
+                    className="800px:w-[97%] w-full px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  ></textarea>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSize(index)}
+                    className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -489,70 +570,73 @@ const CreateProduct = ({ setOpen }) => {
               <FaPlus className="mr-2" /> Add Engraving
             </button>
             {engravings.map((engraving, index) => (
-              <div key={index} className="mt-2 flex flex-wrap">
-                <input
-                  type="text"
-                  placeholder="Engraving type"
-                  value={engraving.type}
-                  onChange={(e) =>
-                    handleEngravingChange(index, "type", e.target.value)
-
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Engraving gross price"
-                  value={engraving.grossPrice}
-                  onChange={(e) =>
-                    handleEngravingChange(index, "grossPrice", e.target.value)
-
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Engraving price"
-                  value={engraving.price}
-                  onChange={(e) =>
-
-                    handleEngravingChange(index, "price", e.target.value)
-
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Engraving stock"
-                  value={engraving.stock}
-                  onChange={(e) =>
-                    handleEngravingChange(index, "stock", e.target.value)
-
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Engraving description"
-                  value={engraving.description}
-                  onChange={(e) =>
-                    handleEngravingChange(index, "description", e.target.value)
-
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => handleDeleteEngraving(index)}
-                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                >
-                  <FaTrash />
-                </button>
+              <div key={index} className="mt-2 flex flex-wrap items-start">
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="text"
+                    placeholder="Engraving type"
+                    value={engraving.type}
+                    onChange={(e) =>
+                      handleEngravingChange(index, 'type', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Engraving gross price"
+                    value={engraving.grossPrice}
+                    onChange={(e) =>
+                      handleEngravingChange(index, 'grossPrice', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="number"
+                    placeholder="Engraving price"
+                    value={engraving.price}
+                    onChange={(e) =>
+                      handleEngravingChange(index, 'price', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Engraving stock"
+                    value={engraving.stock}
+                    onChange={(e) =>
+                      handleEngravingChange(index, 'stock', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <div className="w-full flex flex-wrap">
+                  <textarea
+                    placeholder="Engraving description"
+                    value={engraving.description}
+                    onChange={(e) =>
+                      handleEngravingChange(
+                        index,
+                        'description',
+                        e.target.value
+                      )
+                    }
+                    className="800px:w-[97%] w-full px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  ></textarea>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteEngraving(index)}
+                    className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -576,7 +660,7 @@ const CreateProduct = ({ setOpen }) => {
                   onChange={(e) =>
                     handleBundleChange(index, 'name', e.target.value)
                   }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
                   required
                 />
                 <input
@@ -586,7 +670,7 @@ const CreateProduct = ({ setOpen }) => {
                   onChange={(e) =>
                     handleBundleChange(index, 'stock', e.target.value)
                   }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
                   required
                 />
                 <button

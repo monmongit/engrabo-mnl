@@ -138,7 +138,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                 >
                   {data.name}
                 </h1>
-                <p className="text-justify pt-2 text-[#534723]">
+                <p className="text-[#534723] text-justify text-[17px] leading-8 pb-10 whitespace-pre-line">
                   {data.description}
                 </p>
 

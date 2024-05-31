@@ -20,8 +20,6 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import UserCreateDesign from '../UserCreateDesign';
 
-// import UserOrderOptions from './UserOrderOptions';
-
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
@@ -32,6 +30,7 @@ const ProductDetails = ({ data }) => {
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedEngraving, setSelectedEngraving] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
   const [drawingInfo, setDrawingInfo] = useState('');
   const [open, setOpen] = useState(false);
   const [urls, setUrls] = useState([]);
@@ -58,7 +57,10 @@ const ProductDetails = ({ data }) => {
 
   const incrementCount = () => {
     const stock =
-      selectedSize?.stock ?? selectedEngraving?.stock ?? data?.stock;
+      selectedSize?.stock ??
+      selectedEngraving?.stock ??
+      selectedColor?.stock ??
+      data?.stock;
     if (stock <= count) {
       toast.error(
         `${data?.name} stock is limited! Please contact us to reserve your order!`
@@ -132,7 +134,10 @@ const ProductDetails = ({ data }) => {
       );
     } else {
       const stock =
-        selectedSize?.stock ?? selectedEngraving?.stock ?? data?.stock;
+        selectedSize?.stock ??
+        selectedEngraving?.stock ??
+        selectedColor?.stock ??
+        data?.stock;
       if (stock < 1) {
         toast.error(
           `${data.name} stock is limited! Please contact us to reserve your order!`
@@ -144,8 +149,9 @@ const ProductDetails = ({ data }) => {
           stock: stock,
           response: insResponse,
           options: selectedOptions,
-          size: selectedSize, // Add selected size to cart data
-          engraving: selectedEngraving, // Add selected engraving to cart data
+          size: selectedSize,
+          engraving: selectedEngraving,
+          color: selectedColor,
           price: selectedSize
             ? selectedSize.price
             : selectedEngraving
@@ -169,12 +175,20 @@ const ProductDetails = ({ data }) => {
 
   const handleSizeChange = (size) => {
     setSelectedSize(size);
-    setSelectedEngraving(null); // Reset engraving if size is selected
+    setSelectedEngraving(null);
+    setSelectedColor(null);
   };
 
   const handleEngravingChange = (engraving) => {
     setSelectedEngraving(engraving);
-    setSelectedSize(null); // Reset size if engraving is selected
+    setSelectedSize(null);
+    setSelectedColor(null);
+  };
+
+  const handleColorChange = (color) => {
+    setSelectedColor(color);
+    setSelectedSize(null);
+    setSelectedEngraving(null);
   };
 
   const totalReviewsLength =
@@ -279,6 +293,7 @@ const ProductDetails = ({ data }) => {
                   Stocks:{' '}
                   {selectedSize?.stock ??
                     selectedEngraving?.stock ??
+                    selectedColor?.stock ??
                     data.stock}
                 </h4>
                 {/* Sold of Product */}
@@ -286,6 +301,30 @@ const ProductDetails = ({ data }) => {
                   {data?.sold_out} sold
                 </span>
               </div>
+
+              {/* Colors */}
+              {data.colors && data.colors.length > 0 && (
+                <div className="mt-4">
+                  <label className="block font-medium text-[#534723]">
+                    Colors:
+                  </label>
+                  <div className="flex space-x-2">
+                    {data.colors.map((color, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleColorChange(color)}
+                        className={`px-4 py-2 border rounded-md ${
+                          selectedColor && selectedColor.name === color.name
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-700'
+                        }`}
+                      >
+                        {color.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Sizes */}
               {data.sizes && data.sizes.length > 0 && (
@@ -404,7 +443,6 @@ const ProductDetails = ({ data }) => {
               {/* pops us the drawing page */}
               {open && (
                 <div className="fixed inset-0 z-50 flex justify-center items-center">
-                  {/* <UserOrderOptions setOpen={setOpen} /> */}
                   {
                     <UserCreateDesign
                       data={data}
