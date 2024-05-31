@@ -31,7 +31,7 @@ const ProductDetails = ({ data }) => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedEngraving, setSelectedEngraving] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [drawingInfo, setDrawingInfo] = useState('');
+  const [drawingInfo, setDrawingInfo] = useState("");
   const [open, setOpen] = useState(false);
   const [urls, setUrls] = useState([]);
   const [count, setCount] = useState(1);
@@ -159,7 +159,7 @@ const ProductDetails = ({ data }) => {
             : data.discountPrice > 0
             ? data.discountPrice
             : data.originalPrice,
-          url: urls
+          url: urls,
         };
         dispatch(addTocart(cartData));
         toast.success(`${data.name} added to cart successfully!`);
@@ -316,8 +316,8 @@ const ProductDetails = ({ data }) => {
                         onClick={() => handleColorChange(color)}
                         className={`px-4 py-2 border rounded-md ${
                           selectedColor && selectedColor.name === color.name
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white text-gray-700'
+                            ? "bg-blue-500 text-white"
+                            : "bg-white text-gray-700"
                         }`}
                       >
                         {color.name}
@@ -357,20 +357,24 @@ const ProductDetails = ({ data }) => {
                   <label className="block font-medium text-[#534723]">
                     Engraving Options:
                   </label>
-                  <div className="flex space-x-2">
+                  <div className="mt-2 grid lg:grid-cols-3 sm:grid-cols-2 md:grid-cols-2 gap-2">
                     {data.engravings.map((engraving, index) => (
-                      <button
+                      <div
                         key={index}
-                        onClick={() => handleEngravingChange(engraving)}
-                        className={`px-4 py-2 border rounded-md ${
-                          selectedEngraving &&
-                          selectedEngraving.type === engraving.type
-                            ? "bg-blue-500 text-white"
-                            : "bg-white text-gray-700"
-                        }`}
+                        className="border border-gray-200 rounded-md"
                       >
-                        {engraving.type}
-                      </button>
+                        <button
+                          onClick={() => handleEngravingChange(engraving)}
+                          className={`w-full flex justify-center items-center py-2 px-4 rounded ${
+                            selectedEngraving &&
+                            selectedEngraving.type === engraving.type
+                              ? "bg-blue-500 text-white"
+                              : "bg-white text-gray-700"
+                          }`}
+                        >
+                          <span>{engraving.type}</span>
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -533,7 +537,7 @@ const ProductDetails = ({ data }) => {
               </div>
             </div>
           </div>
-        
+
           <ProductDetailsInfo
             data={data}
             products={products}
