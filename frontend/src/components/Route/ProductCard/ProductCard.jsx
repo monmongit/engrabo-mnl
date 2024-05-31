@@ -20,7 +20,6 @@ const ProductCard = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
   const { admin } = useSelector((state) => state.admin);
-
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -110,7 +109,7 @@ const ProductCard = ({ data, isEvent }) => {
 
   return (
     <>
-      <div className="w-60 p-2 bg-white rounded-xl transform transition-all hover:translate-y-2 duration-300 shadow-lg hover:shadow-2xl mt-4 mb-4 lg:mt-0 z-1 ">
+      <div className="w-60 p-2 bg-white rounded-xl transform transition-all hover:translate-y-2 duration-300 shadow-lg hover:shadow-2xl mt-4 mb-4 lg:mt-0">
         <div className="w-full h-40 overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75">
           <Link
             to={`${
@@ -264,7 +263,7 @@ const ProductCard = ({ data, isEvent }) => {
           </div>
         )}
       </div>
-      {open ? <ProductDetailsCard setOpen={setOpen} data={data} /> : null}
+      {open && <ProductDetailsCard setOpen={setOpen} data={data} />}
     </>
   );
 };

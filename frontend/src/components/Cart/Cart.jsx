@@ -1,4 +1,3 @@
-// Cart.js
 import React, { useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import styles from '../../styles/style';
@@ -15,7 +14,7 @@ const Cart = ({ setOpenCart }) => {
 
   const removeFromCartHandler = (data) => {
     dispatch(removeFromCart(data));
-    toast.error(`${data.name} removed to cart successfully!`);
+    toast.error(`${data.name} removed from cart successfully!`);
   };
 
   const totalPrice = cart.reduce((acc, item) => acc + item.qty * item.price, 0);
@@ -25,7 +24,7 @@ const Cart = ({ setOpenCart }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10 ">
+    <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10">
       <div className="fixed top-0 right-0 h-[100vh] w-[70%] 800px:w-[25%] bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm overflow-y-scroll hide-scrollbar">
         {cart && cart.length === 0 ? (
           <div className="w-full h-screen flex items-center justify-center">
@@ -171,7 +170,7 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
           <img
             src={data.images[0].url}
             alt={data.name || 'Product Image'}
-            className="w-[120px] h-[120px] ml-2 rounded-[5px]"
+            className="w-[110px] h-[110px] ml-2 rounded-[5px]"
           />
         )}
 
@@ -198,6 +197,11 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
           {data.engraving && (
             <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
               Engraving: {data.engraving.type}
+            </h4>
+          )}
+          {data.color && (
+            <h4 className="font-[400] text-[14px] pt-[3px] text-[#534723] font-Roboto">
+              Color: {data.color.name}
             </h4>
           )}
           <br />

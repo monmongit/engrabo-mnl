@@ -237,6 +237,7 @@ async function updateItemStock(id, qty) {
   }
 }
 // Refund an order of user
+// Refund an order of user
 router.put(
   '/order-refund/:id',
   catchAsyncError(async (req, res, next) => {
@@ -248,6 +249,12 @@ router.put(
       }
 
       order.status = req.body.status;
+
+      if (req.body.status === 'Refund Approved') {
+        for (let item of order.cart) {
+          await refundItemStock(item, item.qty);
+        }
+      }
 
       await order.save({ validateBeforeSave: false });
 
@@ -344,11 +351,16 @@ async function updateItemStock(item, qty) {
     return;
   }
 
-  // Deduct stock for specific size or engraving if present
+  let lowStockMessage = '';
+
+  // Deduct stock for specific size, engraving, or color if present
   if (item.size) {
     const size = product.sizes.find((s) => s.name === item.size.name);
     if (size) {
       size.stock -= qty;
+      if (size.stock <= 5) {
+        lowStockMessage = `The stock for product "${product.name}" size "${size.name}" is low. Current stock: ${size.stock}`;
+      }
     }
   } else if (item.engraving) {
     const engraving = product.engravings.find(
@@ -356,13 +368,41 @@ async function updateItemStock(item, qty) {
     );
     if (engraving) {
       engraving.stock -= qty;
+      if (engraving.stock <= 5) {
+        lowStockMessage = `The stock for product "${product.name}" engraving "${engraving.type}" is low. Current stock: ${engraving.stock}`;
+      }
+    }
+  } else if (item.color) {
+    const color = product.colors.find((c) => c.name === item.color.name);
+    if (color) {
+      color.stock -= qty;
+      if (color.stock <= 5) {
+        lowStockMessage = `The stock for product "${product.name}" color "${color.name}" is low. Current stock: ${color.stock}`;
+      }
     }
   } else {
-    // Deduct stock from main product if no size or engraving
+    // Deduct stock from main product if no size, engraving, or color
     product.stock -= qty;
+    if (product.stock <= 5) {
+      lowStockMessage = `The stock for product "${product.name}" is low. Current stock: ${product.stock}`;
+    }
   }
 
   await product.save({ validateBeforeSave: false });
+
+  // Send low stock alert email if needed
+  if (lowStockMessage) {
+    const admin = await Admin.findOne(); // Assuming there's a single admin, modify if multiple admins
+    if (admin) {
+      const lowStockHtml = getEmailTemplate(lowStockMessage);
+      await sendMail({
+        email: admin.email,
+        subject: 'Low Stock Alert',
+        message: lowStockMessage,
+        html: lowStockHtml,
+      });
+    }
+  }
 }
 
 // Refund for admin side
@@ -406,11 +446,16 @@ async function refundItemStock(item, qty) {
     return;
   }
 
-  // Add stock for specific size or engraving if present
+  let lowStockMessage = '';
+
+  // Add stock for specific size, engraving, or color if present
   if (item.size) {
     const size = product.sizes.find((s) => s.name === item.size.name);
     if (size) {
       size.stock += qty;
+      if (size.stock <= 5) {
+        lowStockMessage = `The stock for product "${product.name}" size "${size.name}" is low. Current stock: ${size.stock}`;
+      }
     }
   } else if (item.engraving) {
     const engraving = product.engravings.find(
@@ -418,13 +463,41 @@ async function refundItemStock(item, qty) {
     );
     if (engraving) {
       engraving.stock += qty;
+      if (engraving.stock <= 5) {
+        lowStockMessage = `The stock for product "${product.name}" engraving "${engraving.type}" is low. Current stock: ${engraving.stock}`;
+      }
+    }
+  } else if (item.color) {
+    const color = product.colors.find((c) => c.name === item.color.name);
+    if (color) {
+      color.stock += qty;
+      if (color.stock <= 5) {
+        lowStockMessage = `The stock for product "${product.name}" color "${color.name}" is low. Current stock: ${color.stock}`;
+      }
     }
   } else {
-    // Add stock to main product if no size or engraving
+    // Add stock to main product if no size, engraving, or color
     product.stock += qty;
+    if (product.stock <= 5) {
+      lowStockMessage = `The stock for product "${product.name}" is low. Current stock: ${product.stock}`;
+    }
   }
 
   await product.save({ validateBeforeSave: false });
+
+  // Send low stock alert email if needed
+  if (lowStockMessage) {
+    const admin = await Admin.findOne(); // Assuming there's a single admin, modify if multiple admins
+    if (admin) {
+      const lowStockHtml = getEmailTemplate(lowStockMessage);
+      await sendMail({
+        email: admin.email,
+        subject: 'Low Stock Alert',
+        message: lowStockMessage,
+        html: lowStockHtml,
+      });
+    }
+  }
 }
 
 router.post(

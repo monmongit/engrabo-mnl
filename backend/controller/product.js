@@ -316,6 +316,7 @@ router.put(
         sizes: req.body.sizes,
         engravings: req.body.engravings,
         mediaType: req.body.mediaType,
+        color: req.body.color,
       };
 
       const updatedProduct = await Product.findByIdAndUpdate(

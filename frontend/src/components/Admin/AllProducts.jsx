@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllProductsAdmin, deleteProduct } from '../../redux/action/product';
-import { getAllCategories, deleteCategory } from '../../redux/action/category';
-import { useNavigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllProductsAdmin, deleteProduct } from "../../redux/action/product";
+import { getAllCategories, deleteCategory } from "../../redux/action/category";
+import { useNavigate } from "react-router-dom";
 // import { makeStyles } from "@mui/styles";
 
 import {
@@ -10,24 +10,25 @@ import {
   AiOutlineEye,
   AiOutlineEdit,
   AiOutlineSearch,
-} from 'react-icons/ai';
-import Button from '@mui/material/Button';
-import Loader from '../Layout/Loader';
-import { DataGrid, GridOverlay } from '@mui/x-data-grid';
-import { toast } from 'react-toastify';
-import CreateProduct from './CreateProduct';
-import UpdateProduct from './UpdateProduct';
-import CreateCategory from './CreateCategories';
-import styles from '../../styles/style';
-import { VscNewFile } from 'react-icons/vsc';
+} from "react-icons/ai";
+import Button from "@mui/material/Button";
+import Loader from "../Layout/Loader";
+import { DataGrid, GridOverlay } from "@mui/x-data-grid";
+import { toast } from "react-toastify";
+import CreateProduct from "./CreateProduct";
+import UpdateProduct from "./UpdateProduct";
+import CreateCategory from "./CreateCategories";
+import UpdateCategory from "./UpdateCategory";
+import styles from "../../styles/style";
+import { VscNewFile } from "react-icons/vsc";
 
 const AllProducts = () => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editProductId, setEditProductId] = useState(null);
+  const [editItemId, setEditItemId] = useState(null);
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState('Product');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState("Product");
   const { products, isLoading: loadingProducts } = useSelector(
     (state) => state.products
   );
@@ -38,9 +39,9 @@ const AllProducts = () => {
   const { admin } = useSelector((state) => state.admin);
 
   const fetchData = useCallback(() => {
-    if (viewMode === 'Product') {
+    if (viewMode === "Product") {
       dispatch(getAllProductsAdmin(admin._id));
-    } else if (viewMode === 'Category') {
+    } else if (viewMode === "Category") {
       dispatch(getAllCategories(admin._id));
     }
   }, [viewMode, dispatch, admin._id]);
@@ -56,13 +57,13 @@ const AllProducts = () => {
 
   useEffect(() => {
     const newPath =
-      viewMode === 'Product' ? '/dashboard-products' : '/dashboard-categories';
-    window.history.pushState({}, '', newPath);
+      viewMode === "Product" ? "/dashboard-products" : "/dashboard-categories";
+    window.history.pushState({}, "", newPath);
     fetchData();
   }, [viewMode, fetchData]);
 
   const handleDelete = async (id) => {
-    if (viewMode === 'Product') {
+    if (viewMode === "Product") {
       await dispatch(deleteProduct(id));
     } else {
       await dispatch(deleteCategory(id));
@@ -72,7 +73,7 @@ const AllProducts = () => {
   };
 
   const handleEdit = (id) => {
-    setEditProductId(id);
+    setEditItemId(id);
     setEditOpen(true);
   };
 
@@ -84,36 +85,35 @@ const AllProducts = () => {
   );
 
   const columns = [
-    { field: 'id', headerName: `${viewMode} ID`, minWidth: 150, flex: 0.5 },
+    { field: "id", headerName: `${viewMode} ID`, minWidth: 150, flex: 0.5 },
     {
-      field: 'name',
+      field: "name",
       headerName: <span className="header-name">Name</span>,
       minWidth: 180,
       flex: 1,
     },
-    ...(viewMode === 'Product'
+    ...(viewMode === "Product"
       ? [
           {
-            field: 'grossprice',
-
+            field: "grossprice",
             headerName: <span className="header-name">Gross Price</span>,
             minWidth: 100,
             flex: 0.5,
           },
           {
-            field: 'price',
+            field: "price",
             headerName: <span className="header-name">Selling Price</span>,
             minWidth: 100,
             flex: 0.5,
           },
           {
-            field: 'discount',
+            field: "discount",
             headerName: <span className="header-name">Discounted Price</span>,
             minWidth: 100,
             flex: 0.5,
           },
           {
-            field: 'stock',
+            field: "stock",
             headerName: <span className="header-name">Stock</span>,
             minWidth: 50,
             flex: 0.5,
@@ -159,8 +159,8 @@ const AllProducts = () => {
       ),
     },
     {
-      field: 'Delete',
-      headerName: 'Delete',
+      field: "Delete",
+      headerName: "Delete",
       minWidth: 130,
       flex: 0.3,
       renderHeader: () => <div className="header-cell">Delete</div>,
@@ -168,7 +168,7 @@ const AllProducts = () => {
         <Button
           variant="contained"
           color="error"
-          style={{ marginRight: '10px' }} // Add margin to the right
+          style={{ marginRight: "10px" }} // Add margin to the right
           onClick={() => handleDelete(params.row.id)}
         >
           <AiOutlineDelete size={20} />
@@ -179,7 +179,7 @@ const AllProducts = () => {
   ];
 
   const rows =
-    viewMode === 'Product'
+    viewMode === "Product"
       ? filteredProducts.map((item) => ({
           id: item._id,
           name: item.name,
@@ -188,7 +188,7 @@ const AllProducts = () => {
           discount:
             item.discountPrice !== null
               ? `₱ ${item.discountPrice}`
-              : 'No Discount',
+              : "No Discount",
           stock: item.stock,
           sold: item?.sold_out,
         }))
@@ -198,7 +198,7 @@ const AllProducts = () => {
         }));
 
   const isLoading =
-    viewMode === 'Product' ? loadingProducts : loadingCategories;
+    viewMode === "Product" ? loadingProducts : loadingCategories;
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -208,12 +208,12 @@ const AllProducts = () => {
     <>
       <div
         className="w-full sm:px-8 pt-1 mt-10 bg-white overflow-x-auto"
-        style={{ marginBottom: '100px', borderRadius: '10px' }}
+        style={{ marginBottom: "100px", borderRadius: "10px" }}
       >
         <div className="mx-4">
           <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-4 mt-2">
             <div className="w-full sm:w-52 mb-3 sm:mb-0">
-              {' '}
+              {" "}
               {/* Adjust width here */}
               <select
                 className="h-10 sm:h-[45px] border-2 border-solid border-[#171203] rounded-md p-2 shadow-md bg-white text-black mr-0 sm:mr-8 mb-3 sm:mb-0 mt-0 transition ease-in-out duration-300 focus:border-[#171203] focus:outline-none hover:border-[#171203] hover:ring-[#171203] hover:ring-1"
@@ -242,7 +242,7 @@ const AllProducts = () => {
               />
             </div>
             <div className="flex flex-col sm:flex-row">
-              {' '}
+              {" "}
               {/* Wrap buttons in a flex container */}
               <div
                 className={`${styles.button} w-max h-10 px-4 rounded-md mb-3 ml-2 bg-[#171203] hover:bg-[#171203] text-white flex items-center justify-center transition ease-in-out duration-300 cursor-pointer`}
@@ -256,7 +256,7 @@ const AllProducts = () => {
             </div>
           </div>
           <div className="w-full overflow-x-auto mb-10">
-            {' '}
+            {" "}
             <DataGrid
               rows={rows}
               columns={columns}
@@ -267,27 +267,24 @@ const AllProducts = () => {
             />
             {open && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                {viewMode === 'Product' ? (
+                {viewMode === "Product" ? (
                   <CreateProduct setOpen={setOpen} />
                 ) : (
                   <CreateCategory setOpen={setOpen} />
                 )}
               </div>
             )}
-            {editOpen && viewMode === 'Product' && (
+            {editOpen && viewMode === "Product" && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <UpdateProduct
-                  setOpen={setEditOpen}
-                  productId={editProductId}
-                />
+                <UpdateProduct setOpen={setEditOpen} productId={editItemId} />
+              </div>
+            )}
+            {editOpen && viewMode === "Category" && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <UpdateCategory setOpen={setEditOpen} categoryId={editItemId} />
               </div>
             )}
           </div>
-          {editOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-              <UpdateProduct setOpen={setEditOpen} productId={editProductId} />
-            </div>
-          )}
         </div>
       </div>
     </>

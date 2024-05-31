@@ -82,6 +82,14 @@ const ProfileContent = ({ active }) => {
     reader.readAsDataURL(e.target.files[0]);
   };
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className="w-full">
       {/* Profile Content */}
@@ -90,7 +98,10 @@ const ProfileContent = ({ active }) => {
           {/* Image and Change Image */}
           <div
             className="w-full min-h-screen flex flex-col items-center"
-            style={{ marginBottom: "100px" }}
+            style={{
+              marginBottom: "100px",
+              ...(isMobile ? { marginTop: "60px", marginLeft: "-9px" } : {}),
+            }}
           >
             <div className="p-4 flex w-full bg-white lg:w-[50%] flex-col justify-center ml-4 my-5 bg-[#171203] rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
               <div className="w-full flex items-center justify-center"></div>
@@ -262,8 +273,9 @@ const AllOrders = () => {
   const { user } = useSelector((state) => state.user);
   const { orders, isLoading } = useSelector((state) => state.order);
   const dispatch = useDispatch();
-  const [statusFilter, setStatusFilter] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
     dispatch(getAllOrdersOfUser(user._id));
@@ -359,8 +371,10 @@ const AllOrders = () => {
         marginBottom: "100px",
         borderRadius: "10px",
         marginLeft: "auto",
-        marginRight: isMobile ? "36px" : "auto", // Apply margin-right only on mobile
+        marginRight: "auto", // Apply margin-right only on mobile
         maxWidth: "90%",
+
+        ...(isMobile ? { marginTop: "100px", marginLeft: "15px" } : {}),
       }}
     >
       <div className="mx-4">
@@ -615,11 +629,22 @@ const ChangePassword = () => {
       toast.error(error.response.data.message);
     }
   };
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <>
       <div
         className="w-full min-h-screen flex flex-col items-center"
-        style={{ marginBottom: "100px" }}
+        style={{
+          ...(isMobile ? { marginTop: "80px", marginLeft: "-9px" } : {}),
+        }}
       >
         <div className="p-4 flex w-full bg-white lg:w-[50%] flex-col justify-center ml-4 my-5 bg-[#171203] rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
           <div className="w-full flex items-center justify-center"></div>
@@ -978,6 +1003,9 @@ const Address = () => {
         </h1>
         <div
           className={`${styles.button}  mt-4 !rounded-[4px] !h-11 hover:opacity-95 transition duration-300 ease-in-out`}
+          style={{
+            ...(isMobile ? { marginTop: "100px", marginLeft: "-9px" } : {}),
+          }}
           onClick={() => setOpen(true)}
         >
           <span className="text-[#fff4d7]">Add New</span>

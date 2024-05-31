@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { AiOutlineArrowRight } from "react-icons/ai";
-import { Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllOrdersOfAdmin } from "../../redux/action/order";
-import { getAllProductsAdmin } from "../../redux/action/product";
-import { getAllUsers } from "../../redux/action/user";
-import { Button, MenuItem, Select } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import { IoBagHandle, IoPieChart, IoPeople, IoCart } from "react-icons/io5";
-import Chart from "react-apexcharts";
+import React, { useEffect, useState } from 'react';
+import { AiOutlineArrowRight } from 'react-icons/ai';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllOrdersOfAdmin } from '../../redux/action/order';
+import { getAllProductsAdmin } from '../../redux/action/product';
+import { getAllUsers } from '../../redux/action/user';
+import { Button, MenuItem, Select } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import { IoBagHandle, IoPieChart, IoPeople, IoCart } from 'react-icons/io5';
+import Chart from 'react-apexcharts';
 
 const DashboardHero = () => {
   const dispatch = useDispatch();
@@ -17,8 +17,8 @@ const DashboardHero = () => {
   const { usersList } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
   const [deliveredOrder, setDeliveredOrder] = useState(null);
-  const [selectedMonth1, setSelectedMonth1] = useState("");
-  const [selectedMonth2, setSelectedMonth2] = useState("");
+  const [selectedMonth1, setSelectedMonth1] = useState('');
+  const [selectedMonth2, setSelectedMonth2] = useState('');
   const [comparisonData, setComparisonData] = useState(null);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const DashboardHero = () => {
 
   useEffect(() => {
     const orderData =
-      orders && orders.filter((item) => item.status === "Delivered");
+      orders && orders.filter((item) => item.status === 'Delivered');
     setDeliveredOrder(orderData);
   }, [orders]);
 
@@ -58,14 +58,14 @@ const DashboardHero = () => {
   }, [selectedMonth1, selectedMonth2, orders, products]);
 
   const computeComparisonData = (month, orders, products) => {
-    const [year, monthIndex] = month.split("-");
+    const [year, monthIndex] = month.split('-');
     const sales = orders
       .filter((order) => {
         const paidAt = new Date(order.paidAt);
         return (
           paidAt.getFullYear() === parseInt(year) &&
           paidAt.getMonth() === parseInt(monthIndex) &&
-          order.status === "Delivered"
+          order.status === 'Delivered'
         );
       })
       .reduce((acc, order) => acc + order.totalPrice, 0);
@@ -96,6 +96,12 @@ const DashboardHero = () => {
             0
           );
           productExpense = sizeExpenses + engravingExpenses;
+        } else if (product.colors && product.colors.length > 0) {
+          productExpense = product.colors.reduce(
+            (colorAcc, color) =>
+              colorAcc + (color.stock || 0) * (product.grossPrice || 0),
+            0
+          );
         } else {
           productExpense = (product.stock || 0) * (product.grossPrice || 0);
         }
@@ -115,7 +121,7 @@ const DashboardHero = () => {
       return (
         paidAt.getFullYear() === parseInt(year) &&
         paidAt.getMonth() === parseInt(monthIndex) &&
-        order.status === "Delivered"
+        order.status === 'Delivered'
       );
     }).length;
 
@@ -148,9 +154,9 @@ const DashboardHero = () => {
   };
 
   const formatMonthYear = (month) => {
-    const [year, monthIndex] = month.split("-");
+    const [year, monthIndex] = month.split('-');
     const date = new Date(year, monthIndex, 1);
-    return date.toLocaleString("en-US", { month: "long", year: "numeric" });
+    return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
   };
 
   const renderComparisonCharts = () => {
@@ -165,62 +171,64 @@ const DashboardHero = () => {
 
     const dailySalesExpensesSeries = [
       {
-        name: formatMonthYear(selectedMonth1) + " Sales",
+        name: formatMonthYear(selectedMonth1) + ' Sales',
         data: dailySeries1.sales,
       },
       {
-        name: formatMonthYear(selectedMonth1) + " Expenses",
+        name: formatMonthYear(selectedMonth1) + ' Expenses',
         data: dailySeries1.expenses,
       },
       {
-        name: formatMonthYear(selectedMonth2) + " Sales",
+        name: formatMonthYear(selectedMonth2) + ' Sales',
         data: dailySeries2.sales,
       },
       {
-        name: formatMonthYear(selectedMonth2) + " Expenses",
+        name: formatMonthYear(selectedMonth2) + ' Expenses',
         data: dailySeries2.expenses,
       },
     ];
 
     const dailyOrdersDeliveredSeries = [
       {
-        name: formatMonthYear(selectedMonth1) + " Total Orders",
+        name: formatMonthYear(selectedMonth1) + ' Total Orders',
         data: dailySeries1.orders,
       },
       {
-        name: formatMonthYear(selectedMonth1) + " Delivered Orders",
+        name: formatMonthYear(selectedMonth1) + ' Delivered Orders',
         data: dailySeries1.delivered,
       },
       {
-        name: formatMonthYear(selectedMonth2) + " Total Orders",
+        name: formatMonthYear(selectedMonth2) + ' Total Orders',
         data: dailySeries2.orders,
       },
       {
-        name: formatMonthYear(selectedMonth2) + " Delivered Orders",
+        name: formatMonthYear(selectedMonth2) + ' Delivered Orders',
         data: dailySeries2.delivered,
       },
     ];
 
     const chartOptions = {
       chart: {
-        type: "line",
+        type: 'line',
       },
       stroke: {
         width: 2,
-        curve: "smooth",
+        curve: 'smooth',
       },
       xaxis: {
         categories: dailyCategories,
       },
       yaxis: {
         title: {
-          text: "Amount (₱)",
+          text: 'Amount (₱)',
         },
       },
       tooltip: {
         y: {
           formatter: function (val) {
-            return '₱' + (val ? val.toFixed(2) : '0.00');
+            return (
+              '₱' + val.toLocaleString('en-US', { minimumFractionDigits: 2 })
+            );
           },
         },
       },
@@ -258,7 +266,7 @@ const DashboardHero = () => {
   };
 
   const generateDailyCategories = (month) => {
-    const [year, monthIndex] = month.split("-");
+    const [year, monthIndex] = month.split('-');
     const date = new Date(year, monthIndex, 1);
     const daysInMonth = new Date(
       date.getFullYear(),
@@ -273,7 +281,7 @@ const DashboardHero = () => {
   };
 
   const generateDailySeries = (month, orders, products) => {
-    const [year, monthIndex] = month.split("-");
+    const [year, monthIndex] = month.split('-');
     const salesData = [];
     const expensesData = [];
     const ordersData = [];
@@ -288,7 +296,7 @@ const DashboardHero = () => {
             paidAt.getFullYear() === parseInt(year) &&
             paidAt.getMonth() === parseInt(monthIndex) &&
             paidAt.getDate() === i &&
-            order.status === "Delivered"
+            order.status === 'Delivered'
           );
         })
         .reduce((acc, order) => acc + order.totalPrice, 0);
@@ -321,6 +329,12 @@ const DashboardHero = () => {
               0
             );
             productExpense = sizeExpenses + engravingExpenses;
+          } else if (product.colors && product.colors.length > 0) {
+            productExpense = product.colors.reduce(
+              (colorAcc, color) =>
+                colorAcc + (color.stock || 0) * (product.grossPrice || 0),
+              0
+            );
           } else {
             productExpense = (product.stock || 0) * (product.grossPrice || 0);
           }
@@ -344,7 +358,7 @@ const DashboardHero = () => {
           paidAt.getFullYear() === parseInt(year) &&
           paidAt.getMonth() === parseInt(monthIndex) &&
           paidAt.getDate() === i &&
-          order.status === "Delivered"
+          order.status === 'Delivered'
         );
       }).length;
       deliveredData.push(dayDeliveredOrders);
@@ -375,7 +389,10 @@ const DashboardHero = () => {
             </span>
             <div className="flex items-center">
               <strong className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-semibold">
-                ₱ {availableBalance.toFixed(2)}
+                ₱{' '}
+                {availableBalance.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })}
               </strong>
             </div>
           </div>
@@ -390,7 +407,10 @@ const DashboardHero = () => {
             </span>
             <div className="flex items-center">
               <strong className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 font-semibold">
-                ₱ {totalExpenses.toFixed(2)}
+                ₱{' '}
+                {totalExpenses.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                })}
               </strong>
             </div>
           </div>
@@ -436,7 +456,7 @@ const DashboardHero = () => {
 
       <div className="mt-4 p-4 bg-[#171203] mb-4 rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
         <h3 className="text-[22px] font-Poppins pb-2 text-white">
-          {" "}
+          {' '}
           Compare Data
         </h3>
       </div>
@@ -487,7 +507,10 @@ const DashboardHero = () => {
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
                       <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
-                        ₱ {comparisonData.data1.sales.toFixed(2)}
+                        ₱{' '}
+                        {comparisonData.data1.sales.toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                        })}
                       </span>
                     </strong>
                   </div>
@@ -497,19 +520,25 @@ const DashboardHero = () => {
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
                       <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
-                        ₱ {comparisonData.data2.sales.toFixed(2)}
+                        ₱{' '}
+                        {comparisonData.data2.sales.toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                        })}
                       </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
-                    Difference of {formatMonthYear(selectedMonth1)} and{" "}
+                    Difference of {formatMonthYear(selectedMonth1)} and{' '}
                     {formatMonthYear(selectedMonth2)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
                       <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
-                        ₱{" "}
-                        {comparisonData.differences.salesDifference.toFixed(2)}
+                        ₱{' '}
+                        {comparisonData.differences.salesDifference.toLocaleString(
+                          'en-US',
+                          { minimumFractionDigits: 2 }
+                        )}
                       </span>
                     </strong>
                   </div>
@@ -522,7 +551,7 @@ const DashboardHero = () => {
                   <Chart
                     options={{
                       chart: {
-                        type: "pie",
+                        type: 'pie',
                       },
                       labels: [
                         formatMonthYear(selectedMonth1),
@@ -550,7 +579,10 @@ const DashboardHero = () => {
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
                       <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
-                        ₱ {comparisonData.data1.expenses.toFixed(2)}
+                        ₱{' '}
+                        {comparisonData.data1.expenses.toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                        })}
                       </span>
                     </strong>
                   </div>
@@ -560,20 +592,24 @@ const DashboardHero = () => {
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
                       <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
-                        ₱ {comparisonData.data2.expenses.toFixed(2)}
+                        ₱{' '}
+                        {comparisonData.data2.expenses.toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                        })}
                       </span>
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
-                    Difference of {formatMonthYear(selectedMonth1)} and{" "}
+                    Difference of {formatMonthYear(selectedMonth1)} and{' '}
                     {formatMonthYear(selectedMonth2)}
                   </span>
                   <div className="flex items-center">
                     <strong className="text-xl text-gray-700 font-semibold">
                       <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
-                        ₱{" "}
-                        {comparisonData.differences.expensesDifference.toFixed(
-                          2
+                        ₱{' '}
+                        {comparisonData.differences.expensesDifference.toLocaleString(
+                          'en-US',
+                          { minimumFractionDigits: 2 }
                         )}
                       </span>
                     </strong>
@@ -586,7 +622,7 @@ const DashboardHero = () => {
                   <Chart
                     options={{
                       chart: {
-                        type: "pie",
+                        type: 'pie',
                       },
                       labels: [
                         formatMonthYear(selectedMonth1),
@@ -628,7 +664,7 @@ const DashboardHero = () => {
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
-                    Difference of {formatMonthYear(selectedMonth1)} and{" "}
+                    Difference of {formatMonthYear(selectedMonth1)} and{' '}
                     {formatMonthYear(selectedMonth2)}
                   </span>
                   <div className="flex items-center">
@@ -646,7 +682,7 @@ const DashboardHero = () => {
                   <Chart
                     options={{
                       chart: {
-                        type: "pie",
+                        type: 'pie',
                       },
                       labels: [
                         formatMonthYear(selectedMonth1),
@@ -688,7 +724,7 @@ const DashboardHero = () => {
                     </strong>
                   </div>
                   <span className="text-sm text-gray-500 font-light">
-                    Difference of {formatMonthYear(selectedMonth1)} and{" "}
+                    Difference of {formatMonthYear(selectedMonth1)} and{' '}
                     {formatMonthYear(selectedMonth2)}
                   </span>
                   <div className="flex items-center">
@@ -709,7 +745,7 @@ const DashboardHero = () => {
                   <Chart
                     options={{
                       chart: {
-                        type: "pie",
+                        type: 'pie',
                       },
                       labels: [
                         formatMonthYear(selectedMonth1),
@@ -733,13 +769,13 @@ const DashboardHero = () => {
 
       <div className="mt-4 p-4 bg-[#171203] mb-4 rounded-lg shadow-lg hover:shadow-xl hover:border-white border border-transparent transition duration-300">
         <h3 className="text-[22px] font-Poppins pb-2 text-white">
-          {" "}
+          {' '}
           Latest Orders
         </h3>
       </div>
       <div
         className="w-full min-h-[40vh] bg-white rounded "
-        style={{ marginBottom: "100px" }}
+        style={{ marginBottom: '100px' }}
       >
         <DataGrid
           rows={row}
@@ -782,6 +818,12 @@ const computeTotalExpenses = (products) => {
           engravingAcc + (engraving.stock || 0) * (engraving.grossPrice || 0),
         0
       );
+    } else if (product.colors && product.colors.length > 0) {
+      productExpense = product.colors.reduce(
+        (colorAcc, color) =>
+          colorAcc + (color.stock || 0) * (product.grossPrice || 0),
+        0
+      );
     } else {
       productExpense = (product.stock || 0) * (product.grossPrice || 0);
     }
@@ -793,36 +835,36 @@ const computeTotalExpenses = (products) => {
 
 const ordersDashboard = (orders) => {
   const columns = [
-    { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
+    { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
     {
-      field: "status",
-      headerName: "Status",
+      field: 'status',
+      headerName: 'Status',
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.row.status === "Delivered" ? "greenColor" : "redColor";
+        return params.row.status === 'Delivered' ? 'greenColor' : 'redColor';
       },
     },
     {
-      field: "itemsQty",
-      headerName: "Items Qty",
-      type: "number",
+      field: 'itemsQty',
+      headerName: 'Items Qty',
+      type: 'number',
       minWidth: 130,
       flex: 0.7,
     },
     {
-      field: "total",
-      headerName: "Total",
-      type: "number",
+      field: 'total',
+      headerName: 'Total',
+      type: 'number',
       minWidth: 130,
       flex: 0.8,
     },
     {
-      field: " ",
+      field: ' ',
       flex: 1,
       minWidth: 150,
-      headerName: "",
-      type: "number",
+      headerName: '',
+      type: 'number',
       sortable: false,
       renderCell: (params) => {
         return (
@@ -846,7 +888,9 @@ const ordersDashboard = (orders) => {
       row.push({
         id: item._id,
         itemsQty: item.cart.reduce((acc, item) => acc + item.qty, 0),
-        total: "₱ " + item.totalPrice,
+        total:
+          '₱ ' +
+          item.totalPrice.toLocaleString('en-US', { minimumFractionDigits: 2 }),
         status: item.status,
       });
     });
@@ -856,7 +900,7 @@ const ordersDashboard = (orders) => {
 
 const transactionChart = (orders, products) => {
   if (!orders || !orders.length) {
-    console.log("orders data not available");
+    console.log('orders data not available');
   }
 
   const currentDate = new Date();
@@ -880,7 +924,7 @@ const transactionChart = (orders, products) => {
     const year = paidAt.getFullYear();
     const key = `${year}-${month}`;
 
-    if (order.status === "Delivered") {
+    if (order.status === 'Delivered') {
       monthlySales[key].sales += order.totalPrice;
       monthlySales[key].delivered_orders++;
     }
@@ -905,6 +949,12 @@ const transactionChart = (orders, products) => {
           engravingAcc + (engraving.stock || 0) * (engraving.grossPrice || 0),
         0
       );
+    } else if (product.colors && product.colors.length > 0) {
+      productExpenses = product.colors.reduce(
+        (colorAcc, color) =>
+          colorAcc + (color.stock || 0) * (product.grossPrice || 0),
+        0
+      );
     } else {
       productExpenses = (product.stock || 0) * (product.grossPrice || 0);
     }
@@ -920,14 +970,17 @@ const transactionChart = (orders, products) => {
   });
 
   const formattedData = Object.values(monthlySales).map((item) => ({
-    month: new Date(item.year, item.month, 1).toLocaleString("en-US", {
-      month: "long",
+    month: new Date(item.year, item.month, 1).toLocaleString('en-US', {
+      month: 'long',
     }),
-    sales: item.sales.toFixed(2),
+    sales: item.sales.toLocaleString('en-US', { minimumFractionDigits: 2 }),
     orders: item.orders,
     delivered_orders: item.delivered_orders,
     expenses: monthlyExpenses[`${item.year}-${item.month}`]
-      ? monthlyExpenses[`${item.year}-${item.month}`].expenses.toFixed(2)
+      ? monthlyExpenses[`${item.year}-${item.month}`].expenses.toLocaleString(
+          'en-US',
+          { minimumFractionDigits: 2 }
+        )
       : '0.00',
   }));
 
@@ -941,51 +994,55 @@ const transactionChart = (orders, products) => {
 
 const MyChartComponentSales = (formattedData) => {
   const categories = formattedData.map((item) => item.month);
-  const salesData = formattedData.map((item) => parseFloat(item.sales));
-  const expensesData = formattedData.map((item) => parseFloat(item.expenses));
+  const salesData = formattedData.map((item) =>
+    parseFloat(item.sales.replace(/,/g, ''))
+  );
+  const expensesData = formattedData.map((item) =>
+    parseFloat(item.expenses.replace(/,/g, ''))
+  );
 
-  const [fontSize, setFontSize] = useState("18px");
+  const [fontSize, setFontSize] = useState('18px');
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 400) {
-        setFontSize("12px");
+        setFontSize('12px');
       } else if (window.innerWidth < 576) {
-        setFontSize("14px");
+        setFontSize('14px');
       } else if (window.innerWidth < 768) {
-        setFontSize("16px");
+        setFontSize('16px');
       } else {
-        setFontSize("18px");
+        setFontSize('18px');
       }
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     handleResize(); // Call handler right away so state gets updated with initial window size
 
-    return () => window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
   const options = {
     chart: {
-      type: "bar",
+      type: 'bar',
     },
     title: {
-      text: "Sales and Expenses By Month",
-      align: "center",
+      text: 'Sales and Expenses By Month',
+      align: 'center',
       margin: 10,
       offsetX: 0,
       offsetY: 0,
       floating: false,
       style: {
         fontSize: fontSize,
-        fontWeight: "bold",
-        color: "#333",
+        fontWeight: 'bold',
+        color: '#333',
       },
     },
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "55%",
-        endingShape: "rounded",
+        columnWidth: '55%',
+        endingShape: 'rounded',
       },
     },
     dataLabels: {
@@ -994,22 +1051,22 @@ const MyChartComponentSales = (formattedData) => {
     stroke: {
       show: true,
       width: 2,
-      colors: ["transparent"],
+      colors: ['transparent'],
     },
     xaxis: {
       categories: categories,
     },
     yaxis: {
       title: {
-        text: "Amount (₱)",
+        text: 'Amount (₱)',
       },
     },
     tooltip: {
       y: {
         formatter: function (val) {
-
-          return '₱' + (val ? val.toFixed(2) : '0.00');
-
+          return (
+            '₱' + val.toLocaleString('en-US', { minimumFractionDigits: 2 })
+          );
         },
       },
     },
@@ -1017,14 +1074,14 @@ const MyChartComponentSales = (formattedData) => {
 
   const series = [
     {
-      name: "Sales",
+      name: 'Sales',
       data: salesData,
-      color: "#228B22",
+      color: '#228B22',
     },
     {
-      name: "Expenses",
+      name: 'Expenses',
       data: expensesData,
-      color: "#B22222",
+      color: '#B22222',
     },
   ];
 
@@ -1049,49 +1106,49 @@ const MyChartComponentOrders = (formattedData) => {
   );
 
   //RESPONSIVENESS OF TITLE CHART
-  const [fontSize, setFontSize] = useState("18px");
+  const [fontSize, setFontSize] = useState('18px');
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 400) {
-        setFontSize("12px");
+        setFontSize('12px');
       } else if (window.innerWidth < 576) {
-        setFontSize("14px");
+        setFontSize('14px');
       } else if (window.innerWidth < 768) {
-        setFontSize("16px");
+        setFontSize('16px');
       } else {
-        setFontSize("18px");
+        setFontSize('18px');
       }
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     handleResize(); // Call handler right away so state gets updated with initial window size
 
-    return () => window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const options = {
     chart: {
-      type: "bar",
+      type: 'bar',
     },
     title: {
-      text: "Total Orders and Delivered Orders By Month",
-      align: "center",
+      text: 'Total Orders and Delivered Orders By Month',
+      align: 'center',
       margin: 10,
       offsetX: 0,
       offsetY: 0,
       floating: false,
       style: {
         fontSize: fontSize,
-        fontWeight: "bold",
-        color: "#333",
+        fontWeight: 'bold',
+        color: '#333',
       },
     },
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "55%",
-        endingShape: "rounded",
+        columnWidth: '55%',
+        endingShape: 'rounded',
       },
     },
     dataLabels: {
@@ -1100,14 +1157,14 @@ const MyChartComponentOrders = (formattedData) => {
     stroke: {
       show: true,
       width: 2,
-      colors: ["transparent"],
+      colors: ['transparent'],
     },
     xaxis: {
       categories: categories,
     },
     yaxis: {
       title: {
-        text: "# of Orders",
+        text: '# of Orders',
       },
     },
     tooltip: {
@@ -1121,14 +1178,14 @@ const MyChartComponentOrders = (formattedData) => {
 
   const series = [
     {
-      name: "Total Orders",
+      name: 'Total Orders',
       data: total_orders,
-      color: "#000080",
+      color: '#000080',
     },
     {
-      name: "Delivered Orders",
+      name: 'Delivered Orders',
       data: delivered_orders,
-      color: "#FFA500",
+      color: '#FFA500',
     },
   ];
 
@@ -1152,8 +1209,8 @@ const getMonthOptions = () => {
 
   for (let year = currentYear - 5; year <= currentYear; year++) {
     for (let month = 0; month < 12; month++) {
-      const monthLabel = new Date(year, month, 1).toLocaleString("en-US", {
-        month: "long",
+      const monthLabel = new Date(year, month, 1).toLocaleString('en-US', {
+        month: 'long',
       });
       options.push({
         value: `${year}-${month}`,

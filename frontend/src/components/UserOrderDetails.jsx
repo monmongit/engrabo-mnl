@@ -46,7 +46,7 @@ const UserOrderDetails = () => {
   };
 
   const data = orders && orders.find((item) => item._id === id);
-  console.log("data in user order details compoent: ", data);
+  console.log('data in user order details compoent: ', data);
 
   const reviewHandler = async (e) => {
     await axios
@@ -146,6 +146,11 @@ const UserOrderDetails = () => {
                   Engraving: {item.engraving.type}
                 </h5>
               )}
+              {item.color && (
+                <h5 className="pl-3 text-[15px] text-[#534723]">
+                  Color: {item.color.name}
+                </h5>
+              )}
               <h5 className="pl-3 text-[15px] text-[#534723]">
                 Sub Total: ₱ {item.subTotal.toFixed(2)}
               </h5>
@@ -207,6 +212,11 @@ const UserOrderDetails = () => {
                 {selectedItem.engraving && (
                   <h5 className="pl-3 text-[15px] text-[#534723]">
                     Engraving: {selectedItem.engraving.type}
+                  </h5>
+                )}
+                {selectedItem.color && (
+                  <h5 className="pl-3 text-[15px] text-[#534723]">
+                    Color: {selectedItem.color.name}
                   </h5>
                 )}
                 <h5 className="pl-3 text-[15px] text-[#534723]">
@@ -387,7 +397,7 @@ const UserOrderDetails = () => {
 };
 
 const orderCustomDesign = (data) => {
-  console.log("order custom design ", data[0].url);
+  console.log('order custom design ', data[0].url);
 
   return (
     <>

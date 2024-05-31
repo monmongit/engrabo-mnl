@@ -30,6 +30,8 @@ const UpdateProduct = ({ setOpen, productId }) => {
   const [sizes, setSizes] = useState([]);
   const [engravings, setEngravings] = useState([]);
   const [mediaType, setMediaType] = useState('none');
+  const [bundles, setBundles] = useState([]);
+  const [colors, setColors] = useState([]);
 
   useEffect(() => {
     dispatch(getAllCategories());
@@ -52,6 +54,8 @@ const UpdateProduct = ({ setOpen, productId }) => {
       setSizes(product.sizes || []);
       setEngravings(product.engravings || []);
       setMediaType(product.mediaType || 'none');
+      setBundles(product.bundles || []);
+      setColors(product.colors || []);
     }
   }, [product]);
 
@@ -66,21 +70,6 @@ const UpdateProduct = ({ setOpen, productId }) => {
       window.location.reload();
     }
   }, [dispatch, error, success, navigate, setOpen]);
-
-  const handleImageChange = (e) => {
-    e.preventDefault();
-    const files = Array.from(e.target.files);
-    setImages([]);
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setImages((old) => [...old, { url: reader.result }]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  };
 
   const handleAddSize = () => {
     setSizes([
@@ -126,6 +115,59 @@ const UpdateProduct = ({ setOpen, productId }) => {
     setEngravings(newEngravings);
   };
 
+  const handleAddBundle = () => {
+    setBundles([...bundles, { name: '', stock: '' }]);
+  };
+
+  const handleBundleChange = (index, field, value) => {
+    const newBundles = bundles.map((bundle, i) => {
+      if (i === index) {
+        return { ...bundle, [field]: value };
+      }
+      return bundle;
+    });
+    setBundles(newBundles);
+  };
+
+  const handleDeleteBundle = (index) => {
+    const newBundles = bundles.filter((_, i) => i !== index);
+    setBundles(newBundles);
+  };
+
+  const handleAddColor = () => {
+    setColors([...colors, { name: '', stock: '' }]);
+  };
+
+  const handleColorChange = (index, field, value) => {
+    const newColors = colors.map((color, i) => {
+      if (i === index) {
+        return { ...color, [field]: value };
+      }
+      return color;
+    });
+    setColors(newColors);
+  };
+
+  const handleDeleteColor = (index) => {
+    const newColors = colors.filter((_, i) => i !== index);
+    setColors(newColors);
+  };
+
+  const handleImageChange = (e) => {
+    e.preventDefault();
+    const files = Array.from(e.target.files);
+    setImages([]);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setImages((old) => [...old, { url: reader.result }]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const updatedProduct = {
@@ -144,6 +186,8 @@ const UpdateProduct = ({ setOpen, productId }) => {
       instructions,
       sizes,
       engravings,
+      bundles,
+      colors,
       mediaType,
     };
 
@@ -192,8 +236,10 @@ const UpdateProduct = ({ setOpen, productId }) => {
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter your product description..."
+              disabled={sizes.length > 0 || engravings.length > 0}
             ></textarea>
           </div>
+
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Details <span className="text-red-500">*</span>
@@ -206,9 +252,10 @@ const UpdateProduct = ({ setOpen, productId }) => {
               value={details}
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setDetails(e.target.value)}
-              placeholder="Enter your product description..."
+              placeholder="Enter your product details..."
             ></textarea>
           </div>
+
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
               Category <span className="text-red-500">*</span>
@@ -218,7 +265,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              <option value="">Choose a category</option>
+              <option value="Choose a category">Choose a category</option>
               {categories &&
                 categories.map((i) => (
                   <option value={i.title} key={i.title}>
@@ -251,6 +298,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setGrossPrice(e.target.value)}
               placeholder="Enter your product gross price..."
+              disabled={sizes.length > 0 || engravings.length > 0}
             />
           </div>
           <div>
@@ -264,6 +312,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setOriginalPrice(e.target.value)}
               placeholder="Enter your product selling price..."
+              disabled={sizes.length > 0 || engravings.length > 0}
             />
           </div>
           <div>
@@ -291,6 +340,7 @@ const UpdateProduct = ({ setOpen, productId }) => {
               className="block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setStock(e.target.value)}
               placeholder="Enter your product stock..."
+              disabled={sizes.length > 0 || engravings.length > 0}
             />
           </div>
           <div>
@@ -350,64 +400,69 @@ const UpdateProduct = ({ setOpen, productId }) => {
               <FaPlus className="mr-2" /> Add Size
             </button>
             {sizes.map((size, index) => (
-              <div key={index} className="mt-2 flex flex-wrap">
-                <input
-                  type="text"
-                  placeholder="Size name"
-                  value={size.name}
-                  onChange={(e) =>
-                    handleSizeChange(index, 'name', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Size gross price"
-                  value={size.grossPrice}
-                  onChange={(e) =>
-                    handleSizeChange(index, 'grossPrice', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Size price"
-                  value={size.price}
-                  onChange={(e) =>
-                    handleSizeChange(index, 'price', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Size stock"
-                  value={size.stock}
-                  onChange={(e) =>
-                    handleSizeChange(index, 'stock', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Size description"
-                  value={size.description}
-                  onChange={(e) =>
-                    handleSizeChange(index, 'description', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => handleDeleteSize(index)}
-                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
-                >
-                  <FaTrash />
-                </button>
+              <div key={index} className="mt-2 flex flex-wrap items-start">
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="text"
+                    placeholder="Size name"
+                    value={size.name}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'name', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Size gross price"
+                    value={size.grossPrice}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'grossPrice', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="number"
+                    placeholder="Size price"
+                    value={size.price}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'price', e.target.value)
+                    }
+                    className=" w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Size stock"
+                    value={size.stock}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'stock', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <div className="w-full flex flex-wrap">
+                  <textarea
+                    placeholder="Size description"
+                    value={size.description}
+                    onChange={(e) =>
+                      handleSizeChange(index, 'description', e.target.value)
+                    }
+                    className="800px:w-[97%] w-full px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  ></textarea>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSize(index)}
+                    className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -423,60 +478,157 @@ const UpdateProduct = ({ setOpen, productId }) => {
               <FaPlus className="mr-2" /> Add Engraving
             </button>
             {engravings.map((engraving, index) => (
+              <div key={index} className="mt-2 flex flex-wrap items-start">
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="text"
+                    placeholder="Engraving type"
+                    value={engraving.type}
+                    onChange={(e) =>
+                      handleEngravingChange(index, 'type', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Engraving gross price"
+                    value={engraving.grossPrice}
+                    onChange={(e) =>
+                      handleEngravingChange(index, 'grossPrice', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="number"
+                    placeholder="Engraving price"
+                    value={engraving.price}
+                    onChange={(e) =>
+                      handleEngravingChange(index, 'price', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Engraving stock"
+                    value={engraving.stock}
+                    onChange={(e) =>
+                      handleEngravingChange(index, 'stock', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <div className="w-full flex flex-wrap">
+                  <textarea
+                    placeholder="Engraving description"
+                    value={engraving.description}
+                    onChange={(e) =>
+                      handleEngravingChange(
+                        index,
+                        'description',
+                        e.target.value
+                      )
+                    }
+                    className="800px:w-[97%] w-full px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  ></textarea>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteEngraving(index)}
+                    className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Bundles
+            </label>
+            <button
+              type="button"
+              onClick={handleAddBundle}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Bundle
+            </button>
+            {bundles.map((bundle, index) => (
               <div key={index} className="mt-2 flex flex-wrap">
                 <input
                   type="text"
-                  placeholder="Engraving type"
-                  value={engraving.type}
+                  placeholder="Bundle name"
+                  value={bundle.name}
                   onChange={(e) =>
-                    handleEngravingChange(index, 'type', e.target.value)
+                    handleBundleChange(index, 'name', e.target.value)
                   }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
                   required
                 />
                 <input
                   type="number"
-                  placeholder="Engraving gross price"
-                  value={engraving.grossPrice}
+                  placeholder="Bundle stock"
+                  value={bundle.stock}
                   onChange={(e) =>
-                    handleEngravingChange(index, 'grossPrice', e.target.value)
+                    handleBundleChange(index, 'stock', e.target.value)
                   }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Engraving price"
-                  value={engraving.price}
-                  onChange={(e) =>
-                    handleEngravingChange(index, 'price', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="number"
-                  placeholder="Engraving stock"
-                  value={engraving.stock}
-                  onChange={(e) =>
-                    handleEngravingChange(index, 'stock', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Engraving description"
-                  value={engraving.description}
-                  onChange={(e) =>
-                    handleEngravingChange(index, 'description', e.target.value)
-                  }
-                  className="flex-1 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
                   required
                 />
                 <button
                   type="button"
-                  onClick={() => handleDeleteEngraving(index)}
+                  onClick={() => handleDeleteBundle(index)}
+                  className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-800 mb-2">
+              Colors
+            </label>
+            <button
+              type="button"
+              onClick={handleAddColor}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
+            >
+              <FaPlus className="mr-2" /> Add Color
+            </button>
+            {colors.map((color, index) => (
+              <div key={index} className="mt-2 flex flex-wrap items-start">
+                <div className="w-full flex flex-wrap">
+                  <input
+                    type="text"
+                    placeholder="Color name"
+                    value={color.name}
+                    onChange={(e) =>
+                      handleColorChange(index, 'name', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Color stock"
+                    value={color.stock}
+                    onChange={(e) =>
+                      handleColorChange(index, 'stock', e.target.value)
+                    }
+                    className="w-full 800px:w-[48%] px-4 py-2 mb-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mr-2"
+                    required
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteColor(index)}
                   className="bg-red-500 hover:bg-red-700 text-white p-2 rounded-lg ml-2"
                 >
                   <FaTrash />

@@ -58,6 +58,36 @@ router.get(
   })
 );
 
+// Get Category Details
+router.get(
+  '/category/:id',
+  catchAsyncError(async (req, res, next) => {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return next(new ErrorHandler('Category not found', 404));
+    }
+    res.status(200).json({
+      success: true,
+      category,
+    });
+  })
+);
+
+// Get Category by ID
+router.get(
+  '/:id',
+  catchAsyncError(async (req, res, next) => {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return next(new ErrorHandler('Category not found', 404));
+    }
+    res.status(200).json({
+      success: true,
+      category,
+    });
+  })
+);
+
 // Update Category
 router.put(
   '/update-category/:id',
