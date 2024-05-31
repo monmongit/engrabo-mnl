@@ -251,6 +251,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const handleMouseDown = (e) => {
+    e.evt.preventDefault();
     if (tool === 'pen' || tool === 'eraser') {
       setIsDrawing(true);
       const pos = e.target.getStage().getPointerPosition();
@@ -274,6 +275,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
   };
 
   const handleMouseMove = (e) => {
+    e.evt.preventDefault();
     if (!isDrawing) return;
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
@@ -303,7 +305,8 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
     }
   };
 
-  const handleMouseUp = () => {
+  const handleMouseUp = (e) => {
+    e.evt.preventDefault();
     setIsDrawing(false);
     setTempShape(null);
   };
@@ -546,7 +549,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
       <div
         className={`grid ${
           isMobile
-            ? 'grid-cols-1 h-[90%] overflow-y-scroll'
+            ? ' h-[90%] w-[100%] overflow-y-scroll'
             : 'grid-cols-2 lg:grid-cols-3'
         } p-4 bg-slate-500 rounded-md gap-2`}
       >
@@ -848,11 +851,15 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
               width={window.innerWidth * 0.9}
               height={window.innerHeight * 0.7}
               onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
+              onTouchStart={tool === 'text' ? handleTextAdd : handleMouseDown}
               onMousemove={handleMouseMove}
+              onTouchMove={handleMouseMove}
               onMouseup={handleMouseUp}
+              onTouchEnd={handleMouseUp}
               ref={stageRef}
               className="bg-white border rounded border-black"
               onClick={handleSelect}
+              onTap={handleSelect} // For touch devices
             >
               <Layer>
                 {lines.map((line, i) => (
