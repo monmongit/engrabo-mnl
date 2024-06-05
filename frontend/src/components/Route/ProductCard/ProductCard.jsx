@@ -15,6 +15,7 @@ import {
 import { toast } from 'react-toastify';
 import { addTocart } from '../../../redux/action/cart';
 import Ratings from '../../Products/Ratings';
+import outOfstock from '../../../assets/Logo/out-of-stock.png';
 
 const ProductCard = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -109,8 +110,8 @@ const ProductCard = ({ data, isEvent }) => {
 
   return (
     <>
-      <div className="w-60 p-2 bg-white rounded-xl transform transition-all hover:translate-y-2 duration-300 shadow-lg hover:shadow-2xl mt-4 mb-4 lg:mt-0">
-        <div className="w-full h-40 overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75">
+      <div className="w-60 p-2 bg-white rounded-xl transform transition-all hover:translate-y-2 duration-300 shadow-lg hover:shadow-2xl mt-4 mb-4 lg:mt-0 relative">
+        <div className="w-full h-40 overflow-hidden rounded-md bg-gray-200 group-hover:opacity-75 relative">
           <Link
             to={`${
               isEvent === true
@@ -124,6 +125,11 @@ const ProductCard = ({ data, isEvent }) => {
               className="w-full h-full object-cover object-center"
             />
           </Link>
+          {data.stock === 0 && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <img src={outOfstock} alt="Out of Stock" className="w-120" />
+            </div>
+          )}
         </div>
 
         {/* product information */}
