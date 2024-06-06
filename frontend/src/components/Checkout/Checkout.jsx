@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../../styles/style';
 import { Country, State, City } from 'country-state-city';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
 import axios from 'axios';
 import { server } from '../../server';
 import { toast } from 'react-toastify';
@@ -181,14 +180,9 @@ const Checkout = () => {
             couponCode={couponCode}
             setCouponCode={setCouponCode}
             discountPercentenge={discountPercentenge}
+            paymentSubmit={paymentSubmit}
           />
         </div>
-      </div>
-      <div
-        className={`${styles.button} w-[150px] 800px:w-[280px] mt-10`}
-        onClick={paymentSubmit}
-      >
-        <h5 className="text-white">Go to Payment</h5>
       </div>
     </div>
   );
@@ -383,7 +377,7 @@ const ShippingInfo = ({
         <div>
           {user &&
             user.addresses.map((item, index) => (
-              <div className="w-full flex mt-1">
+              <div className="w-full flex mt-1" key={index}>
                 <input
                   type="checkbox"
                   className="mr-3 !text-[#171203]"
@@ -414,6 +408,7 @@ const CartData = ({
   couponCode,
   setCouponCode,
   discountPercentenge,
+  paymentSubmit,
 }) => {
   return (
     <div
@@ -442,7 +437,7 @@ const CartData = ({
         <input
           type="text"
           className="mt-2 appearance-none block w-full px-3 h-[45px] border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
-          placeholder="Coupoun code"
+          placeholder="Coupon code"
           value={couponCode}
           onChange={(e) => setCouponCode(e.target.value)}
           required
@@ -454,6 +449,12 @@ const CartData = ({
           type="submit"
         />
       </form>
+      <div
+        className={`${styles.button} w-[150px] 800px:w-[280px] mt-10`}
+        onClick={paymentSubmit}
+      >
+        <h5 className="text-white">Go to Payment</h5>
+      </div>
     </div>
   );
 };
