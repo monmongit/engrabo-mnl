@@ -15,7 +15,6 @@ const Wishlist = ({ setOpenWishlist }) => {
 
   const removeFromWishlistHandler = (data) => {
     dispatch(removeFromWishlist(data));
-    toast.error(`${data.name} removed to wishlist successfully!`);
   };
 
   const addToCartHandler = (data) => {
@@ -24,7 +23,18 @@ const Wishlist = ({ setOpenWishlist }) => {
     if (itemInCart) {
       toast.error(`${data.name} already in the cart!`);
     } else {
-      const newData = { ...data, qty: 1 };
+      const newData = {
+        ...data,
+        qty: 1,
+        price:
+          data.selectedSize?.price ??
+          data.selectedEngraving?.price ??
+          data.selectedColor?.price ??
+          (data.discountPrice > 0 ? data.discountPrice : data.originalPrice),
+        size: data.selectedSize,
+        engraving: data.selectedEngraving,
+        color: data.selectedColor,
+      };
       dispatch(addTocart(newData));
       dispatch(removeFromWishlist(data));
       setOpenWishlist(false);
@@ -88,8 +98,23 @@ const Wishlist = ({ setOpenWishlist }) => {
 
 const CartSingle = ({ data, removeFromWishlistHandler, addToCartHandler }) => {
   const [value] = useState(1);
-  console.log(data.originalPrice);
-  const totalPrice = data.originalPrice * value;
+
+  // Determine the price based on selected options
+  const selectedPrice =
+    data.selectedSize?.price ??
+    data.selectedEngraving?.price ??
+    data.selectedColor?.price ??
+    (data.discountPrice > 0 ? data.discountPrice : data.originalPrice);
+
+  // Determine the stock based on selected options
+  const selectedStock =
+    data.selectedSize?.stock ??
+    data.selectedEngraving?.stock ??
+    data.selectedColor?.stock ??
+    data.stock;
+
+  const totalPrice = selectedPrice * value;
+
   return (
     <div className="border-b p-4 border-[#d8c68f]">
       <div className="w-full flex items-center">
@@ -99,22 +124,26 @@ const CartSingle = ({ data, removeFromWishlistHandler, addToCartHandler }) => {
           onClick={() => removeFromWishlistHandler(data)}
         />
         {/* Image Product */}
-        <img
-          src={`${data?.images[0]?.url}`}
-          alt=""
-          className="w-[130px] h-min ml-2 rounded-[5px]"
-        />
+        {data.images && data.images.length > 0 && (
+          <img
+            src={data.images[0].url}
+            alt={data.name}
+            className="w-[130px] h-min ml-2 rounded-[5px]"
+          />
+        )}
 
         {/* Price and Details of Product */}
         <div className="pl-[10px] w-[50%] ">
           <h1 className="text-[17px]">
-            {data.name.length > 15 ? data.name.slice(0, 15) + '...' : data.name}
+            {data.name && data.name.length > 15
+              ? `${data.name.slice(0, 15)}...`
+              : data.name}
           </h1>
           <h4 className="font-[600] text-[17px] pt-[3px] text-[#171203] font-Roboto">
-            ₱ {totalPrice}
+            ₱ {isNaN(totalPrice) ? 'N/A' : totalPrice}
           </h4>
           <h4 className="font-[400] text-[17px] pt-[3px] text-[#534723] font-Roboto">
-            Stocks: {data.stock}
+            Stocks: {selectedStock ?? 'N/A'}
           </h4>
         </div>
         <div>
