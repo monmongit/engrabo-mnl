@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RxCross1 } from 'react-icons/rx';
 import styles from '../../styles/style';
 import { BsCartPlus } from 'react-icons/bs';
 import { AiOutlineHeart } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeFromWishlist } from '../../redux/action/wishlist';
+import {
+  removeFromWishlist,
+  getUserWishlist,
+} from '../../redux/action/wishlist';
 import { addTocart } from '../../redux/action/cart';
 import { toast } from 'react-toastify';
 
 const Wishlist = ({ setOpenWishlist }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getUserWishlist(user._id));
+    }
+  }, [dispatch, user]);
 
   const removeFromWishlistHandler = (data) => {
     dispatch(removeFromWishlist(data));
@@ -43,8 +53,8 @@ const Wishlist = ({ setOpenWishlist }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10 ">
-      <div className="fixed top-0 right-0 h-[100vh] w-[70%] 800px:w-[25%] bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm overflow-y-scroll hide-scrollbar ">
+    <div className="fixed top-0 left-0 w-full bg-[#0000004b] h-screen z-10">
+      <div className="fixed top-0 right-0 h-[100vh] w-[70%] 800px:w-[25%] bg-gradient-to-r from-[#e9d18e] to-[#fff4d7] flex flex-col justify-between shadow-sm overflow-y-scroll hide-scrollbar">
         {wishlist && wishlist.length === 0 ? (
           <div className="w-full h-screen flex items-center justify-center">
             <div className="flex w-full justify-end pt-5 pr-5 fixed top-3 right-3">

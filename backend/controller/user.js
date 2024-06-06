@@ -490,11 +490,10 @@ router.put(
 // Get all user by admin
 router.get(
   '/admin-all-users/:userID',
-  // isAuthenticated,
   isAdmin,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const users = await User.find().sort({
+      const users = await User.find().populate('wishlist').sort({
         createdAt: -1,
       });
       res.status(201).json({
@@ -588,7 +587,7 @@ router.post(
   '/add-to-wishlist',
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).populate('wishlist');
     const { productId } = req.body;
 
     if (!user) {
@@ -596,7 +595,7 @@ router.post(
     }
 
     const alreadyInWishlist = user.wishlist.find(
-      (item) => item.toString() === productId
+      (item) => item._id.toString() === productId
     );
 
     if (alreadyInWishlist) {
@@ -620,7 +619,7 @@ router.post(
   '/remove-from-wishlist',
   isAuthenticated,
   catchAsyncErrors(async (req, res, next) => {
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.user.id).populate('wishlist');
     const { productId } = req.body;
 
     if (!user) {
@@ -628,7 +627,7 @@ router.post(
     }
 
     user.wishlist = user.wishlist.filter(
-      (item) => item.toString() !== productId
+      (item) => item._id.toString() !== productId
     );
     await user.save();
 
@@ -637,6 +636,21 @@ router.post(
     res.status(200).json({
       success: true,
       wishlist: populatedUser.wishlist,
+    });
+  })
+);
+
+// Get User Wishlist
+router.get(
+  '/user/:userId/wishlist',
+  catchAsyncErrors(async (req, res, next) => {
+    const user = await User.findById(req.params.userId).populate('wishlist');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(200).json({
+      success: true,
+      wishlist: user.wishlist,
     });
   })
 );

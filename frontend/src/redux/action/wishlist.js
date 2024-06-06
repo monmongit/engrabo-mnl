@@ -85,3 +85,23 @@ export const removeFromWishlist = (data) => async (dispatch, getState) => {
     toast.error(error.response.data.message);
   }
 };
+
+// Get User Wishlist
+export const getUserWishlist = (userId) => async (dispatch) => {
+  try {
+    dispatch({ type: 'getUserWishlistRequest' });
+
+    const { data } = await axios.get(`${server}/user/${userId}/wishlist`);
+
+    dispatch({
+      type: 'getUserWishlistSuccess',
+      payload: data.wishlist,
+    });
+  } catch (error) {
+    dispatch({
+      type: 'getUserWishlistFail',
+      payload: error.response.data.message,
+    });
+    toast.error(error.response.data.message);
+  }
+};

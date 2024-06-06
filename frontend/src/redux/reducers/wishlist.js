@@ -45,5 +45,19 @@ export const wishlistReducer = createReducer(initialState, (builder) => {
     })
     .addCase('removeFromWishlist', (state, action) => {
       state.wishlist = state.wishlist.filter((i) => i._id !== action.payload);
+    })
+    .addCase('getUserWishlistRequest', (state) => {
+      state.loading = true;
+    })
+    .addCase('getUserWishlistSuccess', (state, action) => {
+      state.loading = false;
+      state.wishlist = action.payload;
+    })
+    .addCase('getUserWishlistFail', (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase('clearWishlist', (state) => {
+      state.wishlist = [];
     });
 });
