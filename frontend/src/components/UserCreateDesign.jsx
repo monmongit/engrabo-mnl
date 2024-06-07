@@ -549,7 +549,7 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
       <div
         className={`grid ${
           isMobile
-            ? ' h-[90%] w-[100%] overflow-y-scroll'
+            ? 'grid-cols-1 h-[90%] overflow-y-scroll'
             : 'grid-cols-2 lg:grid-cols-3'
         } p-4 bg-slate-500 rounded-md gap-2`}
       >
@@ -846,232 +846,236 @@ const UserCreateDesign = ({ data, setDrawingInfo, setOpen, setUrls }) => {
             isMobile ? 'h-[60vh] overflow-y-scroll' : 'lg:col-span-2'
           }`}
         >
-          <div className="h-full w-full">
-            <Stage
-              width={window.innerWidth * 0.9}
-              height={window.innerHeight * 0.7}
-              onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
-              onTouchStart={tool === 'text' ? handleTextAdd : handleMouseDown}
-              onMousemove={handleMouseMove}
-              onTouchMove={handleMouseMove}
-              onMouseup={handleMouseUp}
-              onTouchEnd={handleMouseUp}
-              ref={stageRef}
-              className="bg-white border rounded border-black"
-              onClick={handleSelect}
-              onTap={handleSelect} // For touch devices
-            >
-              <Layer>
-                {lines.map((line, i) => (
-                  <Line
-                    key={i}
-                    id={`line${i}`}
-                    points={line.points}
-                    stroke={line.tool === 'pen' ? 'black' : 'white'}
-                    strokeWidth={5}
-                    tension={0.5}
-                    lineCap="round"
-                    globalCompositeOperation={
-                      line.tool === 'eraser' ? 'destination-out' : 'source-over'
+          <div className="h-full w-full overflow-hidden">
+            <div className="h-full w-full relative">
+              <Stage
+                width={window.innerWidth * 0.9}
+                height={window.innerHeight * 0.7}
+                onMouseDown={tool === 'text' ? handleTextAdd : handleMouseDown}
+                onTouchStart={tool === 'text' ? handleTextAdd : handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onTouchMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onTouchEnd={handleMouseUp}
+                ref={stageRef}
+                className="bg-white border rounded border-black"
+                onClick={handleSelect}
+                onTap={handleSelect} // For touch devices
+              >
+                <Layer>
+                  {lines.map((line, i) => (
+                    <Line
+                      key={i}
+                      id={`line${i}`}
+                      points={line.points}
+                      stroke={line.tool === 'pen' ? 'black' : 'white'}
+                      strokeWidth={5}
+                      tension={0.5}
+                      lineCap="round"
+                      globalCompositeOperation={
+                        line.tool === 'eraser'
+                          ? 'destination-out'
+                          : 'source-over'
+                      }
+                    />
+                  ))}
+                  {shapes.map((shape, i) => {
+                    if (shape.tool === 'rectangle') {
+                      return (
+                        <Rect
+                          key={i}
+                          id={`rect${i}`}
+                          x={shape.points[0]}
+                          y={shape.points[1]}
+                          width={shape.points[2] - shape.points[0]}
+                          height={shape.points[3] - shape.points[1]}
+                          stroke="black"
+                          draggable
+                          onClick={handleSelect}
+                          onTap={handleSelect} // For touch devices
+                        />
+                      );
+                    } else if (shape.tool === 'circle') {
+                      const radius = Math.sqrt(
+                        Math.pow(shape.points[2] - shape.points[0], 2) +
+                          Math.pow(shape.points[3] - shape.points[1], 2)
+                      );
+                      return (
+                        <Circle
+                          key={i}
+                          id={`circle${i}`}
+                          x={shape.points[0]}
+                          y={shape.points[1]}
+                          radius={radius}
+                          stroke="black"
+                          draggable
+                          onClick={handleSelect}
+                          onTap={handleSelect} // For touch devices
+                        />
+                      );
+                    } else if (shape.tool === 'line') {
+                      return (
+                        <Line
+                          key={i}
+                          id={`line${i}`}
+                          points={shape.points}
+                          stroke="black"
+                          strokeWidth={2}
+                          lineCap="round"
+                          draggable
+                          onClick={handleSelect}
+                          onTap={handleSelect} // For touch devices
+                        />
+                      );
+                    } else if (shape.tool === 'arrow') {
+                      return (
+                        <Arrow
+                          key={i}
+                          id={`arrow${i}`}
+                          points={shape.points}
+                          stroke="black"
+                          strokeWidth={2}
+                          lineCap="round"
+                          draggable
+                          onClick={handleSelect}
+                          onTap={handleSelect} // For touch devices
+                        />
+                      );
+                    } else if (shape.tool === 'star') {
+                      return (
+                        <Star
+                          key={i}
+                          id={`star${i}`}
+                          x={shape.points[0]}
+                          y={shape.points[1]}
+                          numPoints={5}
+                          innerRadius={(shape.points[2] - shape.points[0]) / 2}
+                          outerRadius={(shape.points[3] - shape.points[1]) / 2}
+                          stroke="black"
+                          draggable
+                          onClick={handleSelect}
+                          onTap={handleSelect} // For touch devices
+                        />
+                      );
+                    } else if (shape.tool === 'polygon') {
+                      return (
+                        <RegularPolygon
+                          key={i}
+                          id={`polygon${i}`}
+                          x={shape.points[0]}
+                          y={shape.points[1]}
+                          sides={6}
+                          radius={Math.sqrt(
+                            Math.pow(shape.points[2] - shape.points[0], 2) +
+                              Math.pow(shape.points[3] - shape.points[1], 2)
+                          )}
+                          stroke="black"
+                          draggable
+                          onClick={handleSelect}
+                          onTap={handleSelect} // For touch devices
+                        />
+                      );
+                    } else if (shape.tool === 'heart') {
+                      return (
+                        <Path
+                          key={i}
+                          id={`heart${i}`}
+                          data={drawHeartPath(
+                            shape.points[0],
+                            shape.points[1],
+                            shape.points[2],
+                            shape.points[3]
+                          )}
+                          stroke="black"
+                          draggable
+                          onClick={handleSelect}
+                          onTap={handleSelect} // For touch devices
+                        />
+                      );
                     }
-                  />
-                ))}
-                {shapes.map((shape, i) => {
-                  if (shape.tool === 'rectangle') {
-                    return (
-                      <Rect
-                        key={i}
-                        id={`rect${i}`}
-                        x={shape.points[0]}
-                        y={shape.points[1]}
-                        width={shape.points[2] - shape.points[0]}
-                        height={shape.points[3] - shape.points[1]}
-                        stroke="black"
-                        draggable
-                        onClick={handleSelect}
-                        onTap={handleSelect} // For touch devices
-                      />
-                    );
-                  } else if (shape.tool === 'circle') {
-                    const radius = Math.sqrt(
-                      Math.pow(shape.points[2] - shape.points[0], 2) +
-                        Math.pow(shape.points[3] - shape.points[1], 2)
-                    );
-                    return (
-                      <Circle
-                        key={i}
-                        id={`circle${i}`}
-                        x={shape.points[0]}
-                        y={shape.points[1]}
-                        radius={radius}
-                        stroke="black"
-                        draggable
-                        onClick={handleSelect}
-                        onTap={handleSelect} // For touch devices
-                      />
-                    );
-                  } else if (shape.tool === 'line') {
-                    return (
-                      <Line
-                        key={i}
-                        id={`line${i}`}
-                        points={shape.points}
-                        stroke="black"
-                        strokeWidth={2}
-                        lineCap="round"
-                        draggable
-                        onClick={handleSelect}
-                        onTap={handleSelect} // For touch devices
-                      />
-                    );
-                  } else if (shape.tool === 'arrow') {
-                    return (
-                      <Arrow
-                        key={i}
-                        id={`arrow${i}`}
-                        points={shape.points}
-                        stroke="black"
-                        strokeWidth={2}
-                        lineCap="round"
-                        draggable
-                        onClick={handleSelect}
-                        onTap={handleSelect} // For touch devices
-                      />
-                    );
-                  } else if (shape.tool === 'star') {
-                    return (
-                      <Star
-                        key={i}
-                        id={`star${i}`}
-                        x={shape.points[0]}
-                        y={shape.points[1]}
-                        numPoints={5}
-                        innerRadius={(shape.points[2] - shape.points[0]) / 2}
-                        outerRadius={(shape.points[3] - shape.points[1]) / 2}
-                        stroke="black"
-                        draggable
-                        onClick={handleSelect}
-                        onTap={handleSelect} // For touch devices
-                      />
-                    );
-                  } else if (shape.tool === 'polygon') {
-                    return (
-                      <RegularPolygon
-                        key={i}
-                        id={`polygon${i}`}
-                        x={shape.points[0]}
-                        y={shape.points[1]}
-                        sides={6}
-                        radius={Math.sqrt(
-                          Math.pow(shape.points[2] - shape.points[0], 2) +
-                            Math.pow(shape.points[3] - shape.points[1], 2)
-                        )}
-                        stroke="black"
-                        draggable
-                        onClick={handleSelect}
-                        onTap={handleSelect} // For touch devices
-                      />
-                    );
-                  } else if (shape.tool === 'heart') {
-                    return (
-                      <Path
-                        key={i}
-                        id={`heart${i}`}
-                        data={drawHeartPath(
-                          shape.points[0],
-                          shape.points[1],
-                          shape.points[2],
-                          shape.points[3]
-                        )}
-                        stroke="black"
-                        draggable
-                        onClick={handleSelect}
-                        onTap={handleSelect} // For touch devices
-                      />
-                    );
-                  }
-                  return null;
-                })}
-                {tempShape && ['line', 'arrow'].includes(tempShape.tool) && (
-                  <Line
-                    points={tempShape.points}
-                    stroke="gray"
-                    strokeWidth={2}
-                    lineCap="round"
-                    dash={[4, 4]}
-                  />
-                )}
-                {tempShape && tempShape.tool === 'rectangle' && (
-                  <Rect
-                    x={tempShape.points[0]}
-                    y={tempShape.points[1]}
-                    width={tempShape.points[2] - tempShape.points[0]}
-                    height={tempShape.points[3] - tempShape.points[1]}
-                    stroke="gray"
-                    dash={[4, 4]}
-                  />
-                )}
-                {tempShape && tempShape.tool === 'circle' && (
-                  <Circle
-                    x={tempShape.points[0]}
-                    y={tempShape.points[1]}
-                    radius={Math.sqrt(
-                      Math.pow(tempShape.points[2] - tempShape.points[0], 2) +
-                        Math.pow(tempShape.points[3] - tempShape.points[1], 2)
-                    )}
-                    stroke="gray"
-                    dash={[4, 4]}
-                  />
-                )}
-                {tempShape && tempShape.tool === 'heart' && (
-                  <Path
-                    data={drawHeartPath(
-                      tempShape.points[0],
-                      tempShape.points[1],
-                      tempShape.points[2],
-                      tempShape.points[3]
-                    )}
-                    stroke="gray"
-                    dash={[4, 4]}
-                  />
-                )}
-                {texts.map((textItem, i) => (
-                  <Text
-                    key={i}
-                    id={textItem.id}
-                    text={textItem.text}
-                    x={textItem.x}
-                    y={textItem.y}
-                    fontSize={textItem.fontSize}
-                    fontFamily={textItem.fontFamily}
-                    fontStyle={textItem.fontStyle}
-                    textDecoration={textItem.textDecoration}
-                    draggable
-                    onClick={handleSelect}
-                    onTap={handleSelect} // For touch devices
-                    onDblClick={handleTextDblClick}
-                    onDblTap={handleTextDblClick} // For touch devices
-                    onChange={handleTextChange}
-                  />
-                ))}
-                {image && (
-                  <KonvaImage
-                    id="uploadedImage"
-                    image={image}
-                    x={pages[currentPageIndex].imageProps.x || 50}
-                    y={pages[currentPageIndex].imageProps.y || 50}
-                    width={pages[currentPageIndex].imageProps.width || 200}
-                    height={pages[currentPageIndex].imageProps.height || 200}
-                    scaleX={pages[currentPageIndex].imageProps.scaleX || 1}
-                    scaleY={pages[currentPageIndex].imageProps.scaleY || 1}
-                    draggable
-                    onClick={handleSelect}
-                    onTap={handleSelect} // For touch devices
-                  />
-                )}
-                <Transformer ref={transformerRef} />
-              </Layer>
-            </Stage>
+                    return null;
+                  })}
+                  {tempShape && ['line', 'arrow'].includes(tempShape.tool) && (
+                    <Line
+                      points={tempShape.points}
+                      stroke="gray"
+                      strokeWidth={2}
+                      lineCap="round"
+                      dash={[4, 4]}
+                    />
+                  )}
+                  {tempShape && tempShape.tool === 'rectangle' && (
+                    <Rect
+                      x={tempShape.points[0]}
+                      y={tempShape.points[1]}
+                      width={tempShape.points[2] - tempShape.points[0]}
+                      height={tempShape.points[3] - tempShape.points[1]}
+                      stroke="gray"
+                      dash={[4, 4]}
+                    />
+                  )}
+                  {tempShape && tempShape.tool === 'circle' && (
+                    <Circle
+                      x={tempShape.points[0]}
+                      y={tempShape.points[1]}
+                      radius={Math.sqrt(
+                        Math.pow(tempShape.points[2] - tempShape.points[0], 2) +
+                          Math.pow(tempShape.points[3] - tempShape.points[1], 2)
+                      )}
+                      stroke="gray"
+                      dash={[4, 4]}
+                    />
+                  )}
+                  {tempShape && tempShape.tool === 'heart' && (
+                    <Path
+                      data={drawHeartPath(
+                        tempShape.points[0],
+                        tempShape.points[1],
+                        tempShape.points[2],
+                        tempShape.points[3]
+                      )}
+                      stroke="gray"
+                      dash={[4, 4]}
+                    />
+                  )}
+                  {texts.map((textItem, i) => (
+                    <Text
+                      key={i}
+                      id={textItem.id}
+                      text={textItem.text}
+                      x={textItem.x}
+                      y={textItem.y}
+                      fontSize={textItem.fontSize}
+                      fontFamily={textItem.fontFamily}
+                      fontStyle={textItem.fontStyle}
+                      textDecoration={textItem.textDecoration}
+                      draggable
+                      onClick={handleSelect}
+                      onTap={handleSelect} // For touch devices
+                      onDblClick={handleTextDblClick}
+                      onDblTap={handleTextDblClick} // For touch devices
+                      onChange={handleTextChange}
+                    />
+                  ))}
+                  {image && (
+                    <KonvaImage
+                      id="uploadedImage"
+                      image={image}
+                      x={pages[currentPageIndex].imageProps.x || 50}
+                      y={pages[currentPageIndex].imageProps.y || 50}
+                      width={pages[currentPageIndex].imageProps.width || 200}
+                      height={pages[currentPageIndex].imageProps.height || 200}
+                      scaleX={pages[currentPageIndex].imageProps.scaleX || 1}
+                      scaleY={pages[currentPageIndex].imageProps.scaleY || 1}
+                      draggable
+                      onClick={handleSelect}
+                      onTap={handleSelect} // For touch devices
+                    />
+                  )}
+                  <Transformer ref={transformerRef} />
+                </Layer>
+              </Stage>
+            </div>
           </div>
         </div>
       </div>

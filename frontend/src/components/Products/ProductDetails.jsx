@@ -8,17 +8,18 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineFontSize,
-} from "react-icons/ai";
-import { server } from "../../server";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllProductsAdmin } from "../../redux/action/product";
-import { addToWishlist, removeFromWishlist } from "../../redux/action/wishlist";
-import { toast } from "react-toastify";
-import { addTocart } from "../../redux/action/cart";
-import Ratings from "./Ratings";
-import axios from "axios";
-import Modal from "react-modal";
-import UserCreateDesign from "../UserCreateDesign";
+} from 'react-icons/ai';
+import { server } from '../../server';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllProductsAdmin } from '../../redux/action/product';
+import { addToWishlist, removeFromWishlist } from '../../redux/action/wishlist';
+import { toast } from 'react-toastify';
+import { addTocart } from '../../redux/action/cart';
+import Ratings from './Ratings';
+import axios from 'axios';
+import Modal from 'react-modal';
+import UserCreateDesign from '../UserCreateDesign';
+import outOfstock from '../../assets/Logo/out-of-stock.png';
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -215,11 +216,22 @@ const ProductDetails = ({ data }) => {
             {/* Images of Product */}
             <div className="w-full md:w-1/2 flex flex-col items-center">
               {/* Image of Product Main */}
-              <img
-                src={`${data && data.images[select]?.url}`}
-                alt=""
-                className=" shadow-lg w-full h-1/2 aspect-square rounded-xl "
-              />
+              <div className="relative w-full h-auto">
+                <img
+                  src={`${data && data.images[select]?.url}`}
+                  alt=""
+                  className="shadow-lg w-full object-cover rounded-xl"
+                />
+                {data.stock === 0 && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <img
+                      src={outOfstock}
+                      alt="Out of Stock"
+                      className="w-120"
+                    />
+                  </div>
+                )}
+              </div>
 
               <div className="flex mt-4 space-x-2">
                 {/* Image of Product Choices */}

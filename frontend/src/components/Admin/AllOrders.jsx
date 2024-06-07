@@ -14,6 +14,7 @@ const AllOrders = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [filterType, setFilterType] = useState('id'); // State to manage the selected filter type
 
   useEffect(() => {
     dispatch(getAllOrdersOfAdmin(admin._id));
@@ -27,16 +28,30 @@ const AllOrders = () => {
     setStatusFilter(e.target.value);
   };
 
+  const handleFilterTypeChange = (e) => {
+    setFilterType(e.target.value);
+  };
+
   const filteredOrders =
     orders &&
     orders.filter((item) => {
-      const matchesSearch = item._id.includes(searchTerm);
+      const matchesSearch =
+        filterType === 'id'
+          ? item._id.includes(searchTerm)
+          : item.user.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === '' || item.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
 
   const columns = [
     { field: 'id', headerName: 'Order ID', minWidth: 150, flex: 0.7 },
+    {
+      field: 'user',
+      headerName: 'User',
+      type: 'text',
+      minWidth: 130,
+      flex: 0.7,
+    },
     {
       field: 'status',
       headerName: 'Status',
@@ -53,6 +68,7 @@ const AllOrders = () => {
       minWidth: 130,
       flex: 0.7,
     },
+
     {
       field: 'total',
       headerName: 'Total',
@@ -84,6 +100,7 @@ const AllOrders = () => {
     filteredOrders.forEach((item) => {
       row.push({
         id: item._id,
+        user: item.user.name,
         itemsQty: item.cart.length,
         total: '₱ ' + item.totalPrice,
         status: item.status,
@@ -102,9 +119,21 @@ const AllOrders = () => {
           <div className="mx-4">
             <div className="w-full flex justify-end items-center mb-4">
               <div className="relative w-full sm:w-[30%] mt-5">
+                <select
+                  className="h-10 sm:h-[45px] pl-4 pr-10 w-full border-2 border-solid border-[#171203] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:outline-none hover:border-[#171203] hover:ring-[#171203] hover:ring-1"
+                  value={filterType}
+                  onChange={handleFilterTypeChange}
+                >
+                  <option value="id">Filter by Order ID</option>
+                  <option value="name">Filter by User Name</option>
+                </select>
+              </div>
+              <div className="relative w-full sm:w-[30%] mt-5 ml-4">
                 <input
                   type="text"
-                  placeholder="Search Orders..."
+                  placeholder={`Search Orders by ${
+                    filterType === 'id' ? 'Order ID' : 'User Name'
+                  }...`}
                   className="h-10 sm:h-[45px] pl-4 pr-10 w-full border-2 border-solid border-[#171203] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:outline-none hover:border-[#171203] hover:ring-[#171203] hover:ring-1"
                   value={searchTerm}
                   onChange={handleSearchChange}

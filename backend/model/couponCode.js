@@ -6,30 +6,24 @@ const couponCodeSchema = new mongoose.Schema({
     required: [true, 'Please enter your coupon code name'],
     unique: true,
   },
-
   value: {
     type: Number,
     required: true,
   },
-
   minAmount: {
     type: Number,
   },
-
   adminId: {
     type: String,
     required: true,
   },
-
-  selectedProduct: {
-    type: String,
+  selectedProducts: {
+    type: [String], // Update to array
   },
-
   createAt: {
     type: Date,
     default: Date.now(),
   },
-
   expiresAt: {
     type: Date,
     required: [true, 'Please enter an expiry date for the coupon code'],

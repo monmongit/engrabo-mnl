@@ -31,6 +31,62 @@ router.post(
   })
 );
 
+router.post(
+  '/apply-coupon',
+
+  catchAsyncError(async (req, res, next) => {
+    const { couponCode, cart } = req.body;
+
+    const coupon = await CouponCode.findOne({ name: couponCode });
+
+    if (!coupon) {
+      return next(new ErrorHandler('Coupon code does not exist.', 404));
+    }
+
+    const today = new Date();
+    if (today > coupon.expiresAt) {
+      return next(new ErrorHandler('This coupon has expired.', 400));
+    }
+
+    if (
+      cart.reduce((acc, item) => acc + item.qty * item.price, 0) <
+      coupon.minAmount
+    ) {
+      return next(
+        new ErrorHandler(
+          `This coupon requires a minimum amount of ${coupon.minAmount}.`,
+          400
+        )
+      );
+    }
+
+    const selectedProductNames = coupon.selectedProducts;
+    const cartProductNames = cart.map((item) => item.name);
+
+    const isValid = selectedProductNames.every((productName) =>
+      cartProductNames.includes(productName)
+    );
+
+    if (!isValid) {
+      return next(
+        new ErrorHandler(
+          'This coupon is not applicable to the selected products in your cart.',
+          400
+        )
+      );
+    }
+
+    const discountValue =
+      (coupon.value / 100) *
+      cart.reduce((acc, item) => acc + item.qty * item.price, 0);
+
+    res.status(200).json({
+      success: true,
+      discountValue,
+    });
+  })
+);
+
 // get all coupons of a shop
 router.get(
   '/get-coupon/:id',
