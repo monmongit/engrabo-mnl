@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please enter your password'],
-    minLength: [6, 'Password should be at least 4 characters'],
+    minLength: [6, 'Password should be at least 6 characters'],
     select: false,
   },
   phoneNumber: {
@@ -62,6 +62,12 @@ const userSchema = new mongoose.Schema({
       required: true,
     },
   },
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,

@@ -14,6 +14,7 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from '../../../redux/action/wishlist';
+import outOfstock from '../../../assets/Logo/out-of-stock.png';
 
 const ProductDetailsCard = ({ setOpen, data }) => {
   const { cart } = useSelector((state) => state.cart);
@@ -21,7 +22,6 @@ const ProductDetailsCard = ({ setOpen, data }) => {
   const dispatch = useDispatch();
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
-  //const [select, setSelect] = useState(false);
 
   const handleMessageSubmit = () => {};
 
@@ -72,7 +72,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
   const removeFromWishlistHandler = (data) => {
     setClick(!click);
     dispatch(removeFromWishlist(data));
-    toast.error(`${data.name} already removed in a wishlist!`);
+    toast.error(`${data.name} already removed from wishlist!`);
   };
 
   const addToWishlistHandler = (data) => {
@@ -94,13 +94,24 @@ const ProductDetailsCard = ({ setOpen, data }) => {
               color="#171203"
             />
             <div className="block w-full 800px:flex">
-              <div className="w-full 800px:w-[50%]">
+              <div className="w-full 800px:w-[50%] relative">
                 {/* Image of the Product View */}
-                <img
-                  src={`${data.images && data.images[0]?.url}`}
-                  alt=""
-                  className="w-[400px] h-[400px] 800px:pt-0 pt-5"
-                />
+                <div className="relative w-full h-[400px]">
+                  <img
+                    src={`${data.images && data.images[0]?.url}`}
+                    alt=""
+                    className="w-full h-full object-cover object-center"
+                  />
+                  {data.stock === 0 && (
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                      <img
+                        src={outOfstock}
+                        alt="Out of Stock"
+                        className="w-120"
+                      />
+                    </div>
+                  )}
+                </div>
 
                 {/* Shop Browser*/}
                 <div className="hidden 800px:flex pt-2">

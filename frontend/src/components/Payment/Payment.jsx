@@ -123,7 +123,10 @@ const Payment = () => {
           Back to Checkout
         </button>
       </div>
-      <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
+      <div className="w-[90%] 1000px:w-[40%] block 800px:flex">
+        <div className="w-full 800px:w-[40%] 800px:mt-0 mt-8">
+          <CartData orderData={orderData} />
+        </div>
         <div className="w-full 800px:w-[65%]">
           <PaymentInfo
             user={user}
@@ -133,9 +136,6 @@ const Payment = () => {
             createOrder={createOrder}
             cashOnDeliveryHandler={cashOnDeliveryHandler}
           />
-        </div>
-        <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
-          <CartData orderData={orderData} />
         </div>
       </div>
     </div>
