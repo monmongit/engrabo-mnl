@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import { DataGrid } from '@mui/x-data-grid';
 import { useDispatch, useSelector } from 'react-redux';
-import { AiOutlineDelete, AiOutlineSearch } from 'react-icons/ai';
+import {
+  AiOutlineDelete,
+  AiOutlineSearch,
+  AiOutlineHeart,
+} from 'react-icons/ai';
 import Loader from '../Layout/Loader';
 import { getAllUsers, deleteUser } from '../../redux/action/user';
 import { Link } from 'react-router-dom';
@@ -12,6 +16,8 @@ const AllUsers = () => {
   const { admin } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState('');
+  const [wishlistItems, setWishlistItems] = useState([]);
+  const [wishlistEmptyMessage, setWishlistEmptyMessage] = useState('');
 
   useEffect(() => {
     dispatch(getAllUsers(admin._id));
@@ -23,9 +29,32 @@ const AllUsers = () => {
     }
   };
 
+  const handleOpenWishlist = (wishlist) => {
+    if (wishlist.length === 0) {
+      setWishlistEmptyMessage('No items in wishlist');
+    } else {
+      setWishlistItems(wishlist);
+      setWishlistEmptyMessage('');
+    }
+  };
+
+  const handleCloseWishlist = () => {
+    setWishlistItems([]);
+    setWishlistEmptyMessage('');
+  };
+
   const filteredUsers = usersList.filter((user) =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const calculateSelectedPrice = (item) => {
+    return (
+      item.selectedSize?.price ??
+      item.selectedEngraving?.price ??
+      item.selectedColor?.price ??
+      (item.discountPrice > 0 ? item.discountPrice : item.originalPrice)
+    );
+  };
 
   const columns = [
     {
@@ -51,6 +80,22 @@ const AllUsers = () => {
       flex: 1,
     },
     {
+      field: 'wishlist',
+      headerName: 'Wishlist',
+      minWidth: 130,
+      flex: 0.5,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleOpenWishlist(params.row.wishlist)}
+        >
+          <AiOutlineHeart size={20} />
+          Wishlist
+        </Button>
+      ),
+    },
+    {
       field: 'actions',
       headerName: 'Actions',
       minWidth: 130,
@@ -69,11 +114,12 @@ const AllUsers = () => {
   ];
 
   const rows = filteredUsers.map((user) => ({
-    id: user._id, // This is still needed for the DataGrid's row identification
-    image: user.avatar?.url || '', // Handle cases where the URL might be missing
+    id: user._id,
+    image: user.avatar?.url || '',
     name: user.name,
     email: user.email,
     phonenumber: user.phoneNumber,
+    wishlist: user.wishlist,
   }));
 
   return (
@@ -81,10 +127,7 @@ const AllUsers = () => {
       {isLoading ? (
         <Loader />
       ) : (
-        <div
-          className="w-full px-0 sm:px-8 pt-1 mt-10 bg-white overflow-x-auto"
-          style={{ marginBottom: '60px', borderRadius: '10px' }}
-        >
+        <div className="w-full px-0 sm:px-8 pt-1 mt-10 bg-white overflow-x-auto mb-16 rounded-md">
           <div className="mx-4">
             <div className="w-full flex justify-end items-center mb-4">
               <div className="relative w-full sm:w-[40%] mt-5">
@@ -112,6 +155,43 @@ const AllUsers = () => {
               />
             </div>
           </div>
+          {wishlistItems.length > 0 || wishlistEmptyMessage ? (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-md w-3/4 md:w-1/2 lg:w-1/3">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">Wishlist</h2>
+                  <button
+                    onClick={handleCloseWishlist}
+                    className="text-xl font-bold"
+                  >
+                    &times;
+                  </button>
+                </div>
+                {wishlistItems.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-4">
+                    {wishlistItems.map((item) => (
+                      <Link
+                        to={`/product/${item._id}`}
+                        key={item._id}
+                        className="mb-4"
+                      >
+                        <img
+                          src={item.images[0]?.url}
+                          alt={item.name}
+                          className="w-full h-[150px] object-cover mb-2"
+                        />
+                        <p className="text-lg font-semibold">{item.name}</p>
+                        <p>₱ {calculateSelectedPrice(item)}</p>
+                        <p>Stocks: {item.stock}</p>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p>{wishlistEmptyMessage}</p>
+                )}
+              </div>
+            </div>
+          ) : null}
         </div>
       )}
     </>
