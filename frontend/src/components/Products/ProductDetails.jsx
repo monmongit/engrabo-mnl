@@ -110,7 +110,6 @@ const ProductDetails = ({ data }) => {
   const addToWishlistHandler = (data) => {
     setClick(!click);
     dispatch(addToWishlist(data));
-    toast.success(`${data.name} added to wishlist successfully!`);
   };
 
   const addToCartHandler = (id) => {
