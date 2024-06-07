@@ -8,19 +8,6 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineFontSize,
-<<<<<<< HEAD
-} from "react-icons/ai";
-import { server } from "../../server";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllProductsAdmin } from "../../redux/action/product";
-import { addToWishlist, removeFromWishlist } from "../../redux/action/wishlist";
-import { toast } from "react-toastify";
-import { addTocart } from "../../redux/action/cart";
-import Ratings from "./Ratings";
-import axios from "axios";
-import Modal from "react-modal";
-import UserCreateDesign from "../UserCreateDesign";
-=======
 } from 'react-icons/ai';
 import { server } from '../../server';
 import { useDispatch, useSelector } from 'react-redux';
@@ -33,7 +20,6 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import UserCreateDesign from '../UserCreateDesign';
 import outOfstock from '../../assets/Logo/out-of-stock.png';
->>>>>>> 8d2667d3e2440b91059e79b52124b86b63e53bea
 
 const ProductDetails = ({ data }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -229,13 +215,6 @@ const ProductDetails = ({ data }) => {
             {/* Images of Product */}
             <div className="w-full md:w-1/2 flex flex-col items-center">
               {/* Image of Product Main */}
-<<<<<<< HEAD
-              <img
-                src={`${data && data.images[select]?.url}`}
-                alt=""
-                className=" shadow-lg w-full h-1/2 aspect-square rounded-xl "
-              />
-=======
               <div className="relative w-full h-auto">
                 <img
                   src={`${data && data.images[select]?.url}`}
@@ -252,7 +231,6 @@ const ProductDetails = ({ data }) => {
                   </div>
                 )}
               </div>
->>>>>>> 8d2667d3e2440b91059e79b52124b86b63e53bea
 
               <div className="flex mt-4 space-x-2">
                 {/* Image of Product Choices */}
