@@ -149,7 +149,7 @@ const Checkout = () => {
 
   return (
     <div className="w-full flex flex-col items-center py-8">
-      <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
+      <div className="w-[90%] 1000px:w-[90%] block 800px:flex">
         <div className="w-full 800px:w-[65%]">
           <ShippingInfo
             user={user}
@@ -206,7 +206,7 @@ const ShippingInfo = ({
   setZipCode,
 }) => {
   return (
-    <div className="w-full 800px:w-[95%] bg-white rounded-md p-5 pb-8">
+    <div className="w-full 800px:w-[500px] bg-white rounded-md p-5 pb-8">
       <h5 className="text-[18px] font-[500]">Shipping Address</h5>
       <br />
       <form>
@@ -338,21 +338,23 @@ const ShippingInfo = ({
         </div>
 
         <div className="w-full flex pb-3">
-          {/* Address 1 */}
-          <div className="w-[50%]">
-            <label className="block pb-2 !text-[#171203]">Address1</label>
+          {/* Address 2 */}
+          <div className="w-full">
+            <label className="block pb-2 !text-[#171203]">Barangay</label>
             <input
               type="address"
-              required
               value={address1}
               onChange={(e) => setAddress1(e.target.value)}
-              className="h-[40px] w-[95%] appearance-none block px-3 border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
+              required
+              className="h-[40px] w-full appearance-none block px-3 border border-[#9e8a4f] rounded-[3px] shadow-sm placeholder-[#9e8a4f] focus:outline-none focus:ring-brown-dark focus:border-brown-dark"
             />
           </div>
+        </div>
 
+        <div className="w-full flex pb-3">
           {/* Address 2 */}
-          <div className="w-[50%]">
-            <label className="block pb-2 !text-[#171203]">Address2</label>
+          <div className="w-full">
+            <label className="block pb-2 !text-[#171203]">Street</label>
             <input
               type="address"
               value={address2}
@@ -362,8 +364,6 @@ const ShippingInfo = ({
             />
           </div>
         </div>
-
-        <div></div>
       </form>
 
       {/* Select Saved Address */}
