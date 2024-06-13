@@ -14,7 +14,8 @@ const AllOrders = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [filterType, setFilterType] = useState('id'); // State to manage the selected filter type
+  const [filterType, setFilterType] = useState('id');
+  const [sortOrder, setSortOrder] = useState('');
 
   useEffect(() => {
     dispatch(getAllOrdersOfAdmin(admin._id));
@@ -32,6 +33,10 @@ const AllOrders = () => {
     setFilterType(e.target.value);
   };
 
+  const handleSortOrderChange = (e) => {
+    setSortOrder(e.target.value);
+  };
+
   const filteredOrders =
     orders &&
     orders.filter((item) => {
@@ -41,6 +46,36 @@ const AllOrders = () => {
           : item.user.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === '' || item.status === statusFilter;
       return matchesSearch && matchesStatus;
+    });
+
+  const userOrderData = filteredOrders.reduce((acc, order) => {
+    const userName = order.user.name;
+    const itemsQty = order.cart.length;
+
+    if (!acc[userName]) {
+      acc[userName] = { totalQty: 0, user: order.user };
+    }
+    acc[userName].totalQty += itemsQty;
+    return acc;
+  }, {});
+
+  const sortedUserOrderData = Object.values(userOrderData).sort((a, b) => {
+    return sortOrder === 'highest'
+      ? b.totalQty - a.totalQty
+      : a.totalQty - b.totalQty;
+  });
+
+  const row = [];
+
+  filteredOrders &&
+    filteredOrders.forEach((item) => {
+      row.push({
+        id: item._id,
+        user: item.user.name,
+        itemsQty: item.cart.length,
+        total: '₱ ' + item.totalPrice,
+        status: item.status,
+      });
     });
 
   const columns = [
@@ -68,7 +103,6 @@ const AllOrders = () => {
       minWidth: 130,
       flex: 0.7,
     },
-
     {
       field: 'total',
       headerName: 'Total',
@@ -94,18 +128,21 @@ const AllOrders = () => {
     },
   ];
 
-  const row = [];
+  const userColumns = [
+    { field: 'user', headerName: 'User Name', minWidth: 150, flex: 1 },
+    {
+      field: 'totalQty',
+      headerName: 'Number of Orders',
+      minWidth: 150,
+      flex: 1,
+    },
+  ];
 
-  filteredOrders &&
-    filteredOrders.forEach((item) => {
-      row.push({
-        id: item._id,
-        user: item.user.name,
-        itemsQty: item.cart.length,
-        total: '₱ ' + item.totalPrice,
-        status: item.status,
-      });
-    });
+  const userRows = sortedUserOrderData.map((userData, index) => ({
+    id: index,
+    user: userData.user.name,
+    totalQty: userData.totalQty,
+  }));
 
   return (
     <>
@@ -162,6 +199,17 @@ const AllOrders = () => {
                   <option value="Refund Successful">Refund Successful</option>
                 </select>
               </div>
+              <div className="relative w-full sm:w-[30%] mt-5 ml-4">
+                <select
+                  className="h-10 sm:h-[45px] pl-4 pr-10 w-full border-2 border-solid border-[#171203] rounded-md placeholder-[#9e8a4f] shadow-md transition ease-in-out duration-300 focus:outline-none hover:border-[#171203] hover:ring-[#171203] hover:ring-1"
+                  value={sortOrder}
+                  onChange={handleSortOrderChange}
+                >
+                  <option value="">Sort by Orders</option>
+                  <option value="highest">Highest Orders</option>
+                  <option value="lowest">Lowest Orders</option>
+                </select>
+              </div>
             </div>
             <div className="w-full overflow-x-auto mb-10">
               <DataGrid
@@ -172,6 +220,21 @@ const AllOrders = () => {
                 autoHeight
                 className="data-grid"
               />
+            </div>
+            <div className="mt-5">
+              <h2 className="text-lg font-semibold mb-4">
+                User Orders Summary
+              </h2>
+              <div className="w-full overflow-x-auto mb-10">
+                <DataGrid
+                  rows={userRows}
+                  columns={userColumns}
+                  pageSize={10}
+                  disableSelectionOnClick
+                  autoHeight
+                  className="data-grid"
+                />
+              </div>
             </div>
           </div>
         </div>
