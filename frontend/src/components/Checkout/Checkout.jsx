@@ -7,6 +7,44 @@ import axios from 'axios';
 import { server } from '../../server';
 import { toast } from 'react-toastify';
 
+const shippingRates = {
+  Malabon: 46,
+  Calumpang: 113.2,
+  Caloocan: 49,
+  'Dasmariñas Village': 111.36,
+  Ermita: 75.12,
+  Intramuros: 68.29,
+  'Las Piñas': 166.24,
+  Makati: 103.1,
+  Malate: 81.25,
+  Mandaluyong: 94.37,
+  Manila: 64.57,
+  Marikina: 113.69,
+  Muntinlupa: 197.28,
+  Navotas: 49,
+  Niugan: 49,
+  Paco: 73.33,
+  Pandacan: 68.9,
+  Parañaque: 141.18,
+  Pasay: 104.91,
+  Pasig: 119.81,
+  Pateros: 125.29,
+  'Port Area': 73.62,
+  'Quezon City': 75.88,
+  Quiapo: 65.02,
+  'San Juan': 79.91,
+  'San Miguel': 78.64,
+  'Santa Ana': 81.76,
+  'Santa Cruz': 56.92,
+  Singkamas: 90.67,
+  Taguig: 131.17,
+  Tanza: 49,
+  Tondo: 51.74,
+  Valenzuela: 49.93,
+
+  // Add more cities and their corresponding shipping costs here
+};
+
 const Checkout = () => {
   const { user } = useSelector((state) => state.user);
   const { cart } = useSelector((state) => state.cart);
@@ -27,6 +65,10 @@ const Checkout = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const getShippingCost = (city) => {
+    return shippingRates[city] || 0;
+  };
 
   const paymentSubmit = () => {
     if (
@@ -50,6 +92,9 @@ const Checkout = () => {
       const discountValue = couponCodeData
         ? (couponCodeData.value / 100) * subTotalPrice
         : 0;
+
+      const shipping = getShippingCost(city);
+
       const totalPrice = (subTotalPrice + shipping - discountValue).toFixed(2);
 
       const orderData = {
@@ -72,9 +117,6 @@ const Checkout = () => {
     (acc, item) => acc + item.qty * item.price,
     0
   );
-
-  // this is shipping cost variable
-  const shipping = subTotalPrice * 0.1;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,8 +186,8 @@ const Checkout = () => {
     : 0;
 
   const totalPrice = couponCodeData
-    ? (subTotalPrice + shipping - discountPercentenge).toFixed(2)
-    : (subTotalPrice + shipping).toFixed(2);
+    ? (subTotalPrice + getShippingCost(city) - discountPercentenge).toFixed(2)
+    : (subTotalPrice + getShippingCost(city)).toFixed(2);
 
   return (
     <div className="w-full flex flex-col items-center py-8">
@@ -175,7 +217,7 @@ const Checkout = () => {
           <CartData
             handleSubmit={handleSubmit}
             totalPrice={totalPrice}
-            shipping={shipping}
+            shipping={getShippingCost(city)}
             subTotalPrice={subTotalPrice}
             couponCode={couponCode}
             setCouponCode={setCouponCode}
